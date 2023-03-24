@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ESNext" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */,
+    "module": "NodeNext" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */,
+    "allowJs": false /* Allow javascript files to be compiled. */,
+    "checkJs": false /* Report errors in .js files. */,
+    "declaration": true /* Generates corresponding '.d.ts' file. */,
+
+    "sourceMap": true /* Generates corresponding '.map' file. */,
+    "outDir": "temp" /* Redirect output structure to the directory. */,
+    "rootDir": "." /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
+    "composite": true /* Enable project compilation */,
+    "tsBuildInfoFile": "./dist/*" /* Specify file to store incremental compilation information */,
+    "isolatedModules": true /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */,
+
+    /* Strict Type-Checking Options */
+    "strict": true /* Enable all strict type-checking options. */,
+    /* Module Resolution Options */
+    "resolveJsonModule": true,
+    "moduleResolution": "nodenext" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
+    "baseUrl": "." /* Base directory to resolve non-absolute module names. */,
+    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
+
+    /* Experimental Options */
+    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
+    "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
+
+    /* Advanced Options */
+    "skipLibCheck": true /* Skip type checking of declaration files. */,
+    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+  },
+  "exclude": ["packages/*/*.js"],
+  "include": [
+    "packages/*/*.ts",
+    "packages/*/*.d.ts",
+    "packages/*/src",
+    "packages/*/__tests__",
+    "packages/*/*.json",
+    "packages/global.d.ts",
+    "scripts/*",
+    "packages/shared/types"
+  ]
+}

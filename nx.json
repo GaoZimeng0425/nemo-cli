@@ -1,0 +1,37 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "test",
+          "check"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "^test"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ]
+    },
+    "check": {
+      "dependsOn": [
+        "^check"
+      ]
+    }
+  }
+}
