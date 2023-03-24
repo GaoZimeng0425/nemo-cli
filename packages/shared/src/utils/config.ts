@@ -1,19 +1,22 @@
 import path from 'node:path'
 import { homedir } from 'node:os'
-import { readJSON, writeJSON } from './file.js'
-import { dirname } from './pathname.js'
+import Configstore from 'configstore'
 import { CONFIG_NAME } from '../constants.js'
+import { log } from './log.js'
 
-const __dirname = path.resolve(dirname(import.meta), '../..')
-// const configPath = path.resolve(homedir(), CONFIG_NAME)
-const configPath = path.resolve(__dirname, CONFIG_NAME)
+const configRootPath = path.resolve(homedir(), CONFIG_NAME)
 
-export const changeConfig = async (props: Record<string, unknown>) => {
-  const config = await getConfig()
-  const content = JSON.stringify({
-    ...config,
-    ...props
-  })
-  return writeJSON(configPath, content)
+export const changeConfig = async (props: Record<string, unknown>) => {}
+
+type StoreOptions = {
+  path: string
+  default?: Record<PropertyKey, unknown>
 }
-export const getConfig = () => readJSON(configPath)
+export const createStore = (name: string, options: StoreOptions) => {
+  if (!options.path) throw Error('Store subpath is necessary!')
+
+  const configPath = path.resolve(configRootPath, options.path)
+  const store = new Configstore(name, options.default ?? null, { configPath })
+  log.success('store created success', store.path)
+  return store
+}
