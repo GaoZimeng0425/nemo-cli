@@ -1,7 +1,9 @@
 import { Command } from 'commander'
 
-import { createInput, log } from '@nemo-cli/shared'
-import { listModels, createCompletion } from './openai.js'
+import { createInput, createList, log } from '@nemo-cli/shared'
+import { listModels, createCompletion, chatHandle } from './openai.js'
+import { deleteKey, getKey, setKey } from './utils/store.js'
+import { exit } from 'process'
 
 log.debug()
 export const init = () => {
@@ -11,6 +13,7 @@ export const init = () => {
   chat(program)
   completion(program)
   models(program)
+  key(program)
   return program
 }
 
@@ -27,8 +30,6 @@ const completion = (program: Command) => {
           validate: (answer) => !!answer
         })
       }
-      const w = process.stdout.getWindowSize()
-      log.success('', w[0], w[1])
     })
 }
 
@@ -36,20 +37,60 @@ const chat = (program: Command) => {
   return program
     .command('chat')
     .description('使用 openai 聊天')
-    .action(async (prompts) => {
-      // const result = await createCompletion(prompts)
-      // console.log(result)
-      // log.success('openai', 'openai exec')
+    .action(async () => {
+      const key = await getKey()
+      const message = async () => {
+        log.success('chat', '输入 stop 停止 chat')
+        const prompts = await createInput({ message: 'You: ', validate: (a) => !!a })
+        if (prompts === 'stop') {
+          process.exit(0)
+        }
+        const result = await chatHandle(key, prompts)
+        log.success('content: ', result)
+        message()
+      }
+      message()
     })
+}
+enum KEY_CHOOSE {
+  ADD = 'ADD',
+  DELETE = 'DELETE',
+  EXIT = 'EXIT'
+}
+const key = (program: Command) => {
+  program
+    .command('key')
+    .description('添加, 更新或删除openai apikey')
+    .action(async () => {
+      const choose = await createList({
+        choices: [
+          { value: KEY_CHOOSE.ADD, name: '添加' },
+          { value: KEY_CHOOSE.DELETE, name: '删除' },
+          { value: KEY_CHOOSE.EXIT, name: '退出' }
+        ]
+      })
+      if (choose === KEY_CHOOSE.EXIT) {
+        exit(0)
+      } else if (choose === KEY_CHOOSE.DELETE) {
+        await deleteKey()
+      } else {
+        await setKey()
+      }
+      log.success('openai save key', 'success')
+    })
+  return program
 }
 
 const models = (program: Command) => {
   return program
     .command('model')
-    .description('list gpt models')
+    .description('choose gpt model')
     .action(async () => {
-      const models = await listModels()
-      log.success('models', models)
+      const key = await getKey()
+      const models = await listModels(key)
+      log.success('model list', models)
+      const model = createList({ choices: models })
+      log.success('model choose', model)
     })
 }
 

@@ -1,35 +1,48 @@
-import { ora } from '@nemo-cli/shared'
-import { Configuration, OpenAIApi } from 'openai'
-import { TOKEN } from './constants.js'
+import { log, ora } from '@nemo-cli/shared'
+import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai'
 
-const configuration = new Configuration({
-  apiKey: TOKEN
-})
-const openai = new OpenAIApi(configuration)
-
-const AXIOS_OPTIONS: Parameters<typeof openai.createCompletion>[1] = {
-  timeout: 10000
+const AXIOS_OPTIONS: Parameters<OpenAIApi['createChatCompletion']>[1] = {
+  timeout: 20000
 }
 
-export const chat = async () => {
-  const response = await openai.createChatCompletion(
-    {
-      model: 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: 'Who won the world series in 2020?' },
-        { role: 'assistant', content: 'The Los Angeles Dodgers won the World Series in 2020.' },
-        { role: 'user', content: 'Where was it played?' }
-      ],
-      temperature: 0.8,
-      max_tokens: 200
-    },
-    AXIOS_OPTIONS
-  )
-  return response.data.choices[0]
+const CONTENT: ChatCompletionRequestMessage[] = [
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'Who won the world series in 2020?' },
+  { role: 'assistant', content: 'The Los Angeles Dodgers won the World Series in 2020.' }
+]
+export const chatHandle = async (TOKEN: string, content: string) => {
+  log.success('', TOKEN)
+  const configuration = new Configuration({
+    apiKey: TOKEN
+  })
+  const openai = new OpenAIApi(configuration)
+
+  CONTENT.push({ role: 'user', content })
+  log.success('', content)
+  try {
+    const response = await openai.createChatCompletion(
+      {
+        model: 'gpt-3.5-turbo',
+        messages: CONTENT,
+        temperature: 0.8,
+        max_tokens: 200
+      },
+      AXIOS_OPTIONS
+    )
+    const { message } = response.data.choices[0]
+    log.success('', message)
+    message && CONTENT.push(message)
+    return message?.content ?? ''
+  } catch (err) {
+    log.error('error', (err as any)?.message)
+  }
 }
 
-export const createCompletion = async (question?: string): Promise<string> => {
+export const createCompletion = async (TOKEN: string, question?: string): Promise<string> => {
+  const configuration = new Configuration({
+    apiKey: TOKEN
+  })
+  const openai = new OpenAIApi(configuration)
   const spinner = ora('completion')
   try {
     const response = await openai.createCompletion(
@@ -50,21 +63,29 @@ export const createCompletion = async (question?: string): Promise<string> => {
   }
 }
 
-export const listModels = async () => {
+export const listModels = async (TOKEN: string) => {
+  const configuration = new Configuration({
+    apiKey: TOKEN
+  })
+  const openai = new OpenAIApi(configuration)
   const spinner = ora('find models').start()
 
   try {
     const { data } = await openai.listModels(AXIOS_OPTIONS)
     spinner.succeed()
-    console.log(data)
+    console.log(data.data)
 
-    return data
+    return data.data.map((model) => ({ name: model.object, value: model.object }))
   } catch (err) {
     spinner.fail(`error: ${err}`)
   }
 }
 
-export const retrieveModel = async (model: string) => {
+export const retrieveModel = async (model: string, TOKEN: string) => {
+  const configuration = new Configuration({
+    apiKey: TOKEN
+  })
+  const openai = new OpenAIApi(configuration)
   try {
     const { data } = await openai.retrieveModel(model)
     return data
