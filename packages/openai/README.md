@@ -1,11 +1,19 @@
 # `@nemo-cli/openai`
 
-> TODO: description
+> openai operation
+
+## Install
+
+> pnpm
+```
+pnpm add @nemo-cli/openai --global
+```
 
 ## Usage
 
 ```
-import openai from '@nemo-cli/openai';
-
-// TODO: DEMONSTRATE API
+openai chat
+openai key
+openai completion
+openai model
 ```

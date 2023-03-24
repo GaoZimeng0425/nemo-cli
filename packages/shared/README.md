@@ -1,11 +1,9 @@
 # `@nemo-cli/shared`
 
-> TODO: description
+> nemo-cli tools
 
 ## Usage
 
 ```
-import shared from '@nemo-cli/shared';
-
-// TODO: DEMONSTRATE API
+import {log, createStore, createList} from '@nemo-cli/shared'
 ```
