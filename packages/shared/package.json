@@ -22,12 +22,12 @@
     "lib": "dist",
     "test": "__tests__"
   },
-  "files": ["src", "dist"],
+  "files": ["dist"],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "dev": "tsc watch ./src -P tsconfig.build.json",
+    "dev": "tsc -P ./tsconfig.build.json --watch",
     "build": "tsc -P ./tsconfig.build.json",
     "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
@@ -35,10 +35,11 @@
     "check": "tsc --incremental --noEmit"
   },
   "dependencies": {
-    "@nemo-cli/shared": "workspace:^0.0.1",
+    "ansi-escapes": "^6.1.0",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
-    "fs-extra": "^11.1.0",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^9.1.5",
     "npmlog": "^7.0.1",
     "ora": "^6.2.0",
     "update-notifier": "^6.0.2"
@@ -46,7 +47,6 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.1",
     "@types/inquirer": "^9.0.3",
-    "@types/npmlog": "^4.1.4",
-    "inquirer": "^9.1.4"
+    "@types/npmlog": "^4.1.4"
   }
 }

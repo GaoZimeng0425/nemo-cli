@@ -1,14 +1,10 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": ["../../tsconfig.build.json"],
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
     "rootDir": "./src",
-    "noEmit": false,
-    "emitDeclarationOnly": false,
-    "declaration": true,
-    "sourceMap": false
+    "tsBuildInfoFile": "dist/.tsBuildInfoFile.json"
   },
-  "include": ["src", "../global.d.ts", "types"],
-  "exclude": ["packages/*/__tests__"]
+  "include": ["src", "../global.d.ts"]
 }
