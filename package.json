@@ -1,0 +1,40 @@
+{
+  "name": "nemo-cli",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
+  "author": "gaozimeng <gaozimeng0425@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "coverage": "vitest run --coverage",
+    "graph": "pnpm dlx nx graph",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^4.0.3",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/node": "^18.15.6",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "lerna": "^6.6.0",
+    "np": "^7.6.4",
+    "prettier": "^2.8.6",
+    "rollup": "^3.20.1",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "tsx": "^3.12.6",
+    "typescript": "^5.0.2",
+    "vitest": "^0.29.7",
+    "zx": "^7.2.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
