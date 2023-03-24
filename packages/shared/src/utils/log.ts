@@ -1,15 +1,28 @@
 import chalk from 'chalk'
 import npmlog from 'npmlog'
+import ansiEscapes from 'ansi-escapes'
 import { isString } from './types.js'
 
 // type LogLevels = "silly" | "verbose" | "info" | "timing" | "http" | "notice" | "warn" | "error" | "silent";
-const reset = () => {
-  npmlog.heading = '@nemo-cli'
-  npmlog.addLevel('success', 1500, { fg: 'green', bg: 'black', bold: true, bell: true })
-  npmlog.level = 'warn'
+const DEFAULT_OPTIONS = {
+  heading: '@nemo-cli',
+  level: 'warn'
 }
-reset()
+const init = (customOptions?: typeof DEFAULT_OPTIONS) => {
+  const options = { ...DEFAULT_OPTIONS, ...customOptions }
 
+  npmlog.heading = options.heading
+  npmlog.level = options.level
+
+  npmlog.addLevel('success', 1500, {
+    fg: 'green',
+    bg: 'black',
+    bold: true,
+    bell: true
+  })
+}
+
+init()
 const transformMessage = (messages: any[]) => {
   for (let i = 0; i < messages.length; i++) {
     const [current, next] = [messages[i], messages[i + 1]]
@@ -22,8 +35,7 @@ const transformMessage = (messages: any[]) => {
 
 export const log = {
   ...npmlog,
-  reset,
-  init() {},
+  init,
   set lever(v: any) {
     throw new Error('use setLevel')
   },
@@ -55,5 +67,20 @@ export const log = {
         console.log(message)
       }
     })
+  },
+  clearScreen() {
+    process.stdout.write(ansiEscapes.clearScreen)
+  },
+  clearTerminal() {
+    process.stdout.write(ansiEscapes.clearTerminal)
+  },
+  beep() {
+    process.stdout.write(ansiEscapes.beep)
+  },
+  scrollDown() {
+    process.stdout.write(ansiEscapes.scrollDown)
+  },
+  scrollUp() {
+    process.stdout.write(ansiEscapes.scrollUp)
   }
 }
