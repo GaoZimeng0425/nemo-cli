@@ -1,4 +1,3 @@
-import { getConfig } from './config.js'
 import { log } from './log.js'
 
 type NPM_INFO = {
@@ -6,9 +5,8 @@ type NPM_INFO = {
     latest: `${number}.${number}.${number}`
   }
 }
-export const getNpmInfo = (npmName: string): Promise<NPM_INFO> => {
-  const config = getConfig()
-  const url = new URL(npmName, config.register)
+export const getNpmInfo = (npmName: string, register: string): Promise<NPM_INFO> => {
+  const url = new URL(npmName, register)
   return fetch(url.toString())
     .then((data) => data.json())
     .catch((err) => {

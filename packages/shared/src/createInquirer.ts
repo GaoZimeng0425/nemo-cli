@@ -19,6 +19,8 @@ export const createList = createType('list')
 
 export const createInput = createType('input')
 
+export const createPassword = createType('password')
+
 export const createCheckbox = createType('checkbox')
 
 export const createConfirm = createType('confirm')
