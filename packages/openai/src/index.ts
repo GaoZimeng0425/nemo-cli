@@ -1,19 +1,25 @@
 import { Command } from 'commander'
 
-import { createInput, createList, log } from '@nemo-cli/shared'
+import { createInput, createList, log, readPackage } from '@nemo-cli/shared'
 import { listModels, createCompletion, chatHandle } from './openai.js'
 import { deleteKey, getKey, setKey } from './utils/store.js'
-import { exit } from 'process'
 
-log.debug()
+import { HELP_MESSAGE } from './constants.js'
+
+export const pkg = readPackage(import.meta, '..')
+
 export const init = () => {
-  const program = new Command('ai').description('help you use openai').usage('<Command> [options]')
-  program.showHelpAfterError()
-  program.showSuggestionAfterError()
+  const program = new Command('ai')
+    .description(`${pkg.name} help you use openai easier`)
+    .version(pkg.version)
+    .usage('<Command> [options]')
+    .addHelpText('after', HELP_MESSAGE.ai)
+
   chat(program)
   completion(program)
   models(program)
   key(program)
+
   return program
 }
 
@@ -72,7 +78,7 @@ const key = (program: Command) => {
         ]
       })
       if (choose === KEY_CHOOSE.EXIT) {
-        exit(0)
+        process.exit(0)
       } else if (choose === KEY_CHOOSE.DELETE) {
         await deleteKey()
       } else {

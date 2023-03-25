@@ -9,8 +9,8 @@ export * from './createInquirer.js'
 export { ora } from './utils/spinner.js'
 export * from './utils/file.js'
 
-import pkg from '../package.json' assert { type: 'json' }
-export { pkg }
+import { readPackage } from './utils/file.js'
+export const pkg = readPackage(import.meta, '..')
 
 export const cached = <Func extends (...args: any[]) => any>(fn: Func) => {
   const map: Map<PropertyKey, ReturnType<Func>> = new Map()
