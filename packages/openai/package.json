@@ -2,7 +2,10 @@
   "name": "@nemo-cli/openai",
   "version": "0.0.3",
   "description": "openai cli",
-  "keywords": ["openai cli", "terminal openai"],
+  "keywords": [
+    "openai cli",
+    "terminal openai"
+  ],
   "bin": {
     "openai": "bin/index.mjs"
   },
@@ -16,19 +19,22 @@
     "lib": "dist",
     "test": "__tests__"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "build": "tsc -P ./tsconfig.build.json",
     "dev": "tsc -P ./tsconfig.build.json --watch",
-    "//dev": "tsx watch ./src --tsconfig tsconfig.build.json",
     "prepublish": "npm run build"
   },
   "type": "module",
   "dependencies": {
-    "@nemo-cli/shared": "workspace:^0.0.3",
+    "@nemo-cli/shared": "workspace:^",
+    "boxen": "^7.0.2",
+    "chalk": "^5.2.0",
     "commander": "^10.0.0",
     "inquirer": "^9.1.5",
     "openai": "^3.2.1"

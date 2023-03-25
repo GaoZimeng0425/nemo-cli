@@ -24,12 +24,14 @@ const completion = (program: Command) => {
     .argument('[prompts]', '问题', '')
     .description('使用 openai 询问')
     .action(async (prompts) => {
+      const key = await getKey()
       if (!prompts) {
         prompts = await createInput({
           message: '请输入问题',
           validate: (answer) => !!answer
         })
       }
+      createCompletion(key, prompts)
     })
 }
 
