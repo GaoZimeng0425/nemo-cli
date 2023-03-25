@@ -1,9 +1,26 @@
-import fse, { type PathLike, ReadStream } from 'fs-extra'
-import { createReadStream } from 'fs'
+import { resolve } from 'node:path'
+import fse, { type PathLike } from 'fs-extra'
 import { log } from './log.js'
 import { dirname } from './pathname.js'
-import { resolve } from 'path'
-import { stdin as input, stdout as output } from 'node:process'
+
+type Package = {
+  name: string
+  version: `${number}.${number}.${number}`
+  keywords: string[]
+  license: string
+  author: string
+  description: string
+  workspaces: string[] | Record<string, string[]>
+}
+export const readPackage = (importMeta: { url: string }, ...paths: string[]): Package => {
+  try {
+    const path = resolve(dirname(importMeta), ...paths)
+    return readJSON(`${path}/package.json`)
+  } catch (err) {
+    log.error('file', (err as any).message)
+    process.exit(0)
+  }
+}
 
 export const readJSON = (path: string, force = false) => {
   if (fse.existsSync(path)) {
@@ -34,7 +51,6 @@ export const deleteFile = (file: string) => fse.removeSync(file)
 export const deleteFiles = (files: string[]) => files.forEach((file) => fse.removeSync(file))
 
 export const emptyDir = (src: string) => fse.emptyDirSync(src)
-
 export const emptyDirs = (dirs: string[]) => dirs.forEach((dir) => fse.emptyDirSync(dir))
 
 export const isEmptyDir = async (src: string) => {
@@ -43,6 +59,9 @@ export const isEmptyDir = async (src: string) => {
 }
 
 export const dirList = (src: string = './') => {
-  return fileList(src).filter((file) => fse.statSync(file).isDirectory())
+  const files = fileList(src)
+  return files.filter((file) => fse.statSync(`${src}/${file}`).isDirectory())
 }
-export const fileList = (src: string = './') => fse.readdirSync(src)
+export const fileList = (src: string = './') => {
+  return fse.readdirSync(src)
+}

@@ -1,12 +1,10 @@
 import path from 'node:path'
 import { homedir } from 'node:os'
 import Configstore from 'configstore'
-import { CONFIG_NAME } from '../constants.js'
 import { log } from './log.js'
+import { CONFIG_NAME } from '../constants.js'
 
 const configRootPath = path.resolve(homedir(), CONFIG_NAME)
-
-export const changeConfig = async (props: Record<string, unknown>) => {}
 
 type StoreOptions = {
   path: string

@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/shared",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "cli tools",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",
@@ -43,7 +43,7 @@
     "fs-extra": "^11.1.1",
     "inquirer": "^9.1.5",
     "npmlog": "^7.0.1",
-    "ora": "^6.2.0",
+    "ora": "^6.3.0",
     "update-notifier": "^6.0.2"
   },
   "devDependencies": {
