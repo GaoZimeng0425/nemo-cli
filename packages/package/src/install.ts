@@ -9,6 +9,7 @@ import {
   dirList,
   isUndefined,
   log,
+  ora,
   tryPromise
 } from '@nemo-cli/shared'
 import { HELP_MESSAGE } from './constants.js'
@@ -44,12 +45,14 @@ const installHandle = async (
   const peer = options.peer ? '--save-peer' : ''
   const filter = choose.map((name) => `--filter=./packages/${name}`)
 
+  const spinner = ora(`${packageNames} installing in ${choose.join(' ')} directory!`).start()
+
   const flags = [dev, peer, exact].filter(Boolean)
   const [err] = await tryPromise($`pnpm ${filter} add -r ${packageNames} ${flags}`)
 
   err
-    ? log.error(err.message)
-    : log.success('install', `workspace: ${choose.join(' ')} install ${packageNames} success!`)
+    ? spinner.fail(err.message)
+    : spinner.succeed(`workspace: ${choose.join(' ')} install ${packageNames} success!`)
 }
 
 export const installCommand = (program: Command) => {
@@ -61,6 +64,7 @@ export const installCommand = (program: Command) => {
     .addHelpText('after', HELP_MESSAGE.install)
     .action(async (packages, options) => {
       let packageNames = packages?.trim().split(/\W+/gm).join(' ')
+      console.log('[高子蒙] : file: install.ts:64 : .action : packageNames:', packageNames)
       if (!packageNames) {
         packageNames = await createInput({
           message: 'Please enter the package name you want to install',

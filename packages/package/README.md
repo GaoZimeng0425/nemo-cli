@@ -4,7 +4,7 @@
 
 ## Install
 ```
-$ pnpm add @nemo-cli/package
+$ pnpm add @nemo-cli/package --global
 ```
 
 ## Usage
