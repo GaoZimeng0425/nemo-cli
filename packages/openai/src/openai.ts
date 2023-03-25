@@ -11,7 +11,6 @@ const CONTENT: ChatCompletionRequestMessage[] = [
   { role: 'assistant', content: 'The Los Angeles Dodgers won the World Series in 2020.' }
 ]
 export const chatHandle = async (TOKEN: string, content: string) => {
-  log.success('', TOKEN)
   const configuration = new Configuration({
     apiKey: TOKEN
   })
@@ -38,7 +37,7 @@ export const chatHandle = async (TOKEN: string, content: string) => {
   }
 }
 
-export const createCompletion = async (TOKEN: string, question?: string): Promise<string> => {
+export const createCompletion = async (TOKEN: string, question: string): Promise<string> => {
   const configuration = new Configuration({
     apiKey: TOKEN
   })
@@ -54,9 +53,9 @@ export const createCompletion = async (TOKEN: string, question?: string): Promis
       },
       AXIOS_OPTIONS
     )
-    console.log(response.data.choices[0])
     return response.data.choices[0]?.text ?? '无回答'
   } catch (err) {
+    log.error('openai', (err as any).message)
     return '出错了'
   } finally {
     spinner.clear()
