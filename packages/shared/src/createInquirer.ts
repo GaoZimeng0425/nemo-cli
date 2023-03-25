@@ -17,6 +17,10 @@ export const createType =
 
 export const createList = createType('list')
 
+export const createNumberList = createType('rawlist')
+
+export const createSelect = createType('list')
+
 export const createInput = createType('input')
 
 export const createPassword = createType('password')

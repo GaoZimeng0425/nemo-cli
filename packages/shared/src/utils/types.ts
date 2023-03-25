@@ -23,6 +23,7 @@ const isError = isType<Error>('Error')
 
 const isPromise = isType<Promise<unknown>>('Promise')
 const isPlainObject = isType<Record<string, unknown>>('Object')
+const isArray = isType<unknown[]>('Array')
 const isDate = isType<Date>('Date')
 const isSymbol = isType<symbol>('Symbol')
 const isSet = isType<Set<unknown>>('Set')
@@ -41,6 +42,7 @@ export {
   isError,
   isPromise,
   isPlainObject,
+  isArray,
   isDate,
   isSymbol,
   isSet,
