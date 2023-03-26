@@ -5,5 +5,6 @@ export const PROMPT_KEY = 'PROMPT_KEY'
 
 export const HELP_MESSAGE = {
   ai: createHelpExample('n ai key', 'n ai model', 'n ai chat', 'n ai completion [question]'),
-  key: createHelpExample('n key')
+  key: createHelpExample('n key'),
+  chat: createHelpExample('n chat', 'n chat -p', 'n chat -L')
 }

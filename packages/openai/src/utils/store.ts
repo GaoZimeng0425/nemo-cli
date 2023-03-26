@@ -1,13 +1,14 @@
 import { createPassword, createStore } from '@nemo-cli/shared'
 import { API_KEY_NAME, PROMPT_KEY, STORE_PATH } from '../constants.js'
+import { PROMPT_LIST, Prompt } from '../prompt.js'
 
-const store = createStore('openai', { path: STORE_PATH })
+export const store = createStore('openai', { path: STORE_PATH })
 
 export const deleteKey = () => {
   store.delete(API_KEY_NAME)
 }
 export const setKey = async () => {
-  const apiKey = await createPassword({ message: 'input openai apikey' })
+  const apiKey = await createPassword({ message: 'Input openai API Key' })
   store.set(API_KEY_NAME, apiKey)
 }
 
@@ -19,10 +20,13 @@ export const getKey = async () => {
   return apiKey
 }
 
-export const savePrompt = (prompt: string[]) => {
+export const clearPrompt = () => store.delete(PROMPT_KEY)
+export const savePrompt = (prompt: Prompt) => {
   try {
-    const promptList = store.get(PROMPT_KEY) || []
-    promptList.push(prompt)
+    const promptList = getPrompt()
+    const index = promptList.findIndex((store) => store.act === prompt.act)
+    if (index !== -1) promptList.splice(index, 1)
+    promptList.unshift(prompt)
     store.set(PROMPT_KEY, promptList)
     return true
   } catch (err) {
@@ -31,9 +35,9 @@ export const savePrompt = (prompt: string[]) => {
 }
 export const getPrompt = () => {
   try {
-    const prompt: string[] = store.get(PROMPT_KEY)
-    return prompt
+    const promptList: Prompt[] = store.get(PROMPT_KEY) ?? PROMPT_LIST
+    return promptList
   } catch (err) {
-    return null
+    return PROMPT_LIST
   }
 }
