@@ -1,4 +1,7 @@
-module.exports = {
+/**
+ * @type {import('eslint').Linter.Config}
+ */
+export default {
   env: {
     browser: true,
     es2021: true,
@@ -20,7 +23,10 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint'],
-  rules: {},
+  rules: {
+    '@typescript-eslint/no-unused-vars': 'warn',
+    'no-unused-vars': 'warn'
+  },
   overrides: [
     {
       files: ['*.js'],
