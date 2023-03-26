@@ -1,40 +1,56 @@
+import { Configuration, OpenAIApi } from 'openai'
 import { log, ora } from '@nemo-cli/shared'
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai'
+// TODO: USE LANG_CHAIN
+// import { OpenAI } from 'langchain'
+import { Prompt } from './prompt.js'
+import { getContext, addContext, initializationPrompt } from './utils/context.js'
+import { sleep } from 'zx'
+import { mockAnswer } from './utils/mock.js'
+import boxen from 'boxen'
 
 const AXIOS_OPTIONS: Parameters<OpenAIApi['createChatCompletion']>[1] = {
   timeout: 20000
 }
 
-const CONTENT: ChatCompletionRequestMessage[] = [
-  { role: 'system', content: 'You are a helpful assistant.' },
-  { role: 'user', content: 'Who won the world series in 2020?' },
-  { role: 'assistant', content: 'The Los Angeles Dodgers won the World Series in 2020.' }
-]
-export const chatHandle = async (TOKEN: string, content: string) => {
+export const createOpenai = (TOKEN: string, prompt: Prompt) => {
   const configuration = new Configuration({
     apiKey: TOKEN
   })
   const openai = new OpenAIApi(configuration)
+  initializationPrompt(prompt)
+  log.verbose('chat init prompt', getContext())
 
-  CONTENT.push({ role: 'user', content })
-  log.success('', content)
-  try {
-    const response = await openai.createChatCompletion(
-      {
-        model: 'gpt-3.5-turbo',
-        messages: CONTENT,
-        temperature: 0.8,
-        max_tokens: 200
-      },
-      AXIOS_OPTIONS
-    )
-    const { message } = response.data.choices[0]
-    log.success('', message)
-    message && CONTENT.push(message)
-    return message?.content ?? ''
-  } catch (err) {
-    log.error('error', (err as any)?.message)
+  const generatorChat = async (content: string) => {
+    addContext(content)
+    log.verbose('chat add content', content)
+
+    const spinner = ora({
+      hideCursor: true,
+      text: boxen(`Loading...`, { padding: 1, margin: { top: 1 } })
+    }).start()
+
+    try {
+      const response = await openai.createChatCompletion(
+        {
+          model: 'gpt-3.5-turbo',
+          messages: getContext(),
+          temperature: 0.8,
+          max_tokens: 200
+        },
+        AXIOS_OPTIONS
+      )
+      const { message } = response.data.choices[0]
+      log.verbose('chat response message', message)
+      spinner.stop()
+      message && addContext(message)
+    } catch (err) {
+      addContext({ role: 'system', content: 'something error' })
+      log.error('error', (err as any)?.message)
+      spinner.stop()
+      process.exit(0)
+    }
   }
+  return generatorChat
 }
 
 export const createCompletion = async (TOKEN: string, question: string): Promise<string> => {
