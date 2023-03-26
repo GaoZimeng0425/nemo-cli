@@ -37,8 +37,6 @@
     "packages/*/src",
     "packages/*/__tests__",
     "packages/*/*.json",
-    "packages/global.d.ts",
-    "scripts/*",
-    "packages/shared/types"
+    "packages/global.d.ts"
   ]
 }

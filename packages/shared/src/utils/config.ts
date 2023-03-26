@@ -15,6 +15,6 @@ export const createStore = (name: string, options: StoreOptions) => {
 
   const configPath = path.resolve(configRootPath, options.path)
   const store = new Configstore(name, options.default ?? null, { configPath })
-  log.success('store created success', store.path)
+  log.verbose('store created success', store.path)
   return store
 }
