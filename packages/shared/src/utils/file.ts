@@ -50,8 +50,11 @@ export const checkFile = (src: string) => fse.existsSync(src)
 export const deleteFile = (file: string) => fse.removeSync(file)
 export const deleteFiles = (files: string[]) => files.forEach((file) => fse.removeSync(file))
 
-export const emptyDir = (src: string) => fse.emptyDirSync(src)
-export const emptyDirs = (dirs: string[]) => dirs.forEach((dir) => fse.emptyDirSync(dir))
+export const emptyDir = (src: string) => {
+  log.verbose('empty', src)
+  fse.emptyDirSync(src)
+}
+export const emptyDirs = (dirs: string[]) => dirs.forEach((dir) => emptyDir(dir))
 
 export const isEmptyDir = async (src: string) => {
   const list = fse.readdirSync(src)

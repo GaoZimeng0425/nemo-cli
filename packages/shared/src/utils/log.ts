@@ -14,7 +14,7 @@ const init = (customOptions?: typeof DEFAULT_OPTIONS) => {
   npmlog.heading = options.heading
   npmlog.level = options.level
 
-  npmlog.addLevel('success', 1500, {
+  npmlog.addLevel('success', 8000, {
     fg: 'green',
     bg: 'black',
     bold: true,
