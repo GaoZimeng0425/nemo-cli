@@ -2,52 +2,40 @@ import { $ } from 'zx'
 import { Command } from 'commander'
 
 import {
-  checkFile,
   createCheckbox,
   createInput,
   createList,
-  dirList,
   isUndefined,
   log,
   ora,
   tryPromise
 } from '@nemo-cli/shared'
-import { HELP_MESSAGE } from './constants.js'
 
-const searchWorkspaceDir = (): string[] => {
-  // TODO: support custom workspace
-  // const pkg = readPackage({ url: cwd })
-  // const { workspaces } = pkg
-  // const dirnames: string[] = []
-  // if (isArray(workspaces)) {
-  // } else {
-  // }
-  const cwd = process.cwd()
-  const isWorkspaceDir = checkFile(`${cwd}/pnpm-workspace.yaml`)
-  if (!isWorkspaceDir) {
-    log.error('install', "It's not workspace directory")
-    process.exit(0)
-  }
-  return dirList(`${cwd}/packages`) || []
-}
+import { HELP_MESSAGE } from '../constants.js'
+import { searchWorkspaceDir } from '../utils.js'
+
 const installHandle = async (
   packageNames: string,
-  options: { dev: boolean; exact: boolean; peer: boolean }
+  options: { saveProd: boolean; exact: boolean; peer: boolean; workspace: string[] }
 ) => {
-  const workspaceDir = searchWorkspaceDir()
-  log.success('install', workspaceDir.join(', '))
+  const { workspace, saveProd = true, exact = false, peer = false } = options
+  log.success('install: installHandle workspace', workspace.join(', '))
+
   const choose: string[] = await createCheckbox({
-    choices: workspaceDir,
+    choices: workspace,
     message: `Choose Directory To Install Package`
   })
-  const dev = options.dev ? '--save-dev' : '--save-prod'
-  const exact = options.exact ? '--save-exact' : ''
-  const peer = options.peer ? '--save-peer' : ''
+
+  const flags = [
+    saveProd ? '--save-prod' : '--save-dev',
+    exact ? '--save-exact' : '',
+    peer ? '--save-peer' : ''
+  ].filter(Boolean)
+
   const filter = choose.map((name) => `--filter=./packages/${name}`)
 
   const spinner = ora(`${packageNames} installing in ${choose.join(' ')} directory!`).start()
 
-  const flags = [dev, peer, exact].filter(Boolean)
   const [err] = await tryPromise($`pnpm ${filter} add -r ${packageNames} ${flags}`)
 
   err
@@ -58,28 +46,30 @@ const installHandle = async (
 export const installCommand = (program: Command) => {
   program
     .command('install [...packages]')
-    .option('-D, --dev', 'Is development dependencies')
-    .option('-S, --save', 'Is productive dependencies')
+    .option('-D, --save-dev', 'Is Development dependencies')
+    .option('-S, --save-prod', 'Is Productive dependencies')
     .option('-E, --exact', 'Is exact dependencies')
     .addHelpText('after', HELP_MESSAGE.install)
     .action(async (packages, options) => {
+      const workspaceDir = searchWorkspaceDir()
+
       let packageNames = packages?.trim().split(/\W+/gm).join(' ')
-      console.log('[高子蒙] : file: install.ts:64 : .action : packageNames:', packageNames)
+
       if (!packageNames) {
         packageNames = await createInput({
           message: 'Please enter the package name you want to install',
           validate: (name) => !!name
         })
       }
-      if (isUndefined(options.dev) && isUndefined(options.save)) {
-        options.dev = await createList({
-          message: 'Is it a development dependencies?',
+      if (isUndefined(options.saveProd) && isUndefined(options.saveDev)) {
+        options.saveProd = await createList({
+          message: 'Is it a productive dependencies?',
           choices: [
             { name: 'Yes', value: true },
             { name: 'No', value: false }
           ]
         })
       }
-      installHandle(packageNames, options)
+      installHandle(packageNames, { ...options, workspace: workspaceDir })
     })
 }

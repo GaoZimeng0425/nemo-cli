@@ -1,7 +1,8 @@
 import { Command } from 'commander'
 import { readPackage } from '@nemo-cli/shared'
-import { installCommand } from './install.js'
+import { installCommand } from './commands/install.js'
 import { HELP_MESSAGE } from './constants.js'
+import { cleanCommand } from './commands/clean.js'
 
 export const pkg = readPackage(import.meta, '..')
 
@@ -12,6 +13,7 @@ export const init = () => {
     .addHelpText('after', HELP_MESSAGE.pnpm)
 
   installCommand(command)
+  cleanCommand(command)
 
   return command
 }
