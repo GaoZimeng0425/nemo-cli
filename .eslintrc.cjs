@@ -1,13 +1,13 @@
 /**
  * @type {import('eslint').Linter.Config}
  */
-export default {
+module.exports = {
   env: {
     browser: true,
     es2021: true,
     node: true
   },
-  extends: ['standard', 'plugin:@typescript-eslint/recommended'],
+  extends: ['standard', 'plugin:@typescript-eslint/recommended', 'prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly'
@@ -24,8 +24,7 @@ export default {
   },
   plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/no-unused-vars': 'warn',
-    'no-unused-vars': 'warn'
+    '@typescript-eslint/no-unused-vars': 'warn'
   },
   overrides: [
     {

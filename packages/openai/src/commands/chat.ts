@@ -1,12 +1,11 @@
 import { Command } from 'commander'
 
-import { createInput, createList, log, readPackage } from '@nemo-cli/shared'
-import { listModels, createCompletion, createOpenai } from '../openai.js'
-import { clearPrompt, deleteKey, getKey, getPrompt, savePrompt, setKey } from '../utils/store.js'
+import { createInput, createList, log } from '@nemo-cli/shared'
+import { createOpenai } from '../openai.js'
+import { clearPrompt, getKey, getPrompt, savePrompt } from '../utils/store.js'
 
 import { HELP_MESSAGE } from '../constants.js'
-import { promptBox, talk } from '../utils/chatBox.js'
-import { getContext } from '../utils/context.js'
+import { promptBox } from '../utils/chatBox.js'
 
 export const chatCommand = (program: Command) => {
   return (
@@ -16,7 +15,7 @@ export const chatCommand = (program: Command) => {
       // .argument('[prompt]', 'Type in the prompt you want to know about')
       // .argument('[content]', 'Type in the prompt you want to know about')
       .option('-p, --prompt', 'Show all prompts')
-      .option('-C, --clean', 'Clean prompt cache')
+      .option('-r, --reset', 'Clean prompt cache')
       .option('-L, --limit', 'Limit Token count')
       .option('-n, --new', 'Add an new Prompt to Chat')
       .addHelpText('after', HELP_MESSAGE.chat)

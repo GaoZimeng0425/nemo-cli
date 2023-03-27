@@ -31,6 +31,12 @@ module.exports = {
       }
     },
     {
+      files: '*.md',
+      options: {
+        parser: 'markdown'
+      }
+    },
+    {
       files: '*.json5',
       options: {
         parser: 'json5',
