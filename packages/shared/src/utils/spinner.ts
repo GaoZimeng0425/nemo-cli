@@ -1,28 +1,18 @@
-import instance from 'ora'
+import instance, { type Options } from 'ora'
+import { isString } from './types.js'
 
 const BASE_OPTIONS = {
   timeout: 10000
 }
 
-export const ora = (message = 'start', options?: typeof BASE_OPTIONS) => {
-  const spinner = instance(message)
-  // const map: Record<PropertyKey, () => void> = {
-  //   start: () => {
-  //     spinner.start()
-  //     return spinner
-  //   }
-  // }
-  // const target = new Proxy(spinner, {
-  //   get(target, p, receiver) {
-  //     if (map[p]) {
-  //       return map[p]
-  //     }
-  //     return Reflect.get(target, p, receiver)
-  //   },
-  //   set(target, p, newValue, receiver) {
-  //     throw Error("don't set anything")
-  //   }
-  // })
+export const ora = (options: string | Options) => {
+  if (!isString(options)) return instance(options)
+
+  // TODO: add logo...
+  const spinner = instance({
+    // spinner: {},
+    text: options
+  })
 
   return spinner
 }

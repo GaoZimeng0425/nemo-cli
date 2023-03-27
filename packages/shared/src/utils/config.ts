@@ -10,7 +10,8 @@ type StoreOptions = {
   path: string
   default?: Record<PropertyKey, unknown>
 }
-export const createStore = (name: string, options: StoreOptions) => {
+
+export const createStore = (name: string, options: StoreOptions): Configstore => {
   if (!options.path) throw Error('Store subpath is necessary!')
 
   const configPath = path.resolve(configRootPath, options.path)
@@ -18,3 +19,5 @@ export const createStore = (name: string, options: StoreOptions) => {
   log.verbose('store created success', store.path)
   return store
 }
+
+export { Configstore }

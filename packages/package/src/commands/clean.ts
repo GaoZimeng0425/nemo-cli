@@ -13,13 +13,13 @@ const cleanHandle = (directory: string[]) => {
   }
 }
 export const cleanCommand = (command: Command) => {
-  const workspaceDir = searchWorkspaceDir()
   command
     .command('clean')
     .description('Clear workspace build directory')
     .argument('[dirname]', 'Build directory name', 'dist')
     .addHelpText('after', HELP_MESSAGE.clean)
     .action(async (dirname) => {
+      const workspaceDir = searchWorkspaceDir()
       dirname =
         dirname || (await createInput({ message: 'Enter folder name in all workspace cleanup' }))
       const target = workspaceDir.map((cwd) => `${cwd}/${dirname}`)

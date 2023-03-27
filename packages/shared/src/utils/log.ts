@@ -59,6 +59,11 @@ export const log = {
       }
     })
   },
+  verbose(prefix = '', ...message: any[]) {
+    message.forEach((msg) => {
+      npmlog.verbose(prefix, isString(msg) ? msg : JSON.stringify(msg))
+    })
+  },
   success(prefix = '', ...messages: any[]) {
     transformMessage(messages).forEach((message) => {
       if (isString(message)) {
@@ -82,5 +87,11 @@ export const log = {
   },
   scrollUp() {
     process.stdout.write(ansiEscapes.scrollUp)
+  },
+  eraseEndLine() {
+    // process.stdout.moveCursor(0, -1)
+    // process.stdout.clearLine(0)
+    process.stdout.write(ansiEscapes.cursorPrevLine)
+    process.stdout.write(ansiEscapes.eraseLine)
   }
 }

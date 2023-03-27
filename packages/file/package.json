@@ -1,14 +1,14 @@
 {
   "name": "@nemo-cli/file",
   "version": "1.0.0",
-  "private": true,
   "description": "> TODO: description",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",
   "license": "ISC",
   "exports": {
     ".": {
-      "import": "./src/index.ts"
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     }
   },
   "directories": {

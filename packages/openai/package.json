@@ -1,11 +1,8 @@
 {
   "name": "@nemo-cli/openai",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "openai cli",
-  "keywords": [
-    "openai cli",
-    "terminal openai"
-  ],
+  "keywords": ["openai cli", "terminal openai"],
   "bin": {
     "openai": "bin/index.mjs"
   },
@@ -19,9 +16,7 @@
     "lib": "dist",
     "test": "__tests__"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "publishConfig": {
     "access": "public"
   },
@@ -37,6 +32,7 @@
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
     "inquirer": "^9.1.5",
+    "langchain": "^0.0.41",
     "openai": "^3.2.1"
   }
 }
