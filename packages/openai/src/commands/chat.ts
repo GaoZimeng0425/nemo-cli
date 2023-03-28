@@ -1,11 +1,46 @@
 import { Command } from 'commander'
+import boxen from 'boxen'
+import { createInput, createList, createPassword, log, ora, tryPromise } from '@nemo-cli/shared'
 
-import { createInput, createList, log } from '@nemo-cli/shared'
 import { createOpenai } from '../openai.js'
-import { clearPrompt, getKey, getPrompt, savePrompt } from '../utils/store.js'
-
 import { HELP_MESSAGE } from '../constants.js'
+import { Prompt } from '../prompt.js'
+import { clearPrompt, getKey, getPrompt, savePrompt, setKey } from '../utils/store.js'
 import { promptBox } from '../utils/chatBox.js'
+import { addContext, getContext } from '../utils/context.js'
+
+const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
+  const generatorChat = createOpenai(apiKey, choosePrompt)
+
+  return async (content: string) => {
+    addContext(content)
+    log.verbose('chat add content', content)
+
+    const spinner = ora({
+      hideCursor: true,
+      text: boxen(`Loading...`, { padding: 1, margin: { top: 1 } })
+    }).start()
+
+    const [err, message] = await tryPromise(generatorChat(getContext()))
+
+    spinner.stop()
+
+    if (err) {
+      addContext({ role: 'system', content: 'something error' })
+      log.error('error', (err as any)?.message)
+      process.exit(0)
+    } else {
+      log.verbose('chat response message', message)
+      message && addContext(message)
+    }
+  }
+}
+
+const ensureKey = async () => {
+  const key = (await getKey()) || (await createPassword({ message: 'Input openai API Key' }))
+  key && setKey(key)
+  return key
+}
 
 export const chatCommand = (program: Command) => {
   return (
@@ -25,7 +60,7 @@ export const chatCommand = (program: Command) => {
           promptBox(prompts)
           process.exit(0)
         }
-        if (options.clean) {
+        if (options.reset) {
           clearPrompt()
           log.success('chat', 'Prompt clean success')
           process.exit(0)
@@ -42,18 +77,23 @@ export const chatCommand = (program: Command) => {
 
         savePrompt(choosePrompt)
 
-        const apiKey = await getKey()
-        const generatorChat = createOpenai(apiKey, choosePrompt)
+        const apiKey = await ensureKey()
+
+        const sender = chatHandle(apiKey, choosePrompt)
 
         const sendMessage = async () => {
-          const message = await createInput({ message: 'You: ', validate: (a) => !!a })
+          const message = await createInput({
+            message: 'You: ',
+            validate: Boolean,
+            default: 'Type exit to stop, copy to copy all message'
+          })
           log.eraseEndLine()
           log.beep()
 
           if (message === 'exit') {
             process.exit(0)
           }
-          const result = await generatorChat(message)
+          const result = await sender(message)
           log.verbose('content: ', result)
           sendMessage()
         }

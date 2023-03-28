@@ -1,4 +1,4 @@
-import { createPassword, createStore } from '@nemo-cli/shared'
+import { createStore, log } from '@nemo-cli/shared'
 import { API_KEY_NAME, PROMPT_KEY, STORE_PATH } from '../constants.js'
 import { PROMPT_LIST, Prompt } from '../prompt.js'
 
@@ -7,16 +7,17 @@ export const store = createStore('openai', { path: STORE_PATH })
 export const deleteKey = () => {
   store.delete(API_KEY_NAME)
 }
-export const setKey = async () => {
-  const apiKey = await createPassword({ message: 'Input openai API Key' })
+export const setKey = async (apiKey: string) => {
+  if (!apiKey) {
+    log.error('error set key:', 'Need API Key')
+    return false
+  }
   store.set(API_KEY_NAME, apiKey)
+  return true
 }
 
 export const getKey = async () => {
-  let apiKey = store.get(API_KEY_NAME)
-  if (!apiKey) {
-    apiKey = await setKey()
-  }
+  const apiKey = store.get(API_KEY_NAME)
   return apiKey
 }
 
