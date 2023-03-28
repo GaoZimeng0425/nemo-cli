@@ -1,3 +1,7 @@
+<p align="center">
+Use chatGPT on your terminal
+</p>
+
 # Pre-requisite
 
 You'll need to have your own `OpenAi` API key to operate this package.
@@ -14,9 +18,7 @@ You'll need to have your own `OpenAi` API key to operate this package.
 npm install @nemo-cli/openai --global
 ```
 
-```bash
-yarn global add @nemo-cli/openai
-```
+or
 
 ```bash
 pnpm add @nemo-cli/openai --global
@@ -54,8 +56,14 @@ openai --new
 openai --limit
 ```
 
-### Reset Prompt(Clear Custom Prompt)
+### Reset Prompt(Clear Custom Prompts)
 
 ```bash
-openai --limit
+openai --reset
+```
+
+### Other
+
+```bash
+openai -h
 ```

@@ -8,7 +8,7 @@ import { chatCommand, completionCommand, keyCommand, modelsCommand } from './com
 export const pkg = readPackage(import.meta, '..')
 
 export const init = () => {
-  const program = new Command('ai')
+  const program = new Command('openai')
     .description(`${pkg.name} help you use openai in CLI`)
     .version(pkg.version)
     .usage('<Command> [options]')
