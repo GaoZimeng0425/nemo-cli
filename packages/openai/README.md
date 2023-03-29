@@ -2,6 +2,10 @@
 Use chatGPT on your terminal
 </p>
 
+<p align="center">
+<img src="https://raw.githubusercontent.com/GaoZimeng0425/nemo-cli/main/assets/openai.jpg" />
+</p>
+
 # Pre-requisite
 
 You'll need to have your own `OpenAi` API key to operate this package.

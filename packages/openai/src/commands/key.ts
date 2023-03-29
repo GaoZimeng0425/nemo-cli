@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 import { createList, log } from '@nemo-cli/shared'
 
-import { deleteKey, setKey } from '../utils/store.js'
+import { deleteKey, ensureKey } from '../utils/store.js'
 
 enum KEY_CHOOSE {
   ADD = 'ADD',
@@ -27,7 +27,7 @@ export const keyCommand = (program: Command) => {
       } else if (choose === KEY_CHOOSE.DELETE) {
         await deleteKey()
       } else {
-        await setKey()
+        await ensureKey()
       }
       log.success('openai save key', 'success')
     })
