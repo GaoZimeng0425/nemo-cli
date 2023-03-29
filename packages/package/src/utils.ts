@@ -1,5 +1,6 @@
 import { checkFile, dirList, log } from '@nemo-cli/shared'
 import { ERROR_MESSAGE } from './constants.js'
+import path from 'node:path'
 
 export const searchWorkspaceDir = (): string[] => {
   const cwd = process.cwd()
@@ -21,3 +22,5 @@ export const searchWorkspaceDir = (): string[] => {
     (workspace) => dirList(workspace).map((pack) => `${workspace}/${pack}`) || []
   )
 }
+
+export const relate = (source: string) => path.relative(process.cwd(), source)
