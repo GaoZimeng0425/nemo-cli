@@ -1,13 +1,13 @@
 {
   "name": "@nemo-cli/openai",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "openai cli",
   "keywords": ["openai cli", "terminal openai"],
   "bin": {
     "openai": "bin/index.mjs"
   },
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
-  "homepage": "",
+  "homepage": "https://github.com/GaoZimeng0425/nemo-cli/tree/main/packages/openai",
   "license": "ISC",
   "exports": {
     "import": "./dist/index.js"
@@ -30,9 +30,11 @@
     "@nemo-cli/shared": "workspace:^",
     "boxen": "^7.0.2",
     "chalk": "^5.2.0",
+    "clipboardy": "^3.0.0",
     "commander": "^10.0.0",
+    "gpt3-tokenizer": "^1.1.5",
     "inquirer": "^9.1.5",
-    "langchain": "^0.0.41",
+    "langchain": "^0.0.43",
     "openai": "^3.2.1"
   }
 }

@@ -1,13 +1,14 @@
 import { Command } from 'commander'
 import boxen from 'boxen'
-import { createInput, createList, createPassword, log, ora, tryPromise } from '@nemo-cli/shared'
+import { createInput, createList, log, ora, tryPromise } from '@nemo-cli/shared'
 
 import { createOpenai } from '../openai.js'
 import { HELP_MESSAGE } from '../constants.js'
 import { Prompt } from '../prompt.js'
-import { clearPrompt, getKey, getPrompt, savePrompt, setKey } from '../utils/store.js'
+import { clearPrompt, ensureKey, getPrompt, savePrompt } from '../utils/store.js'
 import { promptBox } from '../utils/chatBox.js'
 import { addContext, getContext } from '../utils/context.js'
+import { copy } from '../utils/copy.js'
 
 const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
   const generatorChat = createOpenai(apiKey, choosePrompt)
@@ -21,7 +22,9 @@ const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
       text: boxen(`Loading...`, { padding: 1, margin: { top: 1 } })
     }).start()
 
+    process.stdin.pause()
     const [err, message] = await tryPromise(generatorChat(getContext()))
+    process.stdin.resume()
 
     spinner.stop()
 
@@ -35,11 +38,18 @@ const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
     }
   }
 }
+const copyHandle = async () => {
+  const messages = getContext()
+    .map(({ role, content }) => `${role}: ${content}`)
+    .join('\n')
 
-const ensureKey = async () => {
-  const key = (await getKey()) || (await createPassword({ message: 'Input openai API Key' }))
-  key && setKey(key)
-  return key
+  const [err] = await tryPromise(copy(messages))
+  if (err) {
+    log.error('Copy Error', (err as any).message)
+    process.exit(0)
+  } else {
+    log.success('Copy', 'copy success!')
+  }
 }
 
 export const chatCommand = (program: Command) => {
@@ -92,6 +102,11 @@ export const chatCommand = (program: Command) => {
 
           if (message === 'exit') {
             process.exit(0)
+          }
+          if (message === 'copy') {
+            copyHandle()
+            sendMessage()
+            return
           }
           const result = await sender(message)
           log.verbose('content: ', result)
