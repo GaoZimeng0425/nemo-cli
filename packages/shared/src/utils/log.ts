@@ -23,7 +23,7 @@ const init = (customOptions?: typeof DEFAULT_OPTIONS) => {
 }
 
 init()
-const transformMessage = (messages: any[]) => {
+const transformMessage = (messages: unknown[]) => {
   for (let i = 0; i < messages.length; i++) {
     const [current, next] = [messages[i], messages[i + 1]]
     if (isString(current) && isString(next)) {
@@ -36,7 +36,10 @@ const transformMessage = (messages: any[]) => {
 export const log = {
   ...npmlog,
   init,
-  set lever(v: any) {
+  get level() {
+    throw new Error("can't visit level")
+  },
+  set level(_: unknown) {
     throw new Error('use setLevel')
   },
   stopDebug() {
@@ -50,7 +53,7 @@ export const log = {
   timing(prefix = '', time: string | number) {
     npmlog.timing(prefix, `${time}`)
   },
-  error(prefix = '', ...messages: any[]) {
+  error(prefix = '', ...messages: unknown[]) {
     transformMessage(messages).forEach((message) => {
       if (isString(message)) {
         npmlog.error(prefix, chalk.red.bgBlack(message))
@@ -59,12 +62,16 @@ export const log = {
       }
     })
   },
-  verbose(prefix = '', ...message: any[]) {
-    message.forEach((msg) => {
-      npmlog.verbose(prefix, isString(msg) ? msg : JSON.stringify(msg))
+  verbose(prefix = '', ...messages: unknown[]) {
+    transformMessage(messages).forEach((message) => {
+      if (isString(message)) {
+        npmlog.verbose(prefix, message)
+      } else {
+        npmlog.verbose(prefix, JSON.stringify(message, null, 2))
+      }
     })
   },
-  success(prefix = '', ...messages: any[]) {
+  success(prefix = '', ...messages: unknown[]) {
     transformMessage(messages).forEach((message) => {
       if (isString(message)) {
         npmlog.success(prefix, chalk.green.bgBlack(message))

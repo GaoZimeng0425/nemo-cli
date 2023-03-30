@@ -3,6 +3,6 @@ export const tryPromise = async <T>(promise: Promise<T>) => {
     const result = await promise
     return [null, result] as [never, T]
   } catch (err) {
-    return [err, err] as [Error & T, T]
+    return [err, null] as [any, T]
   }
 }
