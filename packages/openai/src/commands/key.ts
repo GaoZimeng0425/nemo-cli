@@ -24,9 +24,11 @@ export const keyCommand = (program: Command) => {
       })
       if (choose === KEY_CHOOSE.EXIT) {
         process.exit(0)
-      } else if (choose === KEY_CHOOSE.DELETE) {
-        await deleteKey()
-      } else {
+      }
+
+      await deleteKey()
+
+      if (choose === KEY_CHOOSE.ADD) {
         await ensureKey()
       }
       log.success('openai save key', 'success')
