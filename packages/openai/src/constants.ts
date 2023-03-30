@@ -2,6 +2,7 @@ import { createHelpExample } from '@nemo-cli/shared'
 export const API_KEY_NAME = 'API_KEY'
 export const STORE_PATH = '.openai'
 export const PROMPT_KEY = 'PROMPT_KEY'
+export const MODEL_KEY = 'MODEL_KEY'
 
 export const HELP_MESSAGE = {
   ai: createHelpExample('n ai key', 'n ai model', 'n ai chat', 'n ai completion [question]'),
