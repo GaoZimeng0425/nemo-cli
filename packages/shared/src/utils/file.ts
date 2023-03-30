@@ -22,7 +22,7 @@ export const readPackage = (importMeta: { url: string }, ...paths: string[]): Pa
   }
 }
 
-export const readJSON = (path: string, force = false) => {
+export const readJSON = (path: string, overwrite = false) => {
   if (fse.existsSync(path)) {
     return fse.readJsonSync(path)
   } else {
@@ -61,10 +61,10 @@ export const isEmptyDir = async (src: string) => {
   return list.length === 0
 }
 
-export const dirList = (src: string = './') => {
+export const dirList = (src = './') => {
   const files = fileList(src)
   return files.filter((file) => fse.statSync(`${src}/${file}`).isDirectory())
 }
-export const fileList = (src: string = './') => {
+export const fileList = (src = './') => {
   return fse.readdirSync(src)
 }

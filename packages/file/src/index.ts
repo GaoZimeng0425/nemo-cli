@@ -46,7 +46,7 @@ const deleteFilesCommand = (program: Command) => {
       }
 
       const cwd = process.cwd()
-      dirnames = dirnames.trim()
+      dirnames = dirnames?.trim()
       const delFilesList: string[] = []
       if (dirnames) {
         const dirList: string[] = parseNames(dirnames)
