@@ -8,3 +8,18 @@ export const HELP_MESSAGE = {
   key: createHelpExample('n key'),
   chat: createHelpExample('n chat', 'n chat -p', 'n chat -L')
 }
+
+export const ERROR_MESSAGE: Record<string, string> = {
+  400: 'Bad Request: Prompt provided is empty or too long. Prompt should be between 1 and 4096 tokens.',
+  401: 'Incorrect API key provided. You can find your API key at https://platform.openai.com/account/api-keys.',
+  402: 'Payment Required: ChatGPT quota exceeded. Please check you chatGPT account.',
+  404: 'Not Found: Model not found. Please check the model name.',
+  429: 'API Rate Limit Exceeded: ChatGPT is getting too many requests from the user in a short period of time. Please wait a while before sending another message.',
+  503: 'Service Unavailable: ChatGPT is currently unavailable, possibly due to maintenance or high traffic. Please try again later.',
+  default: 'Something Wrong!'
+}
+
+export const CHAT_OPTIONS = {
+  EXIT: 'exit',
+  COPY: 'copy'
+}

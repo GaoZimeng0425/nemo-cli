@@ -73,6 +73,7 @@ class Talk extends EventEmitter {
       this.print(messages)
     })
   }
+
   print(message: ChatCompletionRequestMessage[]) {
     message.forEach(({ role, content }) => {
       const styledContent = cacheCreateType(role)(content)

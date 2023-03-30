@@ -1,35 +1,46 @@
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai'
-import { log, ora } from '@nemo-cli/shared'
+import { isError, log, ora, tryPromise } from '@nemo-cli/shared'
 // TODO: USE LANG_CHAIN
 // import { OpenAI } from 'langchain'
-import { Prompt } from './prompt.js'
-import { getContext, initializationPrompt } from './utils/context.js'
+import { ERROR_MESSAGE } from './constants.js'
 
 const AXIOS_OPTIONS: Parameters<OpenAIApi['createChatCompletion']>[1] = {
   timeout: 20000
 }
 
-export const createOpenai = (TOKEN: string, prompt: Prompt) => {
+type RequestError = {
+  response: { status: string }
+} & Error
+
+export const createOpenai = (TOKEN: string) => {
   const configuration = new Configuration({
     apiKey: TOKEN
   })
   const openai = new OpenAIApi(configuration)
-  initializationPrompt(prompt)
-  log.verbose('chat init prompt', getContext())
 
   // const generatorChat = async (content: string) => {
   const generatorChat = async (messages: ChatCompletionRequestMessage[]) => {
-    const response = await openai.createChatCompletion(
-      {
-        model: 'gpt-3.5-turbo',
-        messages,
-        temperature: 0.8,
-        max_tokens: 200
-      },
-      AXIOS_OPTIONS
+    const [error, response] = await tryPromise(
+      openai.createChatCompletion(
+        {
+          model: 'gpt-3.5-turbo',
+          messages,
+          temperature: 0.8,
+          max_tokens: 200
+        },
+        AXIOS_OPTIONS
+      )
     )
-    const { message } = response.data.choices[0]
-    return message
+    if (isError(error)) {
+      const message = (error as any)?.response?.data?.error?.message
+      log.verbose('openai chat is Error', message)
+      const status = (error as RequestError)?.response?.status
+      log.verbose('message', ERROR_MESSAGE[status])
+      throw new Error(message ?? ERROR_MESSAGE[status] ?? ERROR_MESSAGE.default)
+    } else {
+      const { message } = response.data.choices[0]
+      return message
+    }
   }
   return generatorChat
 }
@@ -69,7 +80,6 @@ export const listModels = async (TOKEN: string) => {
   try {
     const { data } = await openai.listModels(AXIOS_OPTIONS)
     spinner.succeed()
-    console.log(data.data)
 
     return data.data.map((model) => ({ name: model.object, value: model.object }))
   } catch (err) {

@@ -1,6 +1,6 @@
-import { ChatCompletionRequestMessage } from 'openai'
-import { Prompt } from '../prompt.js'
+import { type ChatCompletionRequestMessage } from 'openai'
 import { isString } from '@nemo-cli/shared'
+import { Prompt } from '../prompt.js'
 import { talk } from './chatBox.js'
 
 const CONTEXT: ChatCompletionRequestMessage[] = [

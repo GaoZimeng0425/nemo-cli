@@ -7,11 +7,13 @@ import { HELP_MESSAGE } from '../constants.js'
 import { Prompt } from '../prompt.js'
 import { clearPrompt, ensureKey, getPrompt, savePrompt } from '../utils/store.js'
 import { promptBox } from '../utils/chatBox.js'
-import { addContext, getContext } from '../utils/context.js'
+import { addContext, getContext, initializationPrompt } from '../utils/context.js'
 import { copy } from '../utils/copy.js'
 
 const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
-  const generatorChat = createOpenai(apiKey, choosePrompt)
+  initializationPrompt(choosePrompt)
+
+  const generatorChat = createOpenai(apiKey)
 
   return async (content: string) => {
     addContext(content)
@@ -29,7 +31,7 @@ const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
     spinner.stop()
 
     if (err) {
-      addContext({ role: 'system', content: 'something error' })
+      addContext({ role: 'system', content: (err as Error).message })
       log.error('error', (err as any)?.message)
       process.exit(0)
     } else {
@@ -76,6 +78,8 @@ export const chatCommand = (program: Command) => {
           process.exit(0)
         }
 
+        const apiKey = await ensureKey()
+
         const choices = prompts.map((prompt) => ({ name: prompt.act, value: prompt }))
         const choosePrompt = await (options.new
           ? createInput({ message: 'Type in the prompt you want to know about' })
@@ -86,8 +90,6 @@ export const chatCommand = (program: Command) => {
             }))
 
         savePrompt(choosePrompt)
-
-        const apiKey = await ensureKey()
 
         const sender = chatHandle(apiKey, choosePrompt)
 
@@ -109,7 +111,7 @@ export const chatCommand = (program: Command) => {
             return
           }
           const result = await sender(message)
-          log.verbose('content: ', result)
+          log.verbose('chat content: ', result)
           sendMessage()
         }
         sendMessage()
