@@ -1,5 +1,5 @@
 import { createPassword, createStore, log } from '@nemo-cli/shared'
-import { API_KEY_NAME, PROMPT_KEY, STORE_PATH } from '../constants.js'
+import { API_KEY_NAME, MODEL_KEY, PROMPT_KEY, STORE_PATH } from '../constants.js'
 import { PROMPT_LIST, Prompt } from '../prompt.js'
 
 export const store = createStore('openai', { path: STORE_PATH })
@@ -47,4 +47,12 @@ export const getPrompt = () => {
   } catch (err) {
     return PROMPT_LIST
   }
+}
+
+export const getModel = () => {
+  const model = store.get(MODEL_KEY)
+  return model
+}
+export const setModel = (model: string) => {
+  return store.set(MODEL_KEY, model)
 }

@@ -3,6 +3,7 @@ import { isError, log, ora, tryPromise } from '@nemo-cli/shared'
 // TODO: USE LANG_CHAIN
 // import { OpenAI } from 'langchain'
 import { ERROR_MESSAGE } from './constants.js'
+import { getModel } from './utils/store.js'
 
 const AXIOS_OPTIONS: Parameters<OpenAIApi['createChatCompletion']>[1] = {
   timeout: 20000
@@ -23,7 +24,7 @@ export const createOpenai = (TOKEN: string) => {
     const [error, response] = await tryPromise(
       openai.createChatCompletion(
         {
-          model: 'gpt-3.5-turbo',
+          model: getModel() || 'gpt-3.5-turbo',
           messages,
           temperature: 0.8,
           max_tokens: 200
@@ -81,7 +82,7 @@ export const listModels = async (TOKEN: string) => {
     const { data } = await openai.listModels(AXIOS_OPTIONS)
     spinner.succeed()
 
-    return data.data.map((model) => ({ name: model.object, value: model.object }))
+    return data.data.map((model) => ({ name: model.id, value: model.id }))
   } catch (err) {
     spinner.fail(`error: ${err}`)
   }
