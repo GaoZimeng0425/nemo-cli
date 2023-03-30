@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/openai",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "openai cli",
   "keywords": ["openai cli", "terminal openai"],
   "bin": {
