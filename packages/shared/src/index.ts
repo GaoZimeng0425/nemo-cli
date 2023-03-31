@@ -1,3 +1,5 @@
+import { readPackage } from './utils/file.js'
+
 export * from './utils/command.js'
 export * from './utils/common.js'
 export * from './utils/log.js'
@@ -11,6 +13,4 @@ export { ora } from './utils/spinner.js'
 export * from './utils/file.js'
 
 export * from './constants.js'
-
-import { readPackage } from './utils/file.js'
 export const pkg = readPackage(import.meta, '..')
