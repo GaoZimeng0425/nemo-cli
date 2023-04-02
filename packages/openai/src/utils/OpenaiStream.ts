@@ -13,20 +13,22 @@ export interface OpenAIStreamPayload {
   n: number
 }
 
-export async function OpenAIStream(payload: OpenAIStreamPayload) {
-  const encoder = new TextEncoder()
-  const decoder = new TextDecoder()
-
-  let counter = 0
-
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+const requestOpenai = (APIKey: string, payload: OpenAIStreamPayload) => {
+  return fetch('https://api.openai.com/v1/chat/completions', {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ''}`
+      Authorization: `Bearer ${APIKey}`
     },
     method: 'POST',
     body: JSON.stringify(payload)
   })
+}
+
+export async function OpenAIStream(APIKey: string, payload: OpenAIStreamPayload) {
+  const encoder = new TextEncoder()
+  const decoder = new TextDecoder()
+
+  const res = await requestOpenai(APIKey, payload)
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -40,12 +42,11 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
           }
           try {
             const json = JSON.parse(data)
-            // console.log("JSON.parse(data): ", json);
+            // console.log('JSON.parse(data): ', json)
             const content = json.choices[0].delta.content
             // console.log("content: ", content);
             const queue = encoder.encode(content)
             controller.enqueue(queue)
-            counter++
           } catch (e) {
             // maybe parse error
             controller.error(e)
@@ -64,4 +65,18 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
   })
 
   return stream
+}
+
+export const readStream = async (stream: ReadableStream, cb?: (content: string) => unknown) => {
+  const decoder = new TextDecoder()
+  const reader = stream.getReader()
+  let result = ''
+  while (true) {
+    const { done, value } = await reader.read()
+    const content = decoder.decode(value)
+    content && cb?.(content)
+    result += content
+    if (done) break
+  }
+  return result
 }

@@ -9,36 +9,59 @@ import { clearPrompt, ensureKey, getPrompt, savePrompt } from '../utils/store.js
 import { promptBox } from '../utils/chatBox.js'
 import { addContext, getContext, initializationPrompt } from '../utils/context.js'
 import { copy } from '../utils/copy.js'
+import { OpenAIStream, OpenAIStreamPayload, readStream } from '../utils/OpenaiStream.js'
 
+const payload: OpenAIStreamPayload = {
+  model: 'gpt-3.5-turbo-0301',
+  messages: [],
+  temperature: 0,
+  top_p: 1,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+  max_tokens: 2000,
+  stream: true,
+  n: 1
+}
 const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
   initializationPrompt(choosePrompt)
 
-  const generatorChat = createOpenai(apiKey)
+  // const generatorChat = createOpenai(apiKey)
+  const createStream = () => OpenAIStream(apiKey, { ...payload, messages: getContext() })
 
   return async (content: string) => {
     addContext(content)
-    log.verbose('chat add content', content)
-
-    const spinner = ora({
-      hideCursor: true,
-      text: boxen(`Loading...`, { padding: 1, margin: { top: 1 } })
-    }).start()
-
-    process.stdin.pause()
-    const [err, message] = await tryPromise(generatorChat(getContext()))
-    process.stdin.resume()
-
-    spinner.stop()
-
-    if (err) {
-      addContext({ role: 'system', content: (err as Error).message })
-      log.error('error', (err as any)?.message)
-      process.exit(0)
-    } else {
-      log.verbose('chat response message', message)
-      message && addContext(message)
-    }
+    const stream = await createStream()
+    const message = await readStream(stream, (content: string) => {
+      process.stdout.write(content)
+    })
+    message && addContext({ role: 'assistant', content: message })
+    return message
   }
+
+  // return async (content: string) => {
+  //   addContext(content)
+  //   log.verbose('chat add content', content)
+
+  //   const spinner = ora({
+  //     hideCursor: true,
+  //     text: boxen(`Loading...`, { padding: 1, margin: { top: 1 } })
+  //   }).start()
+
+  //   process.stdin.pause()
+  //   const [err, message] = await tryPromise(generatorChat(getContext()))
+  //   process.stdin.resume()
+
+  //   spinner.stop()
+
+  //   if (err) {
+  //     addContext({ role: 'system', content: (err as Error).message })
+  //     log.error('error', (err as any)?.message)
+  //     process.exit(0)
+  //   } else {
+  //     log.verbose('chat response message', message)
+  //     message && addContext(message)
+  //   }
+  // }
 }
 const copyHandle = async () => {
   const messages = getContext()
