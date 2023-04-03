@@ -24,11 +24,44 @@ const requestOpenai = (APIKey: string, payload: OpenAIStreamPayload) => {
   })
 }
 
+/**
+ * @link https://github.com/mckaywrigley/chatbot-ui/blob/83e25b97b0/utils/server/index.ts
+ */
+export class OpenAIError extends Error {
+  type: string
+  param: string
+  code: string
+
+  constructor(message: string, type: string, param: string, code: string) {
+    super(message)
+    this.name = 'OpenAIError'
+    this.type = type
+    this.param = param
+    this.code = code
+  }
+}
+
 export async function OpenAIStream(APIKey: string, payload: OpenAIStreamPayload) {
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
 
   const res = await requestOpenai(APIKey, payload)
+
+  if (res.status !== 200) {
+    const result = await res.json()
+    if (result.error) {
+      throw new OpenAIError(
+        result.error.message,
+        result.error.type,
+        result.error.param,
+        result.error.code
+      )
+    } else {
+      throw new Error(
+        `OpenAI API returned an error: ${decoder.decode(result?.value) || result.statusText}`
+      )
+    }
+  }
 
   const stream = new ReadableStream({
     async start(controller) {

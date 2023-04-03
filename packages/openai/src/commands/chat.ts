@@ -30,12 +30,16 @@ const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
 
   return async (content: string) => {
     addContext(content)
-    const stream = await createStream()
-    const message = await readStream(stream, (content: string) => {
-      process.stdout.write(content)
-    })
-    message && addContext({ role: 'assistant', content: message })
-    return message
+    const [error, stream] = await tryPromise(createStream())
+    if (error) {
+      log.verbose(error.message)
+    } else {
+      const message = await readStream(stream, (content: string) => {
+        process.stdout.write(content)
+      })
+      message && addContext({ role: 'assistant', content: message })
+      return message
+    }
   }
 
   // return async (content: string) => {
