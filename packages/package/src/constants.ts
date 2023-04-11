@@ -17,7 +17,8 @@ Example:
   $ n pnpm --help
   $ n pnpm <command> [options]
   `,
-  clean: createHelpExample('n pnpm clean [dirname]')
+  clean: createHelpExample('n pnpm clean [dirname]'),
+  up: createHelpExample('n pnpm up')
 }
 
 export const ERROR_MESSAGE = {
