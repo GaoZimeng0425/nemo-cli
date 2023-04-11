@@ -35,3 +35,82 @@ export const PROMPT_LIST: Prompt[] = [
       '**替代**：语法，谷歌翻译\n\n> 我希望你能担任英语翻译、拼写校对和修辞改进的角色。我会用任何语言和你交流，你会识别语言，将其翻译并用更为优美和精炼的英语回答我。请将我简单的词汇和句子替换成更为优美和高雅的表达方式，确保意思不变，但使其更具文学性。请仅回答更正和改进的部分，不要写解释。我的第一句话是“how are you ?”，请翻译它。\n'
   }
 ]
+
+const gptConfig = {
+  completeCoverLetter: `You are a cover letter generator.
+You will be given a job description along with the job applicant's resume.
+You will write a cover letter for the applicant that matches their past experiences from the resume with the job description.
+Rather than simply outlining the applicant's past experiences, you will give more detail and explain how those experiences will help the applicant succeed in the new job.
+You will write the cover letter in a modern, professional style without being too formal, as a software developer might do naturally.`,
+  coverLetterWithAWittyRemark: `You are a cover letter generator.
+You will be given a job description along with the job applicant's resume.
+You will write a cover letter for the applicant that matches their past experiences from the resume with the job description.
+Rather than simply outlining the applicant's past experiences, you will give more detail and explain how those experiences will help the applicant succeed in the new job.
+You will write the cover letter in a modern, relaxed style, as a software developer might do naturally.
+Include a job related joke at the end of the cover letter.`,
+  ideasForCoverLetter:
+    "You are a cover letter idea generator. You will be given a job description along with the job applicant's resume. You will generate a bullet point list of ideas for the applicant to use in their cover letter. "
+}
+const message = [
+  {
+    role: 'system',
+    content: gptConfig.completeCoverLetter
+  },
+  {
+    role: 'user',
+    content: `My Resume: ${''}. Job title: ${''} Job Description: ${''}.`
+  }
+]
+
+// export function getSystemPrompt(promptConfig: any) {
+//   // [gpt-3-youtube-summarizer/main.py at main · tfukaza/gpt-3-youtube-summarizer](https://github.com/tfukaza/gpt-3-youtube-summarizer/blob/main/main.py)
+//   console.log('prompt config: ', promptConfig)
+//   const { language = '中文', sentenceCount = '5', shouldShowTimestamp } = promptConfig
+//   // const enLanguage = PROMPT_LANGUAGE_MAP[language]
+//   // 我希望你是一名专业的视频内容编辑，帮我用${language}总结视频的内容精华。请你将视频字幕文本进行总结（字幕中可能有错别字，如果你发现了错别字请改正），然后以无序列表的方式返回，不要超过5条。记得不要重复句子，确保所有的句子都足够精简，清晰完整，祝你好运！
+//   const betterPrompt = `I want you to act as an educational content creator. You will help students
+//   summarize the essence of the video in ${enLanguage}. Please summarize the video subtitles
+//   (there may be typos in the subtitles, please correct them) and return them in an unordered list
+//   format. Please do not exceed ${sentenceCount} items, and make sure not to repeat any sentences
+//   and all sentences are concise, clear, and complete. Good luck!`
+//   // const timestamp = ' ' //`（类似 10:24）`;
+//   // 我希望你是一名专业的视频内容编辑，帮我用${language}总结视频的内容精华。请先用一句简短的话总结视频梗概。然后再请你将视频字幕文本进行总结（字幕中可能有错别字，如果你发现了错别字请改正），在每句话的最前面加上时间戳${timestamp}，每句话开头只需要一个开始时间。请你以无序列表的方式返回，请注意不要超过5条哦，确保所有的句子都足够精简，清晰完整，祝你好运！
+//   const promptWithTimestamp = `I would like you to act as a professional video content editor. You will
+//   help students summarize the essence of the video in ${enLanguage}. Please start by summarizing the whole
+//   video in one short sentence (there may be typos in the subtitles, please correct them). Then, please
+//   summarize the video subtitles, each subtitle should has the start timestamp (e.g. 12.4 -) so that
+//   students can select the video part. Please return in an unordered list format, make sure not to
+//   exceed ${sentenceCount} items and all sentences are concise, clear, and complete. Good luck!`
+
+//   return shouldShowTimestamp ? promptWithTimestamp : betterPrompt
+// }
+
+const promptUrl =
+  'https://datasets-server.huggingface.co/first-rows?dataset=fka%2Fawesome-chatgpt-prompts&config=fka--awesome-chatgpt-prompts&split=train'
+
+export const request = (
+  url: string,
+  method: 'GET' | 'POST' = 'GET',
+  data?: Record<PropertyKey, unknown>
+) => {
+  const parameters: { data?: string } = {}
+  const instance = new URL(url)
+
+  if (method === 'GET' && data) {
+    const search = instance.searchParams
+    Object.entries(data).forEach(([k, v]) => {
+      search.append(k, JSON.stringify(v))
+    })
+  } else {
+    parameters.data = JSON.stringify(data)
+  }
+
+  return fetch(instance, {
+    method,
+    ...parameters
+  }).then((data) => data.json())
+}
+
+request(promptUrl).then((data) => {
+  console.log(data)
+})

@@ -1,3 +1,6 @@
+/**
+ * @link https://github.com/deiucanta/chatpad/blob/main/src/utils/constants.ts
+ */
 import { createHelpExample } from '@nemo-cli/shared'
 export const API_KEY_NAME = 'API_KEY'
 export const STORE_PATH = '.openai'

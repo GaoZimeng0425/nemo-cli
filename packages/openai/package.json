@@ -33,6 +33,7 @@
     "clipboardy": "^3.0.0",
     "commander": "^10.0.0",
     "compromise": "^14.8.2",
+    "eventsource-parser": "^1.0.0",
     "gpt3-tokenizer": "^1.1.5",
     "inquirer": "^9.1.5",
     "keyv": "^4.5.2",
