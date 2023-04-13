@@ -5,8 +5,8 @@
       "options": {
         "cacheableOperations": [
           "build",
-          "test",
-          "check"
+          "build-dts",
+          "test"
         ]
       }
     }
@@ -15,22 +15,21 @@
     "build": {
       "dependsOn": [
         "^build"
-      ],
-      "outputs": [
-        "{projectRoot}/dist"
       ]
     },
     "test": {
       "dependsOn": [
         "^test"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
       ]
     },
     "check": {
       "dependsOn": [
         "^check"
+      ]
+    },
+    "build-dts": {
+      "dependsOn": [
+        "^build-dts"
       ]
     }
   }
