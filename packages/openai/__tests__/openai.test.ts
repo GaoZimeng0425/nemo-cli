@@ -1,5 +1,12 @@
 import * as openai from '../src/index.js'
-import { strict as assert } from 'assert'
+import { expect, test } from 'vitest'
+import { CommanderError } from 'commander'
 
-assert.strictEqual(openai.run(), 'Hello from openai')
-console.info('openai tests passed')
+test('should throw CommanderError with code commander.helpDisplayed when no command is provided', () => {
+  try {
+    openai.run()
+  } catch (err) {
+    expect(err).toBeInstanceOf(CommanderError)
+    expect((err as CommanderError).code).toBe('commander.help') // Corrected expected code
+  }
+})

@@ -15,7 +15,9 @@
     "lib": "dist",
     "test": "__tests__"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "bin": {
     "npnpm": "./bin/index.mjs"
   },
@@ -41,7 +43,7 @@
   },
   "dependencies": {
     "@nemo-cli/shared": "workspace:^",
-    "commander": "^10.0.0",
-    "inquirer": "^9.1.5"
+    "commander": "^14.0.0",
+    "inquirer": "^12.6.3"
   }
 }

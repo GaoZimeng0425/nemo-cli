@@ -12,6 +12,7 @@ export const init = () => {
     .description(`${pkg.name} help you use openai in CLI`)
     .version(pkg.version)
     .usage('<Command> [options]')
+    .exitOverride() // Add this line
     .addHelpText('after', HELP_MESSAGE.ai)
 
   chatCommand(program)
