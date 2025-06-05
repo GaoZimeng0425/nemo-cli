@@ -12,5 +12,5 @@ export const getNpmInfo = (npmName: string, register: string): Promise<NPM_INFO>
     .catch((err) => {
       log.error('network', err.message)
       throw new Error(err)
-    })
+    }) as Promise<NPM_INFO>
 }

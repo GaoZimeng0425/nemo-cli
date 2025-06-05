@@ -1,21 +1,22 @@
-import { Command } from 'commander'
-import { readPackage } from '@nemo-cli/shared'
-import { installCommand } from './commands/install.js'
-import { HELP_MESSAGE } from './constants.js'
-import { cleanCommand } from './commands/clean.js'
-import { upgradeCommand } from './commands/upgrade.js'
+import { createCommand, readPackage } from '@nemo-cli/shared'
+import { addCommand } from './commands/add'
+import { listCommand } from './commands/list'
+import { removeCommand } from './commands/remove'
+import { upgradeCommand } from './commands/upgrade'
+import { HELP_MESSAGE } from './constants'
 
 export const pkg = readPackage(import.meta, '..')
 
 export const init = () => {
-  const command = new Command('pnpm')
+  const command = createCommand('np')
     .version(pkg.version)
-    .description(`${pkg.name} Make pnpm Workspace Operation Easier`)
-    .addHelpText('after', HELP_MESSAGE.pnpm)
+    .description(`${pkg.name} CLI helper for pnpm workspaces`)
+    .addHelpText('after', HELP_MESSAGE.main)
 
-  installCommand(command)
-  cleanCommand(command)
+  addCommand(command)
   upgradeCommand(command)
+  removeCommand(command)
+  listCommand(command)
 
   return command
 }

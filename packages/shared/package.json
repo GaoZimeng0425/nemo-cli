@@ -8,27 +8,23 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./constants": {
-      "import": "./dist/constants.js",
-      "require": "./dist/constants.js",
-      "types": "./dist/constants.d.ts"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     }
   },
   "directories": {
     "lib": "dist",
     "test": "__tests__"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "dev": "tsc -P ./tsconfig.build.json --watch",
-    "build": "tsc -P ./tsconfig.build.json",
+    "build": "unbuild",
     "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -36,20 +32,29 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "ansi-escapes": "^6.1.0",
-    "chalk": "^5.2.0",
-    "commander": "^10.0.0",
-    "configstore": "^6.0.0",
-    "fs-extra": "^11.1.1",
-    "inquirer": "^9.1.5",
-    "npmlog": "^7.0.1",
-    "ora": "^6.3.0",
-    "update-notifier": "^6.0.2"
+    "@inquirer/prompts": "^7.5.3",
+    "@inquirer/type": "^3.0.7",
+    "ansi-escapes": "^7.0.0",
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "configstore": "^7.0.0",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.0",
+    "glob": "^11.0.2",
+    "js-yaml": "^4.1.0",
+    "ora": "^8.2.0",
+    "pathe": "^2.0.3",
+    "picocolors": "^1.1.1",
+    "react": "^19.1.0",
+    "tinyexec": "^1.0.1",
+    "tinyglobby": "^0.2.14",
+    "update-notifier": "^7.3.1",
+    "winston": "^3.17.0",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
-    "@types/configstore": "^6.0.0",
-    "@types/fs-extra": "^11.0.1",
-    "@types/inquirer": "^9.0.3",
-    "@types/npmlog": "^4.1.4"
+    "@types/configstore": "^6.0.2",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.8"
   }
 }

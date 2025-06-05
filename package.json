@@ -5,37 +5,30 @@
   "keywords": [],
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "license": "ISC",
+  "type": "module",
   "scripts": {
     "coverage": "vitest run --coverage",
-    "graph": "pnpm dlx nx graph",
-    "preinstall": "npx only-allow pnpm"
+    "graph": "nx graph",
+    "preinstall": "npx only-allow pnpm",
+    "dev": "nx dev",
+    "build": "nx run-many -t build",
+    "build__": "pnpm --filter @nemo-cli/shared run build && pnpm --filter @nemo-cli/package run build",
+    "build_": "pnpm --filter @nemo-cli/package run build"
   },
   "devDependencies": {
-    "@rollup/plugin-alias": "^4.0.3",
-    "@rollup/plugin-json": "^6.0.0",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-typescript": "^11.0.0",
-    "@types/node": "^18.15.8",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "eslint": "^8.36.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.6.1",
-    "eslint-plugin-promise": "^6.1.1",
-    "lerna": "^6.6.1",
-    "prettier": "^2.8.7",
-    "rollup": "^3.20.2",
-    "rollup-plugin-esbuild": "^5.0.0",
-    "tsx": "^3.12.6",
-    "typescript": "^5.0.2",
-    "unbuild": "^1.1.2",
-    "vitest": "^0.29.7",
-    "zx": "^7.2.1"
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "^22.15.29",
+    "nx": "21.1.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "unbuild": "^3.5.0",
+    "vitest": "^3.2.1"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "unconfig": "^7.3.2"
   }
 }

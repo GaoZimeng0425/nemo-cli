@@ -1,7 +1,7 @@
 {
-  "name": "@nemo-cli/package",
+  "name": "@nemo-cli/git",
   "version": "0.0.1",
-  "description": "pnpm workspace handle",
+  "description": "git flow handle",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "https://github.com/GaoZimeng0425/nemo-cli#readme",
   "license": "ISC",
@@ -10,7 +10,7 @@
     "test": "__tests__"
   },
   "bin": {
-    "np": "./bin/index.mjs"
+    "ng": "./bin/index.mjs"
   },
   "publishConfig": {
     "access": "public"
@@ -25,12 +25,12 @@
   },
   "scripts": {
     "dev": "tsc -P ./tsconfig.build.json --watch",
-    "build": "unbuild",
     "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "check": "tsc --incremental --noEmit",
     "prepublish": "npm run build",
+    "build": "unbuild",
     "prepack": "unbuild"
   },
   "exports": {

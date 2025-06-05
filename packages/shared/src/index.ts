@@ -11,6 +11,8 @@ export * from './utils/config.js'
 export * from './utils/inquirer.js'
 export { ora } from './utils/spinner.js'
 export * from './utils/file.js'
+export * from './utils/workspace.js'
+export * from './utils/packageJson.js'
 
 export * from './constants.js'
 export const pkg = readPackage(import.meta, '..')

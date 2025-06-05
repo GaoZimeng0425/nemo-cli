@@ -1,32 +1,13 @@
-import inquirer, { QuestionTypeName, QuestionCollection } from 'inquirer'
+import { checkbox, confirm, input, password, rawlist, select } from '@inquirer/prompts'
 
-const BASE_CONFIG = {
-  name: 'name',
-  choices: [],
-  message: '',
-  require: true,
-  mask: '*'
-}
+export const createNumberList = rawlist
 
-export const createType =
-  <Name extends QuestionTypeName>(type: Name) =>
-  async (questions: QuestionCollection, initialAnswers?: any) => {
-    const answer = await inquirer.prompt({ ...BASE_CONFIG, ...questions, type }, initialAnswers)
-    return answer[BASE_CONFIG['name']]
-  }
+export const createSelect = select
 
-export const createList = createType('list')
+export const createInput = input
 
-export const createNumberList = createType('rawlist')
+export const createPassword = password
 
-export const createSelect = createType('list')
+export const createCheckbox = checkbox
 
-export const createInput = createType('input')
-
-export const createPassword = createType('password')
-
-export const createCheckbox = createType('checkbox')
-
-export const createConfirm = createType('confirm')
-
-export const createEditor = createType('editor')
+export const createConfirm = confirm

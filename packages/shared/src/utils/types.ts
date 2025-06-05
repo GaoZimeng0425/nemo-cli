@@ -1,17 +1,10 @@
-const { toString, hasOwnProperty } = Object.prototype
-
-const hasOwn = (target: unknown, key: PropertyKey): boolean => hasOwnProperty.call(target, key)
-const has = <T extends object, K extends PropertyKey>(target: T, key: K): boolean =>
-  Reflect.has(target, key)
-
-const localRegExp = /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-const isLocal = (url: string = window.location.hostname): boolean =>
-  url === 'localhost' || url === '[::1]' || url.match(localRegExp) !== null
+const hasOwn = (target: unknown, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(target, key)
+const has = <T extends object, K extends PropertyKey>(target: T, key: K): boolean => Reflect.has(target, key)
 
 const isType =
   <T0>(type: string) =>
   <T1 extends T0 = T0>(obj: unknown): obj is T1 =>
-    toString.call(obj) === `[object ${type}]`
+    Object.prototype.toString.call(obj) === `[object ${type}]`
 
 const isString = isType<string>('String')
 const isNumber = isType<number>('Number')
@@ -49,5 +42,4 @@ export {
   isMap,
   isFormData,
   isURLSearchParams,
-  isLocal
 }
