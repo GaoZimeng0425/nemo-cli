@@ -1,28 +1,54 @@
-import chalk from 'chalk'
-import npmlog from 'npmlog'
 import ansiEscapes from 'ansi-escapes'
+import chalk from 'chalk'
+import winston from 'winston'
 import { isString } from './types.js'
 
 // type LogLevels = "silly" | "verbose" | "info" | "timing" | "http" | "notice" | "warn" | "error" | "silent";
+const customLevels = {
+  levels: {
+    error: 0,
+    warn: 1,
+    success: 2,
+    info: 3,
+    verbose: 4,
+    silly: 5,
+    timing: 6,
+  },
+  colors: {
+    error: 'red',
+    warn: 'yellow',
+    success: 'green',
+    info: 'blue',
+    verbose: 'cyan',
+    silly: 'magenta',
+    timing: 'grey',
+  },
+}
 const DEFAULT_OPTIONS = {
   heading: '@nemo-cli',
-  level: 'warn'
+  level: 'timing',
 }
+
+
+winston.addColors(customLevels.colors)
+
 const init = (customOptions?: typeof DEFAULT_OPTIONS) => {
-  const options = { ...DEFAULT_OPTIONS, ...customOptions }
-
-  npmlog.heading = options.heading
-  npmlog.level = options.level
-
-  npmlog.addLevel('success', 8000, {
-    fg: 'green',
-    bg: 'black',
-    bold: true,
-    bell: true
+  const options = { ...customOptions, ...DEFAULT_OPTIONS }
+  const logger = winston.createLogger({
+    level: options.level,
+    levels: customLevels.levels,
+    format: winston.format.combine(winston.format.colorize({ all: true })),
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.simple(),
+      }),
+    ],
   })
+  return logger
 }
 
-init()
+export const logger = init()
+
 const transformMessage = (messages: unknown[]) => {
   for (let i = 0; i < messages.length; i++) {
     const [current, next] = [messages[i], messages[i + 1]]
@@ -34,7 +60,6 @@ const transformMessage = (messages: unknown[]) => {
 }
 
 export const log = {
-  ...npmlog,
   init,
   get level() {
     throw new Error("can't visit level")
@@ -42,43 +67,65 @@ export const log = {
   set level(_: unknown) {
     throw new Error('use setLevel')
   },
+  setLevel(level: keyof typeof customLevels.levels) {
+    logger.level = level
+  },
   stopDebug() {
-    npmlog.level = 'warn'
-    npmlog.warn('current npmlog level', npmlog.level)
+    logger.level = 'warn'
+    logger.warn('current winston level', logger.level)
+  },
+  info(...messages: unknown[]) {
+    for (const message of transformMessage(messages)) {
+      if (isString(message)) {
+        logger.info(`${message}`)
+      } else {
+        logger.info(`${JSON.stringify(message, null, 2)}`)
+      }
+    }
+  },
+  warn(...messages: unknown[]) {
+    for (const message of transformMessage(messages)) {
+      if (isString(message)) {
+        logger.warn(`${message}`)
+      } else {
+        logger.warn(`${JSON.stringify(message, null, 2)}`)
+      }
+    }
   },
   debug() {
-    npmlog.level = 'silly'
-    npmlog.warn('current npmlog level', npmlog.level)
+    // logger.level = 'silly'
+    logger.warn('current winston level', logger.level)
   },
-  timing(prefix = '', time: string | number) {
-    npmlog.timing(prefix, `${time}`)
+  timing(time: string | number) {
+    logger.log('timing', `${time}`)
   },
-  error(prefix = '', ...messages: unknown[]) {
-    transformMessage(messages).forEach((message) => {
+  error(...messages: unknown[]) {
+    for (const message of transformMessage(messages)) {
       if (isString(message)) {
-        npmlog.error(prefix, chalk.red.bgBlack(message))
+        logger.error(`${chalk.red.bgBlack(message)}`)
+      } else {
+        // fallback to console for non-string
+        console.log(message)
+      }
+    }
+  },
+  verbose(...messages: unknown[]) {
+    for (const message of transformMessage(messages)) {
+      if (isString(message)) {
+        logger.verbose(`${message}`)
+      } else {
+        logger.verbose(`${JSON.stringify(message, null, 2)}`)
+      }
+    }
+  },
+  success(...messages: unknown[]) {
+    for (const message of transformMessage(messages)) {
+      if (isString(message)) {
+        logger.log('success', `${chalk.green.bgBlack(message)}`)
       } else {
         console.log(message)
       }
-    })
-  },
-  verbose(prefix = '', ...messages: unknown[]) {
-    transformMessage(messages).forEach((message) => {
-      if (isString(message)) {
-        npmlog.verbose(prefix, message)
-      } else {
-        npmlog.verbose(prefix, JSON.stringify(message, null, 2))
-      }
-    })
-  },
-  success(prefix = '', ...messages: unknown[]) {
-    transformMessage(messages).forEach((message) => {
-      if (isString(message)) {
-        npmlog.success(prefix, chalk.green.bgBlack(message))
-      } else {
-        console.log(message)
-      }
-    })
+    }
   },
   clearScreen() {
     process.stdout.write(ansiEscapes.clearScreen)
@@ -96,9 +143,7 @@ export const log = {
     process.stdout.write(ansiEscapes.scrollUp)
   },
   eraseEndLine() {
-    // process.stdout.moveCursor(0, -1)
-    // process.stdout.clearLine(0)
     process.stdout.write(ansiEscapes.cursorPrevLine)
     process.stdout.write(ansiEscapes.eraseLine)
-  }
+  },
 }

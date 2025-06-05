@@ -1,6 +1,6 @@
-import { checkFile, dirList, log } from '@nemo-cli/shared'
-import { ERROR_MESSAGE } from './constants.js'
 import path from 'node:path'
+import { checkFile, dirList, log } from '@nemo-cli/shared'
+import { ERROR_MESSAGE } from './constants'
 
 export const searchWorkspaceDir = (): string[] => {
   const cwd = process.cwd()

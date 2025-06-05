@@ -5,5 +5,5 @@
 ## Usage
 
 ```
-import {log, createStore, createList} from '@nemo-cli/shared'
+import {log, createStore, createSelect} from '@nemo-cli/shared'
 ```

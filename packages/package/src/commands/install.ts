@@ -1,19 +1,8 @@
-import { $ } from 'zx'
-import { Command } from 'commander'
+import type { Command } from '@nemo-cli/shared'
+import { createCheckbox, createInput, createSelect, isString, isUndefined, log, ora, x } from '@nemo-cli/shared'
 
-import {
-  createCheckbox,
-  createInput,
-  createList,
-  isString,
-  isUndefined,
-  log,
-  ora,
-  tryPromise
-} from '@nemo-cli/shared'
-
-import { HELP_MESSAGE } from '../constants.js'
-import { relate, searchWorkspaceDir } from '../utils.js'
+import { HELP_MESSAGE } from '../constants'
+import { relate, searchWorkspaceDir } from '../utils'
 
 const join = (list: string[], separator = ' ') => list.join(separator)
 const installHandle = async (
@@ -25,7 +14,7 @@ const installHandle = async (
     const workspace = relate(path)
     return {
       name: workspace,
-      value: `./${workspace}`
+      value: `./${workspace}`,
     }
   })
 
@@ -33,8 +22,8 @@ const installHandle = async (
 
   const choose: string[] = await createCheckbox({
     choices: installPath,
-    message: `Choose Directory To Install Package`,
-    validate: (list: string[]) => list.length > 0
+    message: 'Choose Directory To Install Package',
+    validate: (list) => list.length > 0,
   })
 
   log.verbose('install: Choose Directory', join(choose, '\n'))
@@ -42,7 +31,7 @@ const installHandle = async (
   const flags = [
     saveProd ? '--save-prod' : '--save-dev',
     exact ? '--save-exact' : '',
-    peer ? '--save-peer' : ''
+    peer ? '--save-peer' : '',
   ].filter(Boolean)
 
   const filter = choose.map((name) => `--filter=${name}`)
@@ -54,24 +43,24 @@ const installHandle = async (
   const script = `pnpm ${filter} add -r ${packageNames} ${flags}`
   log.verbose('install script', script)
 
-  const [err] = await tryPromise($`pnpm ${filter} add -r ${packageNames} ${flags}`)
+  const p = await x('pnpm', [...filter, 'add', '-r', ...packageNames, ...flags])
 
-  err && log.verbose('install error', err)
-  err
-    ? spinner.fail(err.message)
+  p.exitCode && log.verbose('install error', p.exitCode)
+  p.exitCode
+    ? spinner.fail(p.stderr)
     : spinner.succeed(`workspace: ${join(choose)} install ${join(packageNames)} success!`)
 }
 
 const ensurePackage = async (input: string | string[]): Promise<string[]> => {
   log.verbose('install ensurePackage input', input)
-  if (isString(input)) input = [input]
-  const packageNames = input?.map((input) => input.trim()) || []
+  const inputList = isString(input) ? [input] : input
+  const packageNames = inputList?.map((input) => input.trim()) || []
   log.verbose('install ensurePackage', packageNames)
 
   if (packageNames.length === 0) {
     const packageName = await createInput({
       message: 'Please enter the package name you want to install',
-      validate: (name) => !!name
+      validate: (name) => !!name,
     })
     packageNames.push(packageName)
   }
@@ -93,12 +82,12 @@ export const installCommand = (program: Command) => {
       const packageNames = await ensurePackage(packages)
 
       if (isUndefined(options.saveProd) && isUndefined(options.saveDev)) {
-        options.saveProd = await createList({
+        options.saveProd = await createSelect({
           message: 'Is it a productive dependencies?',
           choices: [
             { name: 'Yes', value: true },
-            { name: 'No', value: false }
-          ]
+            { name: 'No', value: false },
+          ],
         })
       }
 

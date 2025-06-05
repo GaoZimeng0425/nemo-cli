@@ -8,17 +8,20 @@ ${commandsString}
 export const HELP_MESSAGE = {
   install: `
 Example:
-  $ n pnpm install commander inquirer
-  $ n pnpm install typescript rollup vitest --dev --exact
+  $ np install commander @inquirer/prompts
+  $ np install typescript unbuild vitest --dev --exact
     `,
-  pnpm: `
+  main: `
 Example:
-  $ n pnpm --version
-  $ n pnpm --help
-  $ n pnpm <command> [options]
+  $ np --version
+  $ np --help
+  $ np <command> [options]
   `,
-  clean: createHelpExample('n pnpm clean [dirname]'),
-  up: createHelpExample('n pnpm up')
+  clean: createHelpExample('np clean [dirname]'),
+  up: createHelpExample('np up'), // Example for the refactored interactive upgrade command
+  remove: createHelpExample('np remove'), // Example for the interactive remove command
+  list: createHelpExample('np list'), // Example for the interactive list command
+  add: createHelpExample('np add', 'np add -p my-package dep1 dep2'),
 }
 
 export const ERROR_MESSAGE = {

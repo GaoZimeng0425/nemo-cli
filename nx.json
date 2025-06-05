@@ -16,22 +16,51 @@
       "dependsOn": [
         "^build"
       ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ]
+      "cache": true
     },
     "test": {
       "dependsOn": [
         "^test"
       ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "cache": true
     },
     "check": {
       "dependsOn": [
         "^check"
-      ]
+      ],
+      "cache": true
+    },
+    "dev": {
+      "dependsOn": [
+        "^dev"
+      ],
+      "cache": true
+    },
+    "build-dts": {
+      "dependsOn": [
+        "^build-dts"
+      ],
+      "cache": true
+    },
+    "coverage": {
+      "dependsOn": [
+        "^coverage"
+      ],
+      "cache": true
+    },
+    "prepublish": {
+      "dependsOn": [
+        "^prepublish"
+      ],
+      "cache": true
+    },
+    "prepack": {
+      "dependsOn": [
+        "^prepack"
+      ],
+      "cache": true
     }
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "nxCloudId": "68411516d78de61fe5abd3f4"
 }
