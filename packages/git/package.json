@@ -24,14 +24,14 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "tsc -P ./tsconfig.build.json --watch",
+    "dev": "rolldown --watch",
+    "build": "rolldown -c ./rolldown.config.ts",
     "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "check": "tsc --incremental --noEmit",
     "prepublish": "npm run build",
-    "build": "unbuild",
-    "prepack": "unbuild"
+    "prepack": "rolldown"
   },
   "exports": {
     ".": {

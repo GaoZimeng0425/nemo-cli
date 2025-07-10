@@ -50,6 +50,7 @@
     "packages/*/src",
     "packages/*/__tests__",
     "packages/*/*.json",
-    "packages/global.d.ts"
+    "packages/global.d.ts",
+    "rolldown.config.ts"
   ]
 }

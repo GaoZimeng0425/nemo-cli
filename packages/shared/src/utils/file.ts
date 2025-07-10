@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import fse, { type PathLike } from 'fs-extra'
-import { glob as fastGlob } from 'glob'
+import { type GlobOptions, glob as fastGlob } from 'glob'
 import { log } from './log.js'
 import { dirname } from './pathname.js'
 
@@ -82,6 +82,6 @@ export const filterDirList = (list: string[]) => {
   return list.filter((item) => fse.statSync(item).isDirectory())
 }
 
-export const glob = (pattern: string, options: any) => {
+export const glob = (pattern: string, options: Partial<GlobOptions> = {}) => {
   return fastGlob(pattern, options)
 }

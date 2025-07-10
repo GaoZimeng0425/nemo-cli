@@ -1,5 +1,6 @@
 import type { Command } from '@nemo-cli/shared'
 import { createConfirm, createSelect, log, x } from '@nemo-cli/shared'
+
 import { getRemoteBranches } from './list'
 
 const getCurrentBranch = async () => {
@@ -43,7 +44,6 @@ export function pushCommand(command: Command) {
       log.info(`Current branch is ${currentBranch}`)
       const check = await createConfirm({
         message: `Do you want to push ${currentBranch} to remote?`,
-        default: true,
       })
       if (!check) {
         log.info('Aborting push operation.')
@@ -54,11 +54,10 @@ export function pushCommand(command: Command) {
       const remoteBranches = await getRemoteBranches()
       const selectedBranch = await createSelect({
         message: 'Select the branch to push',
-        choices: remoteBranches.map((branch) => ({
-          name: branch,
+        options: remoteBranches.map((branch) => ({
           value: branch,
+          label: branch,
         })),
-        default: currentBranch,
       })
       if (!selectedBranch) {
         log.error('No branch selected. Aborting push operation.')

@@ -1,21 +1,21 @@
 import EventEmitter from 'node:events'
-import chalk from 'chalk'
-import boxen, { Options as BoxenOptions } from 'boxen'
-import { ChatCompletionRequestMessage } from 'openai'
-import { cached, isArray } from '@nemo-cli/shared'
-import { Prompt } from '../prompt.js'
+import { cached, colors, isArray } from '@nemo-cli/shared'
+import boxen, { type Options as BoxenOptions } from 'boxen'
+import type { Message } from 'openai/resources/beta/threads/messages.mjs'
+
+import type { Prompt } from '../prompt.js'
 
 type RoleKey = 'user' | 'assistant' | 'system'
 const BASE_BOXEN_OPTIONS: BoxenOptions = {
   padding: 1,
   backgroundColor: '#222',
   float: 'left',
-  titleAlignment: 'left'
+  titleAlignment: 'left',
 }
 
 type ChatOption = {
   [key in RoleKey]: {
-    style: typeof chalk
+    style: typeof colors
     boxenOptions?: BoxenOptions
     name: string
   }
@@ -23,21 +23,21 @@ type ChatOption = {
 
 const STYLES: ChatOption = {
   user: {
-    style: chalk.green.bold,
+    style: colors.green.bold,
     boxenOptions: {
       float: 'right',
-      titleAlignment: 'right'
+      titleAlignment: 'right',
     },
-    name: 'YOU'
+    name: 'YOU',
   },
   assistant: {
-    style: chalk.white.bold,
-    name: 'AI'
+    style: colors.white.bold,
+    name: 'AI',
   },
   system: {
-    style: chalk.blue.bold,
-    name: 'SYSTEM'
-  }
+    style: colors.blue.bold,
+    name: 'SYSTEM',
+  },
 }
 
 const createChatType = (key: RoleKey) => {
@@ -47,7 +47,7 @@ const createChatType = (key: RoleKey) => {
 ${boxen(style(`${message}`), {
   ...BASE_BOXEN_OPTIONS,
   ...boxenOptions,
-  title: style(`${name}:`)
+  title: style(`${name}:`),
 })}`
   }
 }
@@ -55,30 +55,30 @@ ${boxen(style(`${message}`), {
 const cacheCreateType = cached(createChatType)
 
 export const promptBox = (prompts: Prompt[]) => {
-  prompts.forEach((prompt) => {
+  for (const prompt of prompts) {
     const content = `
 ${boxen(`${prompt.prompt}`, {
   ...BASE_BOXEN_OPTIONS,
-  title: `${prompt.act}:`
+  title: `${prompt.act}:`,
 })}`
     process.stdout.write(content)
-  })
+  }
 }
 
 class Talk extends EventEmitter {
   constructor() {
     super()
-    this.on('message', (message: ChatCompletionRequestMessage | ChatCompletionRequestMessage[]) => {
-      const messages = !isArray(message) ? [message] : message
+    this.on('message', (message: Message | Message[]) => {
+      const messages = isArray(message) ? message : [message]
       this.print(messages)
     })
   }
 
-  print(message: ChatCompletionRequestMessage[]) {
-    message.forEach(({ role, content }) => {
-      const styledContent = cacheCreateType(role)(content)
-      process.stdout.write(styledContent + '\n')
-    })
+  print(message: Message[]) {
+    for (const { role, content } of message) {
+      const styledContent = cacheCreateType(role)(content?.[0]?.type ?? '')
+      process.stdout.write(`${styledContent}\n`)
+    }
   }
 }
 

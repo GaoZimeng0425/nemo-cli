@@ -1,6 +1,7 @@
 import ansiEscapes from 'ansi-escapes'
 import chalk from 'chalk'
 import winston from 'winston'
+
 import { isString } from './types.js'
 
 // type LogLevels = "silly" | "verbose" | "info" | "timing" | "http" | "notice" | "warn" | "error" | "silent";
@@ -28,7 +29,6 @@ const DEFAULT_OPTIONS = {
   heading: '@nemo-cli',
   level: 'timing',
 }
-
 
 winston.addColors(customLevels.colors)
 

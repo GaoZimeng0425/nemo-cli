@@ -1,12 +1,13 @@
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai'
-import { isError, log, ora, tryPromise } from '@nemo-cli/shared'
+import { isError, log, ora, safeAwait } from '@nemo-cli/shared'
+import OpenAI from 'openai'
+
 // TODO: USE LANG_CHAIN
 // import { OpenAI } from 'langchain'
 import { ERROR_MESSAGE } from './constants.js'
 import { getModel } from './utils/store.js'
 
-const AXIOS_OPTIONS: Parameters<OpenAIApi['createChatCompletion']>[1] = {
-  timeout: 20000
+const AXIOS_OPTIONS: Parameters<OpenAI['chat']['completions']['create']>[1] = {
+  timeout: 20000,
 }
 
 type RequestError = {
@@ -14,20 +15,19 @@ type RequestError = {
 } & Error
 
 export const createOpenai = (TOKEN: string) => {
-  const configuration = new Configuration({
-    apiKey: TOKEN
+  const openai = new OpenAI({
+    apiKey: TOKEN,
   })
-  const openai = new OpenAIApi(configuration)
 
   // const generatorChat = async (content: string) => {
-  const generatorChat = async (messages: ChatCompletionRequestMessage[]) => {
-    const [error, response] = await tryPromise(
-      openai.createChatCompletion(
+  const generatorChat = async (messages: any[]) => {
+    const [error, response] = await safeAwait(
+      openai.chat.completions.create(
         {
           model: getModel() || 'gpt-3.5-turbo',
           messages,
           temperature: 0.8,
-          max_tokens: 200
+          max_tokens: 200,
         },
         AXIOS_OPTIONS
       )
@@ -38,31 +38,30 @@ export const createOpenai = (TOKEN: string) => {
       const status = (error as RequestError)?.response?.status
       log.verbose('message', ERROR_MESSAGE[status])
       throw new Error(message ?? ERROR_MESSAGE[status] ?? ERROR_MESSAGE.default)
-    } else {
-      const { message } = response.data.choices[0]
-      return message
     }
+    const { message } = response?.choices[0] ?? {}
+    return message?.content
   }
   return generatorChat
 }
 
 export const createCompletion = async (TOKEN: string, question: string): Promise<string> => {
-  const configuration = new Configuration({
-    apiKey: TOKEN
+  const openai = new OpenAI({
+    apiKey: TOKEN,
   })
-  const openai = new OpenAIApi(configuration)
   const spinner = ora('completion')
   try {
-    const response = await openai.createCompletion(
+    const response = await openai.completions.create(
       {
         model: 'text-davinci-003',
         prompt: question,
         temperature: 0.8,
-        max_tokens: 200
+        max_tokens: 200,
       },
       AXIOS_OPTIONS
     )
-    return response.data.choices[0]?.text ?? '无回答'
+    const { text } = response?.choices[0] ?? {}
+    return text ?? '无回答'
   } catch (err) {
     log.error('openai', (err as any).message)
     return '出错了'
@@ -72,29 +71,27 @@ export const createCompletion = async (TOKEN: string, question: string): Promise
 }
 
 export const listModels = async (TOKEN: string) => {
-  const configuration = new Configuration({
-    apiKey: TOKEN
+  const openai = new OpenAI({
+    apiKey: TOKEN,
   })
-  const openai = new OpenAIApi(configuration)
   const spinner = ora('find models').start()
 
   try {
-    const { data } = await openai.listModels(AXIOS_OPTIONS)
+    const { data } = await openai.models.list()
     spinner.succeed()
 
-    return data.data.map((model) => ({ name: model.id, value: model.id }))
+    return data.map((model) => ({ name: model.id, value: model.id })) as { name: string; value: string }[]
   } catch (err) {
     spinner.fail(`error: ${err}`)
   }
 }
 
 export const retrieveModel = async (model: string, TOKEN: string) => {
-  const configuration = new Configuration({
-    apiKey: TOKEN
+  const openai = new OpenAI({
+    apiKey: TOKEN,
   })
-  const openai = new OpenAIApi(configuration)
   try {
-    const { data } = await openai.retrieveModel(model)
+    const data = await openai.models.retrieve(model)
     return data
   } catch (err) {
     if (err instanceof Error) {

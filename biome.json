@@ -1,120 +1,160 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
-	"vcs": {
-		"clientKind": "git",
-		"defaultBranch": "main",
-		"enabled": true,
-		"useIgnoreFile": true
-	},
-	"files": {
-		"ignoreUnknown": false,
-		"ignore": [
-			"node_modules",
-			"packages/design/src/components/ui"
-		]
-	},
-	"formatter": {
-		"enabled": true,
-		"formatWithErrors": true,
-		"ignore": [
-			"**/*/generated-new.ts",
-			"**/*/generated-v2.ts",
-			"node_modules"
-		],
-		"indentStyle": "space",
-		"indentWidth": 2,
-		"lineWidth": 120
-	},
-	"javascript": {
-		"formatter": {
-			"jsxQuoteStyle": "double",
-			"quoteStyle": "single",
-			"semicolons": "asNeeded",
-			"trailingCommas": "es5"
-		}
-	},
-	"css": {
-		"formatter": {
-			"enabled": true
-		},
-		"linter": {
-			"enabled": true
-		}
-	},
-	"linter": {
-		"enabled": true,
-		"ignore": [
-			"node_modules"
-		],
-		"rules": {
-			"recommended": true,
-			"a11y": {
-				"all": true,
-				"useKeyWithClickEvents": "off"
-			},
-			"complexity": {
-				"all": true
-			},
-			"correctness": {
-				"all": true,
-				"noNodejsModules": "off",
-				"useExhaustiveDependencies": "info",
-				"noUndeclaredDependencies": "off",
-				"useImportExtensions": "off"
-			},
-			"nursery": {
-				"all": true,
-				"useImportRestrictions": "off",
-				"noProcessEnv": "off",
-				"noSecrets": "off",
-				"noNestedTernary": "off",
-				"noEnum": "off",
-				"useExplicitType": "off",
-				"useComponentExportOnlyModules": "off",
-				"noStaticElementInteractions": "off",
-				"useSortedClasses": {
-					"fix": "safe",
-					"level": "info",
-					"options": {
-						"attributes": [
-							"classList"
-						],
-						"functions": [
-							"clsx",
-							"cva",
-							"tw"
-						]
-					}
-				}
-			},
-			"performance": {
-				"all": true,
-				"noBarrelFile": "off"
-			},
-			"security": {
-				"all": true
-			},
-			"style": {
-				"all": true,
-				"noNonNullAssertion": "off",
-				"noDefaultExport": "off",
-				"noImplicitBoolean": "off",
-				"useBlockStatements": "off",
-				"useNamingConvention": "off",
-				"useExplicitLengthCheck": "off",
-				"noNamespaceImport": "info"
-			},
-			"suspicious": {
-				"all": true,
-				"noConsole": "off",
-				"noReactSpecificProps": "off",
-				"noArrayIndexKey": "warn",
-				"noConsoleLog": "off",
-				"noExplicitAny": "warn"
-			}
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "root": true,
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":BUN:",
+              ":NODE:",
+              [
+                "npm:*",
+                "npm:*/**"
+              ],
+              [
+                "react"
+              ],
+              ":PACKAGE_WITH_PROTOCOL:",
+              ":URL:",
+              [
+                ":PACKAGE:",
+                "!@prime-next/**"
+              ],
+              ":BLANK_LINE:",
+              [
+                "@prime-next/**"
+              ],
+              ":ALIAS:",
+              ":PATH:"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "defaultBranch": "main",
+    "enabled": true,
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!**/*.svg",
+      "!**/.next",
+      "!**/pnpm-lock.yaml",
+      "!**/node_modules",
+      "!**/packages/design/src/components/ui"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true,
+    "includes": [
+      "**",
+      "!**/*/generated-new.ts",
+      "!**/*/generated-v2.ts",
+      "!**/node_modules"
+    ],
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "es5"
+    }
+  },
+  "css": {
+    "formatter": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "project": "recommended"
+    },
+    "includes": [
+      "**",
+      "!**/node_modules"
+    ],
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "useKeyWithClickEvents": "off",
+        "noStaticElementInteractions": "off"
+      },
+      "complexity": {},
+      "correctness": {
+        "noNodejsModules": "off",
+        "useExhaustiveDependencies": "info",
+        "noUndeclaredDependencies": "off",
+        "useImportExtensions": "off"
+      },
+      "nursery": {
+        "noSecrets": "off",
+        "useExplicitType": "off",
+        "useSortedClasses": {
+          "fix": "safe",
+          "level": "info",
+          "options": {
+            "attributes": [
+              "classList"
+            ],
+            "functions": [
+              "cn",
+              "clsx",
+              "cva",
+              "tw"
+            ]
+          }
+        }
+      },
+      "performance": {
+        "noBarrelFile": "off",
+        "noNamespaceImport": "info"
+      },
+      "security": {},
+      "style": {
+        "noNonNullAssertion": "off",
+        "noDefaultExport": "off",
+        "noImplicitBoolean": "off",
+        "useBlockStatements": "off",
+        "useNamingConvention": "off",
+        "useExplicitLengthCheck": "off",
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "noProcessEnv": "off",
+        "noNestedTernary": "off",
+        "noEnum": "off",
+        "useComponentExportOnlyModules": "off"
+      },
+      "suspicious": {
+        "noConsole": "off",
+        "noReactSpecificProps": "off",
+        "noArrayIndexKey": "warn",
+        "noExplicitAny": "warn"
+      }
+    }
+  }
 }

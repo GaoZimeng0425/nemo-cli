@@ -10,7 +10,7 @@ function throwNative(error: unknown) {
   }
 }
 
-const safeAwait = async <T>(promise: Promise<T>): Promise<[error: Error] | [error: undefined, data: T]> => {
+export const safeAwait = async <T>(promise: Promise<T>): Promise<[error: Error] | [error: undefined, data: T]> => {
   try {
     const data = await promise
     if (data instanceof Error) {
@@ -23,4 +23,3 @@ const safeAwait = async <T>(promise: Promise<T>): Promise<[error: Error] | [erro
     return [error] as [Error]
   }
 }
-export default safeAwait

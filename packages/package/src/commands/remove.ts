@@ -55,13 +55,13 @@ export function removeCommand(command: Command) {
       }
 
       const packageChoices = packages.map((pkg) => ({
-        name: `${pkg.name} (path: ${pkg.path})`,
         value: { name: pkg.name, path: pkg.path },
+        label: `${pkg.name} (path: ${pkg.path})`,
       }))
 
       const selectedPackageInfo = await createSelect({
         message: 'Select the target package to remove dependencies from:',
-        choices: packageChoices,
+        options: packageChoices,
       })
       if (!selectedPackageInfo?.name) {
         log.info('No package selected. Aborting remove operation.')
@@ -80,14 +80,13 @@ export function removeCommand(command: Command) {
       }
 
       const dependencyChoices = dependencies.map((dep) => ({
-        name: `${dep.name} (current: ${dep.version}, type: ${dep.type})`,
         value: dep.name,
-        checked: false,
+        label: `${dep.name} (current: ${dep.version}, type: ${dep.type})`,
       }))
 
       const selectedDependencies = await createCheckbox({
         message: `Select dependencies to remove from ${selectedPackageInfo.name} (space to select, enter to confirm):`,
-        choices: dependencyChoices,
+        options: dependencyChoices,
       })
 
       if (!selectedDependencies || selectedDependencies.length === 0) {

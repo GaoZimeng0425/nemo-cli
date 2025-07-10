@@ -1,5 +1,5 @@
 // https://github.com/gannonh/gpt3.5-turbo-pgvector/blob/master/utils/OpenAIStream.ts
-import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
+import { createParser, type ParsedEvent, type ReconnectInterval } from 'eventsource-parser'
 
 export interface OpenAIStreamPayload {
   model: string

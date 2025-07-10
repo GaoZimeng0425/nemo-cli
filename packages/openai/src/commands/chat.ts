@@ -1,15 +1,12 @@
-import { Command } from 'commander'
-import boxen from 'boxen'
-import { createInput, createList, log, ora, tryPromise } from '@nemo-cli/shared'
+import { type Command, createInput, createSelect, log, safeAwait } from '@nemo-cli/shared'
 
-import { createOpenai } from '../openai.js'
 import { HELP_MESSAGE } from '../constants.js'
-import { Prompt } from '../prompt.js'
-import { clearPrompt, ensureKey, getPrompt, savePrompt } from '../utils/store.js'
+import type { Prompt } from '../prompt.js'
 import { promptBox } from '../utils/chatBox.js'
 import { addContext, getContext, initializationPrompt } from '../utils/context.js'
 import { copy } from '../utils/copy.js'
-import { OpenAIStream, OpenAIStreamPayload, readStream } from '../utils/OpenaiStream.js'
+import { OpenAIStream, type OpenAIStreamPayload, readStream } from '../utils/OpenaiStream.js'
+import { clearPrompt, ensureKey, getPrompt, savePrompt } from '../utils/store.js'
 
 const payload: OpenAIStreamPayload = {
   model: 'gpt-3.5-turbo-0301',
@@ -20,13 +17,13 @@ const payload: OpenAIStreamPayload = {
   presence_penalty: 0,
   max_tokens: 2000,
   stream: true,
-  n: 1
+  n: 1,
 }
 const chatHandle = (apiKey: string, choosePrompt: Prompt) => {
   initializationPrompt(choosePrompt)
 
   // const generatorChat = createOpenai(apiKey)
-  const createStream = () => OpenAIStream(apiKey, { ...payload, messages: getContext() })
+  const createStream = () => OpenAIStream(apiKey, { ...payload, messages: getContext() as any })
 
   return async (content: string) => {
     addContext(content)
@@ -68,7 +65,7 @@ const copyHandle = async () => {
     .map(({ role, content }) => `${role}: ${content}`)
     .join('\n')
 
-  const [err] = await tryPromise(copy(messages))
+  const [err] = await safeAwait(copy(messages))
   if (err) {
     log.error('Copy Error', (err as any).message)
     process.exit(0)
@@ -103,24 +100,28 @@ export const chatCommand = (program: Command) => {
 
         const apiKey = await ensureKey()
 
-        const choices = prompts.map((prompt) => ({ name: prompt.act, value: prompt }))
-        const choosePrompt = await (options.new
+        const choices = prompts.map((prompt) => ({ label: prompt.act, value: prompt }))
+        const choosePrompt = options.new
           ? createInput({ message: 'Type in the prompt you want to know about' })
-          : createList({
-              choices,
+          : createSelect({
+              options: choices,
               message: 'Choose a prompt that interests you',
-              loop: false
-            }))
+            })
 
-        savePrompt(choosePrompt)
+        savePrompt(choosePrompt as unknown as Prompt)
 
-        const sender = chatHandle(apiKey, choosePrompt)
+        const sender = chatHandle(apiKey, choosePrompt as unknown as Prompt)
 
         const sendMessage = async () => {
           const message = await createInput({
             message: 'You: ',
-            validate: Boolean,
-            default: 'Type exit to stop, copy to copy all message'
+            validate: (answer) => {
+              if (!answer) {
+                return '请输入问题'
+              }
+              return undefined
+            },
+            placeholder: 'Type exit to stop, copy to copy all message',
           })
           log.eraseEndLine()
           log.beep()

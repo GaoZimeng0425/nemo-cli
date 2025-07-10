@@ -52,13 +52,13 @@ export const addCommand = (program: Command) => {
         }
 
         const packageChoices = packages.map((pkg) => ({
-          name: `${pkg.name} (${pkg.path})`,
+          label: `${pkg.name} (${pkg.path})`,
           value: pkg.name,
         }))
 
         selectedPackage = await createCheckbox({
           message: 'Select a workspace to add dependencies to:',
-          choices: packageChoices,
+          options: packageChoices,
         })
 
         if (selectedPackage.length === 0) {

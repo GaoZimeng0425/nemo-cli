@@ -1,8 +1,8 @@
-import { log } from '@nemo-cli/shared'
-import type { Command } from 'commander'
-import { x } from 'tinyexec'
+import type { Command } from '@nemo-cli/shared'
+import { log, x } from '@nemo-cli/shared'
 
 const remotePrefix = /^origin\//
+
 export const getRemoteBranches = async () => {
   const branches = await x('git', ['branch', '-r'])
   return branches.stdout
@@ -10,7 +10,8 @@ export const getRemoteBranches = async () => {
     .filter((line) => line.trim() && !line.includes('->'))
     .map((line) => line.trim().replace(remotePrefix, ''))
 }
-const getLocalBranches = async () => {
+
+export const getLocalBranches = async () => {
   const branches = await x('git', ['branch'])
   return branches.stdout
     .split('\n')

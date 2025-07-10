@@ -9,7 +9,7 @@ export const pkg = readPackage(import.meta, '..')
 
 export const init = () => {
   const command = createCommand('np')
-    .version(pkg.version)
+    // .version(pkg.version)
     .description(`${pkg.name} CLI helper for pnpm workspaces`)
     .addHelpText('after', HELP_MESSAGE.main)
 

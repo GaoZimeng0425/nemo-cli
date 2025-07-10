@@ -2,7 +2,10 @@
   "name": "@nemo-cli/openai",
   "version": "0.0.8",
   "description": "openai cli",
-  "keywords": ["openai cli", "terminal openai"],
+  "keywords": [
+    "openai cli",
+    "terminal openai"
+  ],
   "bin": {
     "openai": "bin/index.mjs"
   },
@@ -10,34 +13,37 @@
   "homepage": "https://github.com/GaoZimeng0425/nemo-cli/tree/main/packages/openai",
   "license": "ISC",
   "exports": {
-    "import": "./dist/index.js"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "directories": {
     "lib": "dist",
     "test": "__tests__"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -P ./tsconfig.build.json",
-    "dev": "tsc -P ./tsconfig.build.json --watch",
-    "prepublish": "npm run build"
+    "build": "rolldown -c ./rolldown.config.ts",
+    "dev": "rolldown -c ./rolldown.config.ts --watch",
+    "prepublish": "npm run build",
+    "prepack": "rolldown"
   },
   "type": "module",
   "dependencies": {
     "@nemo-cli/shared": "workspace:^",
-    "boxen": "^7.0.2",
-    "chalk": "^5.2.0",
-    "clipboardy": "^3.0.0",
-    "commander": "^10.0.0",
-    "compromise": "^14.8.2",
+    "boxen": "^8.0.1",
+    "clipboardy": "^4.0.0",
+    "compromise": "^14.14.4",
     "gpt3-tokenizer": "^1.1.5",
-    "inquirer": "^9.1.5",
-    "keyv": "^4.5.2",
-    "langchain": "^0.0.43",
-    "openai": "^3.2.1",
-    "quick-lru": "^6.1.1"
+    "keyv": "^5.3.4",
+    "langchain": "^0.3.29",
+    "openai": "^5.8.3",
+    "quick-lru": "^7.0.1"
   }
 }
