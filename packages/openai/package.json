@@ -43,7 +43,7 @@
     "gpt3-tokenizer": "^1.1.5",
     "keyv": "^5.3.4",
     "langchain": "^0.3.29",
-    "openai": "^5.8.3",
+    "openai": "^5.9.0",
     "quick-lru": "^7.0.1"
   }
 }

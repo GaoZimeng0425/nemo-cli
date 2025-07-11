@@ -1,6 +1,8 @@
 import { createCommand, readPackage } from '@nemo-cli/shared'
 
+import { checkoutCommand } from './commands/checkout'
 import { listCommand } from './commands/list'
+import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
 import { HELP_MESSAGE } from './constants'
 
@@ -12,8 +14,10 @@ export const init = () => {
     .description(`${pkg.name} CLI helper for git`)
     .addHelpText('after', HELP_MESSAGE.main)
 
+  pullCommand(command)
   listCommand(command)
   pushCommand(command)
+  checkoutCommand(command)
 
   return command
 }

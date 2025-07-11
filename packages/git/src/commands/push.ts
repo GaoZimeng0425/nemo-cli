@@ -1,39 +1,30 @@
 import type { Command } from '@nemo-cli/shared'
-import { createConfirm, createSelect, log, x } from '@nemo-cli/shared'
+import { colors, createConfirm, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
 
-import { getRemoteBranches } from './list'
+import { getCurrentBranch, getRemoteOptions } from '../utils'
 
-const getCurrentBranch = async () => {
-  const result = await x('git rev-parse --abbrev-ref HEAD')
-  if (result.exitCode) {
-    log.error(`Failed to get current branch. Command exited with code ${result.exitCode}.`)
-    log.error(result)
-    return result.stderr.trim()
-  }
-  return result.stdout.trim()
-}
 
 const handlePush = async (branch: string) => {
-  log.info(`Pushing branch ${branch} to remote...`)
+  const spinner = createSpinner(`Pushing branch ${branch} to remote...`)
   const process = x('git', ['push', 'origin', branch])
 
   for await (const line of process) {
-    log.info(line)
+    spinner.message(line)
   }
 
   const code = process.exitCode
   if (code) {
-    log.error(`Failed to push branch ${branch}. Command exited with code ${process.exitCode}.`)
+    spinner.stop(`Failed to push branch ${branch}. Command exited with code ${process.exitCode}.`)
     log.error(process)
   } else {
-    log.success(`Successfully pushed branch ${branch} to remote.`)
+    spinner.stop(`Successfully pushed branch ${branch} to remote.`)
   }
 }
 
 export function pushCommand(command: Command) {
   command
     .command('push')
-    .alias('p')
+    .alias('ps')
     .description('Push current branch to remote')
     .action(async () => {
       const currentBranch = await getCurrentBranch()
@@ -41,28 +32,21 @@ export function pushCommand(command: Command) {
         log.error('No branch selected. Aborting push operation.')
         return
       }
-      log.info(`Current branch is ${currentBranch}`)
       const check = await createConfirm({
-        message: `Do you want to push ${currentBranch} to remote?`,
+        message: `Do you want to push ${colors.bgGreen(currentBranch)} to remote?`,
       })
-      if (!check) {
-        log.info('Aborting push operation.')
+
+      if (check) {
+        await handlePush(currentBranch)
         return
       }
-      await handlePush(currentBranch)
 
-      const remoteBranches = await getRemoteBranches()
+      const { options } = await getRemoteOptions()
       const selectedBranch = await createSelect({
         message: 'Select the branch to push',
-        options: remoteBranches.map((branch) => ({
-          value: branch,
-          label: branch,
-        })),
+        options,
+        initialValue: 'main',
       })
-      if (!selectedBranch) {
-        log.error('No branch selected. Aborting push operation.')
-        return
-      }
-      await handlePush(selectedBranch)
+      handlePush(selectedBranch)
     })
 }

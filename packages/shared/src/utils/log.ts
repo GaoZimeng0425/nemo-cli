@@ -1,8 +1,10 @@
+import { log as clackLog } from '@clack/prompts'
 import ansiEscapes from 'ansi-escapes'
 import chalk from 'chalk'
 import winston from 'winston'
 
-import { isString } from './types.js'
+import { type ColorInstance } from './color'
+import { isString } from './types'
 
 // type LogLevels = "silly" | "verbose" | "info" | "timing" | "http" | "notice" | "warn" | "error" | "silent";
 const customLevels = {
@@ -73,6 +75,15 @@ export const log = {
   stopDebug() {
     logger.level = 'warn'
     logger.warn('current winston level', logger.level)
+  },
+  show(message: string, options?: { symbol?: string; colors?: ColorInstance }) {
+    const text = options?.colors?.bold(message) ?? message
+
+    if (options?.symbol) {
+      clackLog.message(text, { symbol: options.symbol })
+    } else {
+      clackLog.info(text)
+    }
   },
   info(...messages: unknown[]) {
     for (const message of transformMessage(messages)) {

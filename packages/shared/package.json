@@ -23,7 +23,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "rolldown --watch",
+    "dev": "rolldown --watch -c ./rolldown.config.ts",
     "build": "rolldown -c ./rolldown.config.ts",
     "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
@@ -40,12 +40,8 @@
     "configstore": "^7.0.0",
     "fs-extra": "^11.3.0",
     "glob": "^11.0.3",
-    "js-yaml": "^4.1.0",
     "ora": "^8.2.0",
-    "pathe": "^2.0.3",
-    "picocolors": "^1.1.1",
     "tinyexec": "^1.0.1",
-    "tinyglobby": "^0.2.14",
     "update-notifier": "^7.3.1",
     "winston": "^3.17.0",
     "yaml": "^2.8.0"

@@ -1,4 +1,4 @@
-import { type Command, fileList, log } from '@nemo-cli/shared'
+import { type Command, createCheckbox, deleteFiles, fileList, log, parseNames } from '@nemo-cli/shared'
 
 export const deleteFilesCommand = (program: Command) => {
   program
@@ -6,7 +6,7 @@ export const deleteFilesCommand = (program: Command) => {
     .description('Delete file which you choose')
     // .option('-a, --all', 'Delete all')
     // .option('-c, --current', '删除当前文件夹并返回上一层')
-    .action(async (dirnames: string, options) => {
+    .action(async (dirnames: string, _options) => {
       const files = fileList()
       if (files.length === 0) {
         return log.success('file', '当前文件夹为空')
