@@ -3,7 +3,7 @@ import ansiEscapes from 'ansi-escapes'
 import chalk from 'chalk'
 import winston from 'winston'
 
-import { type ColorInstance } from './color'
+import type { ColorInstance } from './color'
 import { isString } from './types'
 
 // type LogLevels = "silly" | "verbose" | "info" | "timing" | "http" | "notice" | "warn" | "error" | "silent";
@@ -76,13 +76,21 @@ export const log = {
     logger.level = 'warn'
     logger.warn('current winston level', logger.level)
   },
-  show(message: string, options?: { symbol?: string; colors?: ColorInstance }) {
+  show(
+    message: string,
+    options?: {
+      symbol?: string
+      colors?: ColorInstance
+      type?: 'info' | 'success' | 'step' | 'warn' | 'error' | 'message'
+    }
+  ) {
     const text = options?.colors?.bold(message) ?? message
+    const type = options?.type ?? 'info'
 
     if (options?.symbol) {
       clackLog.message(text, { symbol: options.symbol })
     } else {
-      clackLog.info(text)
+      clackLog[type](text)
     }
   },
   info(...messages: unknown[]) {

@@ -1,28 +1,28 @@
-import { type Command, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
+import { type Command, colors, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
 
 import { getRemoteOptions } from '../utils'
 
 const handlePull = async (branch: string) => {
-  const spinner = createSpinner('Pulling from remote...')
+  const spinner = createSpinner('Pulling from remote')
   try {
     const { stdout, exitCode, stderr } = await x('git', ['pull', 'origin', branch])
 
-    if (stdout) {
-      log.info(`Command output (stdout):\n${stdout}`)
+    if (stderr) {
+      log.show(stderr, { type: 'warn' })
     }
 
-    if (stderr) {
-      log.warn(`Pull error (stderr):\n${stderr}`)
+    if (stdout) {
+      log.show(stdout)
+      spinner.message(`Command output: ${stdout}`)
     }
 
     if (exitCode) {
-      log.error(`Failed to pull from remote. Command exited with code ${exitCode}.`)
+      log.show(`Failed to pull from remote. Command exited with code ${exitCode}.`, { type: 'error' })
       spinner.stop('Pull failed')
       throw new Error(stderr)
     }
 
-    spinner.stop('Pull success')
-    log.success('Successfully pulled from remote.')
+    spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
   } catch (error) {
     spinner.stop('Pull failed')
     log.error(error)

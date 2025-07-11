@@ -17,7 +17,7 @@ const handlePush = async (branch: string) => {
     spinner.stop(`Failed to push branch ${branch}. Command exited with code ${process.exitCode}.`)
     log.error(process)
   } else {
-    spinner.stop(`Successfully pushed branch ${branch} to remote.`)
+    spinner.stop(colors.green(`Successfully pushed branch ${colors.bgGreen(branch)} to remote.`))
   }
 }
 
