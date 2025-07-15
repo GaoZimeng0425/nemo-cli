@@ -47,6 +47,6 @@
     "url": "https://github.com/GaoZimeng0425/nemo-cli/issues"
   },
   "dependencies": {
-    "@nemo-cli/shared": "workspace:*"
+    "@nemo-cli/shared": "*"
   }
 }
