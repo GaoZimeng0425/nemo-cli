@@ -1,6 +1,5 @@
-import { createInput, emptyDirs, log } from '@nemo-cli/shared'
+import { type Command, createInput, emptyDirs, log } from '@nemo-cli/shared'
 
-import type { Command } from 'commander'
 import { HELP_MESSAGE } from '../constants'
 import { searchWorkspaceDir } from '../utils'
 

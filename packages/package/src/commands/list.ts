@@ -48,15 +48,15 @@ export function listCommand(command: Command) {
       }
 
       const packageChoices = packages.map((pkg) => ({
-        name: `${pkg.name} (path: ${pkg.path})`,
+        label: `${pkg.name} (path: ${pkg.path})`,
         value: { name: pkg.name, path: pkg.path },
       }))
 
       const selectedPackageInfo = await createSelect({
         message: 'Select the target package to list its dependencies:',
-        choices: packageChoices,
+        options: packageChoices,
       })
-      if (!selectedPackageInfo?.name) {
+      if (!selectedPackageInfo) {
         log.info('No package selected. Aborting list operation.')
         return
       }

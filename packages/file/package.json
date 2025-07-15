@@ -25,7 +25,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "rolldown --watch",
+    "dev": "rolldown --watch -c ./rolldown.config.ts",
     "build": "rolldown -c ./rolldown.config.ts",
     "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
@@ -35,7 +35,9 @@
   },
   "type": "module",
   "dependencies": {
-    "@nemo-cli/shared": "workspace:^",
+    "@nemo-cli/shared": "workspace:*",
+    "acorn": "^8.15.0",
+    "acorn-jsx": "^5.3.2",
     "ts-morph": "^26.0.0"
   }
 }

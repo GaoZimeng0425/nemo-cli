@@ -3,31 +3,31 @@ import { createCheckbox, createInput, getWorkspacePackages, log, ora, x } from '
 
 const addHandle = async (packageName: string[], dependencies: string[]) => {
   if (!packageName || dependencies.length === 0) {
-    log.error('Package name and at least one dependency are required.')
+    log.show('Package name and at least one dependency are required.', { type: 'error' })
     return
   }
 
   const depsString = dependencies.join(' ')
-  log.info(`Attempting to add dependencies [${depsString}] to package [${packageName.join(',')}]...`)
+  log.show(`Attempting to add dependencies [${depsString}] to package [${packageName.join(',')}]...`)
 
   try {
     const filter = packageName.map((name) => `--filter=${name}`)
     const commandParts = ['add', ...filter, ...dependencies]
-    log.info(`Executing command: pnpm add ${filter.join(' ')} ${depsString}`)
+    log.show(`Executing command: pnpm add ${filter.join(' ')} ${depsString}`)
 
     const process = await x('pnpm', commandParts)
 
     if (process.exitCode) {
-      log.error(`Failed to add dependencies. Command exited with code ${process.exitCode}.`)
-      log.error(process.stdout)
+      log.show(`Failed to add dependencies. Command exited with code ${process.exitCode}.`, { type: 'error' })
+      log.show(process.stdout, { type: 'error' })
     } else {
-      log.success(`Successfully added dependencies [${depsString}] to package [${packageName}].`)
+      log.show(`Successfully added dependencies [${depsString}] to package [${packageName}].`)
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      log.error(`An error occurred while adding dependencies: ${error.message}`)
+      log.show(`An error occurred while adding dependencies: ${error.message}`, { type: 'error' })
     } else {
-      log.error(`An error occurred while adding dependencies: ${error}`)
+      log.show(`An error occurred while adding dependencies: ${error}`, { type: 'error' })
     }
   }
 }
@@ -42,12 +42,12 @@ export const addCommand = (program: Command) => {
       let selectedPackage = options.package?.split(',') ?? []
 
       if (selectedPackage.length > 0) {
-        log.info(`Target package specified via option: ${selectedPackage}`)
+        log.show(`Target package specified via option: ${selectedPackage}`)
       } else {
-        log.info('Fetching workspace packages...')
+        log.show('Fetching workspace packages...')
         const packages = await getWorkspacePackages()
         if (!packages || packages.length === 0) {
-          log.error('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
+          log.show('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
           return
         }
 
@@ -62,7 +62,7 @@ export const addCommand = (program: Command) => {
         })
 
         if (selectedPackage.length === 0) {
-          log.info('No package selected. Aborting.')
+          log.show('No package selected. Aborting.', { type: 'error' })
           return
         }
       }
@@ -74,7 +74,7 @@ export const addCommand = (program: Command) => {
           message: 'Enter dependency names (space-separated):',
         })
         if (!depsInput) {
-          log.info('No dependencies entered. Aborting.')
+          log.show('No dependencies entered. Aborting.', { type: 'error' })
           return
         }
         finalDependencies = depsInput
@@ -90,10 +90,10 @@ export const addCommand = (program: Command) => {
         spinner.succeed('Dependencies added successfully')
       } else if (selectedPackage) {
         // finalDependencies is empty
-        log.warn('No dependencies provided to add.')
+        log.show('No dependencies provided to add.', { type: 'warn' })
       } else {
         // This case should ideally not be reached if prompts work correctly
-        log.error('Package selection failed unexpectedly.')
+        log.show('Package selection failed unexpectedly.', { type: 'error' })
       }
     })
 

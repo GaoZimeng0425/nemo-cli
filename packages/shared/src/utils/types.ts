@@ -35,4 +35,4 @@ export const isEmpty = (value: unknown): value is null | undefined | '' | [] | R
   return false
 }
 
-export type AnyFunction = (...args: any) => any
+export type AnyFunction<T = any, R = any> = (args: T) => R

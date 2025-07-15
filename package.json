@@ -11,14 +11,15 @@
     "graph": "nx graph",
     "preinstall": "npx only-allow pnpm",
     "dev": "pnpm --filter './packages/**' dev",
+    "build": "pnpm --filter './packages/**' build",
     "dev_": "nx run-many --target=dev --batch=true --all --parallel",
-    "build": "nx run-many -t build"
+    "build_": "nx run-many --target=build --batch=true --all --parallel"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
-    "@types/node": "^24.0.13",
-    "nx": "21.2.2",
-    "rolldown": "1.0.0-beta.26",
+    "@types/node": "^24.0.14",
+    "nx": "21.2.3",
+    "rolldown": "1.0.0-beta.27",
     "rolldown-plugin-dts": "^0.13.13",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
