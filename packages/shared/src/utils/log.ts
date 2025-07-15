@@ -1,7 +1,10 @@
+import { log as clackLog } from '@clack/prompts'
 import ansiEscapes from 'ansi-escapes'
 import chalk from 'chalk'
 import winston from 'winston'
-import { isString } from './types.js'
+
+import type { ColorInstance } from './color'
+import { isString } from './types'
 
 // type LogLevels = "silly" | "verbose" | "info" | "timing" | "http" | "notice" | "warn" | "error" | "silent";
 const customLevels = {
@@ -28,7 +31,6 @@ const DEFAULT_OPTIONS = {
   heading: '@nemo-cli',
   level: 'timing',
 }
-
 
 winston.addColors(customLevels.colors)
 
@@ -73,6 +75,23 @@ export const log = {
   stopDebug() {
     logger.level = 'warn'
     logger.warn('current winston level', logger.level)
+  },
+  show(
+    message: string,
+    options?: {
+      symbol?: string
+      colors?: ColorInstance
+      type?: 'info' | 'success' | 'step' | 'warn' | 'error' | 'message'
+    }
+  ) {
+    const text = options?.colors?.bold(message) ?? message
+    const type = options?.type ?? 'info'
+
+    if (options?.symbol) {
+      clackLog.message(text, { symbol: options.symbol })
+    } else {
+      clackLog[type](text)
+    }
   },
   info(...messages: unknown[]) {
     for (const message of transformMessage(messages)) {

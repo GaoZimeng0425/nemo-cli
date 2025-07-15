@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import fse, { type PathLike } from 'fs-extra'
-import { glob as fastGlob } from 'glob'
+import { type GlobOptions, glob as originalGlob, type Path } from 'glob'
+
 import { log } from './log.js'
 import { dirname } from './pathname.js'
 
@@ -23,7 +24,7 @@ export const readPackage = (importMeta: { url: string }, ...paths: string[]): Pa
   }
 }
 
-export const readJSON = (path: string, overwrite = false) => {
+export const readJSON = (path: string, _overwrite = false) => {
   if (fse.existsSync(path)) {
     return fse.readJsonSync(path)
   }
@@ -38,7 +39,7 @@ export const writeJSON = (path: string, content: string, force = false) => {
   return fse.writeFileSync(path, content)
 }
 
-export const copyFile = (src: PathLike, dest: PathLike, overwrite = false) => {
+export const copyFile = (src: PathLike, dest: PathLike, _overwrite = false) => {
   if (fse.existsSync(dest)) {
     log.error('file', `${dest}`)
   }
@@ -82,6 +83,8 @@ export const filterDirList = (list: string[]) => {
   return list.filter((item) => fse.statSync(item).isDirectory())
 }
 
-export const glob = (pattern: string, options: any) => {
-  return fastGlob(pattern, options)
+export function glob(pattern: string, options: Partial<GlobOptions> & { object: true }): Promise<Path[]>
+export function glob(pattern: string, options?: Partial<GlobOptions>): Promise<string[]>
+export function glob(pattern: string, options: Partial<GlobOptions> = {}) {
+  return originalGlob(pattern, options)
 }

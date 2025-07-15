@@ -13,17 +13,17 @@ const installHandle = async (
   const installPath = options.workspace.map((path) => {
     const workspace = relate(path)
     return {
-      name: workspace,
+      label: workspace,
       value: `./${workspace}`,
     }
   })
 
-  log.verbose('install: installHandle workspace', installPath.map(({ name }) => name).join('\n'))
+  log.verbose('install: installHandle workspace', installPath.map(({ label }) => label).join('\n'))
 
   const choose: string[] = await createCheckbox({
-    choices: installPath,
+    options: installPath,
     message: 'Choose Directory To Install Package',
-    validate: (list) => list.length > 0,
+    required: true,
   })
 
   log.verbose('install: Choose Directory', join(choose, '\n'))
@@ -60,7 +60,7 @@ const ensurePackage = async (input: string | string[]): Promise<string[]> => {
   if (packageNames.length === 0) {
     const packageName = await createInput({
       message: 'Please enter the package name you want to install',
-      validate: (name) => !!name,
+      validate: (name) => (!name ? 'Please enter the package name you want to install' : undefined),
     })
     packageNames.push(packageName)
   }
@@ -84,9 +84,9 @@ export const installCommand = (program: Command) => {
       if (isUndefined(options.saveProd) && isUndefined(options.saveDev)) {
         options.saveProd = await createSelect({
           message: 'Is it a productive dependencies?',
-          choices: [
-            { name: 'Yes', value: true },
-            { name: 'No', value: false },
+          options: [
+            { label: 'Yes', value: true },
+            { label: 'No', value: false },
           ],
         })
       }

@@ -9,7 +9,7 @@ ${commandsString}
 `
 }
 
-export const createCommand = (name: string) => {
+export const createCommand = (name: string): Command => {
   const command = new Command(name)
   command.allowExcessArguments()
   command.allowUnknownOption()

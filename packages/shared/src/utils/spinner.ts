@@ -1,17 +1,18 @@
-import instance, { type Options } from 'ora'
+import chalk from 'chalk'
+import instance, { type Options, spinners } from 'ora'
+
 import { isString } from './types.js'
 
-const BASE_OPTIONS = {
-  timeout: 10000
+export const BASE_OPTIONS = {
+  timeout: 10000,
 }
 
 export const ora = (options: string | Options) => {
   if (!isString(options)) return instance(options)
 
-  // TODO: add logo...
   const spinner = instance({
-    // spinner: {},
-    text: options
+    spinner: spinners.circleHalves,
+    text: chalk.green(options),
   })
 
   return spinner
