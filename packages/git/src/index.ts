@@ -1,6 +1,7 @@
 import { createCommand, readPackage } from '@nemo-cli/shared'
 
 import { checkoutCommand } from './commands/checkout'
+import { deleteCommand } from './commands/delete'
 import { listCommand } from './commands/list'
 import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
@@ -18,6 +19,7 @@ export const init = () => {
   listCommand(command)
   pushCommand(command)
   checkoutCommand(command)
+  deleteCommand(command)
 
   return command
 }

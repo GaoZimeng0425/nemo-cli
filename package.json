@@ -11,9 +11,9 @@
     "graph": "nx graph",
     "preinstall": "npx only-allow pnpm",
     "dev": "pnpm --filter './packages/**' dev",
-    "build": "pnpm --filter './packages/**' build",
+    "build_": "pnpm --filter './packages/**' build",
     "dev_": "nx run-many --target=dev --batch=true --all --parallel",
-    "build_": "nx run-many --target=build --batch=true --all --parallel"
+    "build": "nx run-many --target=build --batch=true --all --parallel"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
