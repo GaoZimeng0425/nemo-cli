@@ -22,17 +22,17 @@ export function listCommand(command: Command) {
         log.show(`Local ${localBranches.length} branches`, { symbol: '🔖', colors: colors.bgGreen })
         for (const branch of localBranches) {
           if (branch === currentBranch) {
-            log.show(`${branch}  (current)`, { symbol: '⚡' })
+            log.show(`${branch}  (current)`, { type: 'info' })
           } else {
-            log.show(branch, { symbol: '📌' })
+            log.show(branch, { type: 'step' })
           }
         }
         log.show(`Remote ${remoteBranches.length} branches`, { symbol: '🔖', colors: colors.bgYellow })
         for (const branch of remoteBranches) {
           if (branch === currentBranch) {
-            log.show(`${branch}  (current)`, { symbol: '⚡' })
+            log.show(`${branch}  (current)`, { type: 'info' })
           } else {
-            log.show(branch, { symbol: '🌍' })
+            log.show(branch, { type: 'step' })
           }
         }
       } else if (options.local) {

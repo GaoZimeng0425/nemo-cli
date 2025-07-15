@@ -41,7 +41,9 @@ export const createShowList = createPrompt((options: string[] | SearchOptions[])
   const result = options.map((option) => {
     return isString(option) ? option : option.label
   })
-  log.show(result.join('\n'), { type: 'step' })
+  result.forEach((item) => {
+    log.show(item, { type: 'step' })
+  })
 })
 
 export const createSearch = ({ message, options }: { message: string; options: SearchOptions[] }) => {
