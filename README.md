@@ -1,9 +1,9 @@
 # nemo-cli
 
-> CLI Tools  
+> CLI Tools
 > 1. file operation
 > 2. git operation
-> 3. openai operation
+> 3. package operation
 
 ## Install
 
