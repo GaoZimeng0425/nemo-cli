@@ -63,8 +63,7 @@ export const dynamicX = async (
 
     return await $$`${command} ${parts}`
   } catch (error: any) {
-    log.show(`Failed to execute dynamic command: ${command}`, { type: 'error' })
-    log.show(error.stderr || error.message, { type: 'error' })
+    log.info(`\nFailed to execute dynamic command: ${command} ${error.message}\n`, { type: 'error' })
     throw error
   }
 }

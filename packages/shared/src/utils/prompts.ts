@@ -83,6 +83,7 @@ export const createTasks = createPrompt(tasks)
 
 export const createGroup = createPrompt(group)
 
+export type Spinner = ReturnType<typeof spinner>
 export const createSpinner = (message: string, options?: SpinnerOptions) => {
   const s = spinner(options)
   s.start(message)

@@ -1,15 +1,25 @@
-import { type Command, colors, createOptions, createSelect, createSpinner, log, type Result, x } from '@nemo-cli/shared'
+import { type Command, colors, createConfirm, createSelect, createSpinner, log, type Result, x } from '@nemo-cli/shared'
 
-import { getLocalBranches, getRemoteBranches } from '../utils'
+import { type BranchInfo, getLocalBranches, getRemoteBranches, isBranchMergedToMain } from '../utils'
 
-const handleDelete = async (branch: string, { isLocal }: { isLocal: boolean }) => {
+const handleDelete = async (branch: BranchInfo, { isLocal }: { isLocal: boolean }) => {
+  if (!branch.isMerged) {
+    const confirm = await createConfirm({
+      message: `Branch ${branch.branch} is not merged to main. Are you sure you want to delete it?`,
+    })
+    if (!confirm) {
+      return
+    }
+  }
+
   const spinner = createSpinner(`Deleting branch ${branch}...`)
   let process: Result
   if (isLocal) {
-    process = x('git', ['branch', '-d', branch])
+    process = x('git', ['branch', '-d', branch.branch])
   } else {
-    process = x('git', ['push', 'origin', '--delete', branch])
+    process = x('git', ['push', 'origin', '--delete', branch.branch])
   }
+
   for await (const line of process) {
     spinner.message(line)
   }
@@ -37,14 +47,33 @@ export function deleteCommand(command: Command) {
         log.error('No branches found. Please check your git repository.')
         return
       }
+
+      const mergeInfoList: BranchInfo[] = await isBranchMergedToMain(branches)
+      const enhancedOptions = mergeInfoList.map((branch) => {
+        return {
+          label: `${branch.branch} ${branch.isMerged ? colors.green('(merged)') : colors.yellow('(not merged)')}`,
+          value: {
+            branch: branch.branch,
+            isMerged: branch.isMerged,
+          },
+          hint: branch.isMerged ? 'Safe to delete - already merged to main' : 'Caution - not merged to main',
+        }
+      })
+
+      if (enhancedOptions.length === 0) {
+        log.error('No branches to delete. Please check your git repository.')
+        return
+      }
+
       const selectedBranch = await createSelect({
         message: 'Select the branch to delete',
-        options: createOptions(branches),
+        options: enhancedOptions,
       })
+
       if (!selectedBranch) {
         log.error('No branch selected. Aborting delete operation.')
         return
       }
-      await handleDelete(selectedBranch, { isLocal: !options.remote })
+      // await handleDelete(selectedBranch, { isLocal: !options.remote })
     })
 }

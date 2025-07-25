@@ -1,4 +1,4 @@
-import { colors, createSpinner, createX, dynamicX, log, x } from '@nemo-cli/shared'
+import { colors, createSpinner, createX, dynamicX, log, type PromptOptions, type Spinner, x } from '@nemo-cli/shared'
 
 const remotePrefix = /^origin\//
 
@@ -124,5 +124,42 @@ export const handleGitPop = async () => {
     log.show(stderr, { type: 'error' })
   } else {
     log.show('Successfully popped changes.')
+  }
+}
+
+/**
+ * Check if a branch has been merged into remote main branch
+ * @param branch - The branch name to check
+ * @returns Promise<boolean> - true if merged, false if not merged
+ */
+export type BranchInfo = { isMerged: boolean; branch: string }
+export const isBranchMergedToMain = async (branches: string[]): Promise<BranchInfo[]> => {
+  const spinner = createSpinner('Fetching latest changes from remote')
+
+  const list: BranchInfo[] = []
+  try {
+    const fetchResult = await dynamicX('git', ['fetch', 'origin'])
+    if (fetchResult.exitCode) {
+      log.show('Failed to fetch latest changes from remote. Proceeding with local information.', { type: 'warn' })
+    }
+
+    spinner.message('Checking if branches are merged to main')
+
+    await Promise.all(
+      branches.map(async (branch) => {
+        try {
+          await dynamicX('git', ['merge-base', '--is-ancestor', branch, 'origin/main'])
+          list.push({ branch, isMerged: true })
+        } catch (error) {
+          list.push({ branch, isMerged: false })
+        }
+      })
+    )
+
+    spinner.stop('Fetching latest changes from remote Done')
+
+    return list
+  } catch (error) {
+    return list
   }
 }
