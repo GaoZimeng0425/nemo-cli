@@ -74,6 +74,6 @@ export function deleteCommand(command: Command) {
         log.error('No branch selected. Aborting delete operation.')
         return
       }
-      // await handleDelete(selectedBranch, { isLocal: !options.remote })
+      await handleDelete(selectedBranch, { isLocal: !options.remote })
     })
 }
