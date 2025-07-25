@@ -107,10 +107,10 @@ importers:
         version: 11.0.3
       ink:
         specifier: ^6.0.1
-        version: 6.0.1(react@19.1.0)
+        version: 6.0.1(@types/react@19.1.8)(react@19.1.0)
       ink-markdown:
         specifier: ^1.0.4
-        version: 1.0.4(ink@6.0.1(react@19.1.0))(react@19.1.0)
+        version: 1.0.4(ink@6.0.1(@types/react@19.1.8)(react@19.1.0))(react@19.1.0)
       open:
         specifier: ^10.2.0
         version: 10.2.0
@@ -142,6 +142,9 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
+      '@types/react':
+        specifier: ^19.1.8
+        version: 19.1.8
 
 packages:
 
@@ -867,6 +870,9 @@ packages:
   '@types/node@24.1.0':
     resolution: {integrity: sha512-ut5FthK5moxFKH2T1CUOC6ctR67rQRvvHdFLCD2Ql6KXmMuCrjsSsRI9UsLCm9M18BMwClv4pn327UvB7eeO1w==}
 
+  '@types/react@19.1.8':
+    resolution: {integrity: sha512-AwAfQ2Wa5bCx9WP8nZL2uMZWod7J7/JSplxbTmBQ5ms6QpqNYm672H0Vu9ZVKVngQ+ii4R/byguVEUZQyeg44g==}
+
   '@types/triple-beam@1.3.5':
     resolution: {integrity: sha512-6WaYesThRMCl19iryMYP7/x2OVgCtbIVflDGFpWnb9irXI3UjYE4AzmYuiUKY1AJstGijoY+MgUszMgRxIYTYw==}
 
@@ -1178,6 +1184,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csstype@3.1.3:
+    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
   debug@4.4.1:
     resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
@@ -2976,6 +2985,10 @@ snapshots:
     dependencies:
       undici-types: 7.8.0
 
+  '@types/react@19.1.8':
+    dependencies:
+      csstype: 3.1.3
+
   '@types/triple-beam@1.3.5': {}
 
   '@vitest/expect@3.2.4':
@@ -3299,6 +3312,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  csstype@3.1.3: {}
+
   debug@4.4.1:
     dependencies:
       ms: 2.1.3
@@ -3588,15 +3603,15 @@ snapshots:
 
   ini@4.1.1: {}
 
-  ink-markdown@1.0.4(ink@6.0.1(react@19.1.0))(react@19.1.0):
+  ink-markdown@1.0.4(ink@6.0.1(@types/react@19.1.8)(react@19.1.0))(react@19.1.0):
     dependencies:
       '@types/marked-terminal': 3.1.7
-      ink: 6.0.1(react@19.1.0)
+      ink: 6.0.1(@types/react@19.1.8)(react@19.1.0)
       marked: 9.1.6
       marked-terminal: 6.2.0(marked@9.1.6)
       react: 19.1.0
 
-  ink@6.0.1(react@19.1.0):
+  ink@6.0.1(@types/react@19.1.8)(react@19.1.0):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.1.3
       ansi-escapes: 7.0.0
@@ -3623,6 +3638,8 @@ snapshots:
       wrap-ansi: 9.0.0
       ws: 8.18.3
       yoga-layout: 3.2.1
+    optionalDependencies:
+      '@types/react': 19.1.8
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate

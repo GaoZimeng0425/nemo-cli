@@ -17,7 +17,12 @@ import Fuse from 'fuse.js'
 import { log } from './log'
 import { isString } from './types'
 
-export const createOptions = <const T extends string | number>(options: T[]): SearchOptions[] =>
+export type PromptOptions<T extends string | number | boolean | symbol = string> = {
+  label: string
+  value: T
+}
+
+export const createOptions = <const T extends string | number>(options: T[]): PromptOptions[] =>
   options.map((option) => ({ label: option.toString(), value: option.toString() }))
 
 const createPrompt = <T extends AnyFunction>(fn: T) => {
@@ -32,12 +37,8 @@ const createPrompt = <T extends AnyFunction>(fn: T) => {
   }
 }
 
-type SearchOptions = {
-  label: string
-  value: string
-}
 
-export const createShowList = createPrompt((options: string[] | SearchOptions[]) => {
+export const createShowList = createPrompt((options: string[] | PromptOptions[]) => {
   const result = options.map((option) => {
     return isString(option) ? option : option.label
   })
@@ -46,7 +47,7 @@ export const createShowList = createPrompt((options: string[] | SearchOptions[])
   })
 })
 
-export const createSearch = ({ message, options }: { message: string; options: SearchOptions[] }) => {
+export const createSearch = ({ message, options }: { message: string; options: PromptOptions[] }) => {
   const fuse = new Fuse(options, { keys: ['label'] })
 
   return search({

@@ -1,8 +1,7 @@
 import type { Command } from '@nemo-cli/shared'
 import { colors, createConfirm, createSearch, createSelect, createSpinner, isEmpty, log, x } from '@nemo-cli/shared'
 
-import { getLocalOptions, getRemoteOptions, handleGitStash } from '../utils'
-
+import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
 
 const handleCheckout = async (
   branch: string,
@@ -37,7 +36,7 @@ const handleCheckout = async (
     spinner.stop(`Successfully checked out branch ${branch}.`)
   }
 
-  // await handleGitPop()
+  await handleGitPop()
 }
 
 export function checkoutCommand(command: Command) {

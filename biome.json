@@ -66,6 +66,7 @@
     "lineWidth": 120
   },
   "javascript": {
+    "jsxRuntime": "reactClassic",
     "formatter": {
       "jsxQuoteStyle": "double",
       "quoteStyle": "single",

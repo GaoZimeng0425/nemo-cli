@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Default",
   "compilerOptions": {
+    "jsx": "react",
     /* Basic Options */
     "target": "ESNext" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */,
     "module": "ESNext" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */,
@@ -9,9 +10,7 @@
     "checkJs": false /* Report errors in .js files. */,
     "declaration": true /* Generates corresponding '.d.ts' file. */,
     "declarationMap": true,
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "moduleDetection": "force",
     "noUncheckedIndexedAccess": true,
 
