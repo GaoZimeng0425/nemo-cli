@@ -1,8 +1,9 @@
-import path from 'node:path'
 import { homedir } from 'node:os'
+import path from 'node:path'
 import Configstore from 'configstore'
-import { log } from './log.js'
-import { CONFIG_NAME } from '../constants.js'
+
+import { CONFIG_NAME } from '../constants'
+import { log } from './log'
 
 const configRootPath = path.resolve(homedir(), CONFIG_NAME)
 

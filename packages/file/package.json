@@ -27,7 +27,6 @@
   "scripts": {
     "dev": "rolldown --watch -c ./rolldown.config.ts",
     "build": "rolldown -c ./rolldown.config.ts",
-    "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "check": "tsc --incremental --noEmit",
@@ -35,7 +34,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@nemo-cli/shared": "*",
+    "@nemo-cli/shared": "workspace:*",
     "acorn": "^8.15.0",
     "acorn-jsx": "^5.3.2",
     "ts-morph": "^26.0.0"

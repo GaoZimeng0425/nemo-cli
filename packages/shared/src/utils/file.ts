@@ -2,8 +2,8 @@ import { resolve } from 'node:path'
 import fse, { type PathLike } from 'fs-extra'
 import { type GlobOptions, glob as originalGlob, type Path } from 'glob'
 
-import { log } from './log.js'
-import { dirname } from './pathname.js'
+import { log } from './log'
+import { dirname } from './pathname'
 
 type Package = {
   name: string
@@ -83,8 +83,8 @@ export const filterDirList = (list: string[]) => {
   return list.filter((item) => fse.statSync(item).isDirectory())
 }
 
-export function glob(pattern: string, options: Partial<GlobOptions> & { object: true }): Promise<Path[]>
+export function glob(pattern: string, options: Partial<GlobOptions> & { withFileTypes: true }): Promise<Path[]>
 export function glob(pattern: string, options?: Partial<GlobOptions>): Promise<string[]>
 export function glob(pattern: string, options: Partial<GlobOptions> = {}) {
-  return originalGlob(pattern, options)
+  return originalGlob(pattern, { ignore: 'node_modules/**', ...options })
 }

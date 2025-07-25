@@ -1,4 +1,4 @@
-import { readPackage } from './utils/file.js'
+import { readPackage } from './utils/file'
 
 export * from './constants'
 export * from './utils/color'

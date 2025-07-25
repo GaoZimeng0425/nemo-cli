@@ -1,6 +1,5 @@
-import type { RolldownOptions } from 'rolldown'
+import { defineConfig, type RolldownOptions } from 'rolldown'
 import { dts } from 'rolldown-plugin-dts'
-
 
 export const config: RolldownOptions = {
   input: './src/index.ts',
@@ -17,4 +16,11 @@ export const config: RolldownOptions = {
       tsconfig: './tsconfig.build.json',
     }),
   ],
+}
+
+export const mergeConfig = (inputConfig: RolldownOptions) => {
+  return defineConfig({
+    ...config,
+    ...inputConfig,
+  })
 }

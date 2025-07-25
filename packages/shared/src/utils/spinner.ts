@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import instance, { type Options, spinners } from 'ora'
 
-import { isString } from './types.js'
+import { isString } from './types'
 
 export const BASE_OPTIONS = {
   timeout: 10000,

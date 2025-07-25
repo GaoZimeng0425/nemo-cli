@@ -2,8 +2,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import yaml from 'yaml'
 
-import { filterDirList, glob, readJSON } from './file.js'
-import { log } from './log.js' // Assuming log utility exists
+import { filterDirList, glob, readJSON } from './file'
+import { log } from './log' // Assuming log utility exists
 
 interface PnpmWorkspaceConfig {
   packages?: string[]

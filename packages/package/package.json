@@ -26,7 +26,6 @@
   "scripts": {
     "dev": "rolldown --watch -c ./rolldown.config.ts",
     "build": "rolldown -c ./rolldown.config.ts",
-    "build-dts": "tsc -P ./tsconfig.build.json --emitDeclarationOnly",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "check": "tsc --incremental --noEmit",
@@ -46,6 +45,6 @@
     "url": "https://github.com/GaoZimeng0425/nemo-cli/issues"
   },
   "dependencies": {
-    "@nemo-cli/shared": "*"
+    "@nemo-cli/shared": "workspace:*"
   }
 }

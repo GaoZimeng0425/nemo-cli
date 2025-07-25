@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { isDebug } from '../src/utils/env.js'
+
+import { isDebug } from '../src/utils/env'
 
 describe('shared utils test: env', () => {
   it('isDebug', () => {

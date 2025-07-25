@@ -11,7 +11,7 @@ import {
   tasks,
   text,
 } from '@clack/prompts'
-import search from '@inquirer/search'
+import { search } from '@inquirer/prompts'
 import Fuse from 'fuse.js'
 
 import { log } from './log'

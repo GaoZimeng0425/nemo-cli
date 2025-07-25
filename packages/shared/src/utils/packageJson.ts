@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { log } from './log.js' // Assuming log utility exists
+
+import { log } from './log' // Assuming log utility exists
 
 interface DependencyInfo {
   name: string

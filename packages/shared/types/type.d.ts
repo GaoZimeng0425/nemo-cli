@@ -14,15 +14,3 @@ type IsTuple<T> = true extends IsAny<T> | IsNever<T>
 
 type AnyFunction = (...args: any[]) => any
 type AnyObject<T = any> = Record<PropertyKey, T>
-
-type UnionToIntersection<T> = (T extends unknown ? (arg: T) => void : never) extends (
-  arg: infer Arg
-) => void
-  ? Arg
-  : never
-
-type IntersectionToUnion<T> = (T extends unknown ? (arg: infer Arg) => void : never) extends (
-  arg: T
-) => void
-  ? Arg
-  : never

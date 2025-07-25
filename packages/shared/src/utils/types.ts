@@ -34,5 +34,3 @@ export const isEmpty = (value: unknown): value is null | undefined | '' | [] | R
   if (isPlainObject(value) && Object.keys(value).length === 0) return true
   return false
 }
-
-export type AnyFunction<T = any, R = any> = (args: T) => R

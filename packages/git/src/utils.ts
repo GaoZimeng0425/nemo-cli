@@ -1,4 +1,4 @@
-import { log, x } from '@nemo-cli/shared'
+import { colors, createSpinner, createX, dynamicX, log, x } from '@nemo-cli/shared'
 
 const remotePrefix = /^origin\//
 
@@ -9,9 +9,7 @@ export const getRemoteBranches = async (): Promise<{ branches: string[] }> => {
     .filter((line) => line.trim() && !line.includes('->'))
     .map((line) => line.trim().replace(remotePrefix, ''))
 
-  return {
-    branches,
-  }
+  return { branches }
 }
 
 const currentBranchPrefix = /^\* /
@@ -33,7 +31,7 @@ export const getLocalBranches = async (): Promise<{ branches: string[]; currentB
 }
 
 export const getCurrentBranch = async () => {
-  const result = await x('git', ['branch', '--show-current'])
+  const result = await dynamicX('git', ['branch', '--show-current'])
   if (result.exitCode) {
     log.error(`Failed to get current branch. Command exited with code ${result.exitCode}.`)
     log.error('Error message:', result.stderr)
@@ -67,4 +65,64 @@ export const getLocalOptions = async () => {
     options,
     currentBranch,
   } as const
+}
+
+export const getGitDiffFiles = async (branch: string) => {
+  const result = await createX('git', ['diff', branch, '--name-only'])
+  if (!result) return []
+  return result.stdout.split('\n').filter((line) => line.trim())
+}
+
+export const handleGitPull = async (branch: string, stash = false) => {
+  const spinner = createSpinner('Pulling from remote')
+  try {
+    const { stdout, exitCode, stderr } = await createX('git', ['pull', 'origin', branch])
+
+    if (stderr) {
+      log.show(stderr, { type: 'warn' })
+    }
+
+    if (stdout) {
+      log.show(stdout)
+      spinner.message(`Command output: ${stdout}`)
+    }
+
+    if (exitCode) {
+      log.show(`Failed to pull from remote. Command exited with code ${exitCode}.`, { type: 'error' })
+      spinner.stop('Pull failed')
+      throw new Error(stderr)
+    }
+
+    spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
+  } catch (error) {
+    spinner.stop('Pull failed')
+    log.error(error)
+    throw error
+  }
+}
+
+export const handleGitStash = async () => {
+  const process = x('git', ['stash'])
+  for await (const line of process) {
+    log.show(line)
+  }
+  const { exitCode, stderr, stdout } = await process
+  if (exitCode) {
+    log.show(stderr, { type: 'error' })
+  } else {
+    log.show('Successfully stashed changes.')
+  }
+  return { stdout, exitCode, stderr }
+}
+export const handleGitPop = async () => {
+  const process = x('git', ['stash', 'pop'])
+  for await (const line of process) {
+    log.show(line)
+  }
+  const { exitCode, stderr } = await process
+  if (exitCode) {
+    log.show(stderr, { type: 'error' })
+  } else {
+    log.show('Successfully popped changes.')
+  }
 }
