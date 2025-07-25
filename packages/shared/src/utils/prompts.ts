@@ -1,13 +1,18 @@
 import {
   cancel,
   confirm,
+  type GroupMultiSelectOptions,
   group,
+  groupMultiselect,
   isCancel,
+  type MultiSelectOptions,
   multiselect,
-  password,
+  type PromptGroup,
+  type SelectOptions,
   type SpinnerOptions,
   select,
   spinner,
+  type TextOptions,
   tasks,
   text,
 } from '@clack/prompts'
@@ -26,7 +31,7 @@ export const createOptions = <const T extends string | number>(options: T[]): Pr
   options.map((option) => ({ label: option.toString(), value: option.toString() }))
 
 const createPrompt = <T extends AnyFunction>(fn: T) => {
-  return async (options: Parameters<T>[0]) => {
+  return async (options: Parameters<T>[0]): Promise<Awaited<ReturnType<T>>> => {
     const result = await fn(options)
 
     if (isCancel(result)) {
@@ -36,7 +41,6 @@ const createPrompt = <T extends AnyFunction>(fn: T) => {
     return result
   }
 }
-
 
 export const createShowList = createPrompt((options: string[] | PromptOptions[]) => {
   const result = options.map((option) => {
@@ -69,19 +73,69 @@ process.on('uncaughtException', (error) => {
   }
 })
 
-export const createSelect = createPrompt(select)
+export const createCheckbox = async <Value>(opts: MultiSelectOptions<Value>) => {
+  const result = await multiselect(opts)
 
-export const createInput = createPrompt(text)
-
-export const createPassword = createPrompt(password)
-
-export const createCheckbox = createPrompt(multiselect)
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    process.exit(0)
+  }
+  return result
+}
 
 export const createConfirm = createPrompt(confirm)
 
 export const createTasks = createPrompt(tasks)
 
-export const createGroup = createPrompt(group)
+export const createSelect = async <Value>(opts: SelectOptions<Value>) => {
+  const result = await select(opts)
+
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    process.exit(0)
+  }
+  return result
+}
+
+export const createInput = async (opts: TextOptions) => {
+  const result = await text(opts)
+
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    process.exit(0)
+  }
+  return result
+}
+
+export const createGroupMultiSelect = async <Value>(opts: GroupMultiSelectOptions<Value>) => {
+  const result = await groupMultiselect(opts)
+
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    process.exit(0)
+  }
+  return result
+}
+
+export const createMultiSelect = async <Value>(opts: MultiSelectOptions<Value>) => {
+  const result = await multiselect(opts)
+
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    process.exit(0)
+  }
+  return result
+}
+
+export const createGroup = async <Value>(opts: PromptGroup<Value>) => {
+  const result = await group(opts)
+
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    process.exit(0)
+  }
+  return result
+}
 
 export type Spinner = ReturnType<typeof spinner>
 export const createSpinner = (message: string, options?: SpinnerOptions) => {

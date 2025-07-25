@@ -12,7 +12,7 @@ import {
 
 import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
 
-const handleMerge = async (branch: string, { isRemote = false }: { isRemote?: boolean } = {}) => {
+const handleMerge = async (branch: string) => {
   const spinner = createSpinner(`Merging branch ${branch}...`)
   const args = ['merge', branch]
 
@@ -35,15 +35,14 @@ const handleMerge = async (branch: string, { isRemote = false }: { isRemote?: bo
 export function mergeCommand(command: Command) {
   command
     .command('merge')
-    .alias('me')
+    .alias('mg')
     .argument('[branch]', 'The branch to merge')
     .option('-l, --local', 'Merge a local branch')
     .option('-r, --remote', 'Merge a remote branch')
     .option('-b, --branch <branch>', 'Create and merge a new branch')
     .description('Merge a branch')
-    .action(async (_inputBranch, params: { local?: boolean; remote?: boolean; branch?: string; _: string[] }) => {
+    .action(async (branch, params: { local?: boolean; remote?: boolean }) => {
       let isLocal = params.local
-      const branch = params.branch
 
       if (branch) {
         handleMerge(branch)
@@ -57,7 +56,7 @@ export function mergeCommand(command: Command) {
             { label: 'Remote', value: false },
             { label: 'Local', value: true },
           ],
-          initialValue: true,
+          initialValue: false,
         })
       }
 
@@ -79,7 +78,7 @@ export function mergeCommand(command: Command) {
           message: `Do you want to merge ${colors.bgRed(selectedBranch)}?`,
         })
 
-        if (check) handleMerge(selectedBranch, { isRemote: true })
+        if (check) handleMerge(selectedBranch)
       }
     })
 }

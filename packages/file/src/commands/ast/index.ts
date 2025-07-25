@@ -1,21 +1,31 @@
-import { type Command, createCheckbox, fileList, log, parseNames } from '@nemo-cli/shared'
+import {
+  type Command,
+  createCheckbox,
+  createOptions,
+  fileList,
+  getWorkspacePackages,
+  isChinese,
+  log,
+  parseNames,
+} from '@nemo-cli/shared'
 import { Node, Project } from 'ts-morph'
 
-// import { JsxEmit } from 'typescript'
+enum JsxEmit {
+  None = 0,
+  Preserve = 1,
+  React = 2,
+  ReactNative = 3,
+  ReactJSX = 4,
+  ReactJSXDev = 5,
+}
 
-// Initialize project with settings to handle React/JSX files.
 const project = new Project({
   compilerOptions: {
-    jsx: 4,
+    jsx: JsxEmit.ReactJSX,
     esModuleInterop: true,
   },
-  // We don't need to load the entire project from tsconfig.json to analyze a single file.
   skipAddingFilesFromTsConfig: true,
 })
-
-const CHINESE_STRING_REGEXP = /[\u4e00-\u9fa5]/
-// 检测字符串是否为中文（Unicode 范围）
-const isChinese = (text: string): boolean => CHINESE_STRING_REGEXP.test(text) // 匹配中文字符
 
 // 递归遍历 AST 节点，提取中文变量名
 function extractChineseIdentifiers(node: Node) {
@@ -23,27 +33,33 @@ function extractChineseIdentifiers(node: Node) {
 
   if (Node.isVariableDeclaration(node)) {
     const name = node.getNameNode().getText()
-    log.show(`isVariableDeclaration: ${name}`, { type: 'success' })
     if (isChinese(name)) {
       identifiers.push(name)
     }
   }
-  // 处理对象字面量中的属性名（嵌套对象）
+  // 检测字符串字面量中的中文
+  else if (Node.isStringLiteral(node)) {
+    const literalValue = node.getLiteralText()
+    if (isChinese(literalValue)) {
+      identifiers.push(literalValue)
+    }
+  }
+  // 处理对象字面量中的属性值（只检测值，不检测键）
   else if (Node.isObjectLiteralExpression(node)) {
-    node.getChildren().forEach((child) => {
-      log.show(`🚀 : node.getChildren : child: ${child.formatText()}`)
-    })
     node.getProperties().forEach((property) => {
-      const literalValue = property.getKindName()
-      console.log('🚀 : node.getProperties : literalValue:', literalValue)
-      const parent = node.getParent()
-      if (isChinese(literalValue) && parent && !Node.isImportDeclaration(parent) && !Node.isExportDeclaration(parent)) {
-        identifiers.push(literalValue)
+      // 检查是否是属性赋值 (PropertyAssignment)
+      const initializer = property
+      if (Node.isStringLiteral(initializer)) {
+        // 如果属性值是字符串字面量且包含中文，则添加
+        const value = initializer.getLiteralText()
+        if (isChinese(value)) {
+          identifiers.push(value)
+        }
       }
-
-      const name = property.getText()
-      if (isChinese(name)) {
-        identifiers.push(name)
+      // 检查是否是简写属性 (ShorthandPropertyAssignment)
+      else if (Node.isShorthandPropertyAssignment(property)) {
+        // 简写属性的情况，如 { name } 相当于 { name: name }
+        // 这种情况下我们不需要特殊处理，因为它会在其他地方被递归处理
       }
     })
   }
@@ -73,16 +89,17 @@ function extractChineseIdentifiers(node: Node) {
 
 // Add a file to the project, analyze it, and return found literals.
 const astHandler = (path: string) => {
-  // sourceFile.forEach((item) => {
-  //   log.show(`${item.getFilePath()} getFilePath`, { type: 'error' })
-  // })
-
   const result: string[] = []
-  const sourceFiles = project.addSourceFilesAtPaths(`${path}/file/src/**/*.tsx`)
-  for (const sourceFile of sourceFiles) {
+  const sourceTSXFiles = project.addSourceFilesAtPaths(`${path}/**/*.tsx`)
+  for (const sourceFile of sourceTSXFiles) {
     result.push(...extractChineseIdentifiers(sourceFile))
   }
-  project.removeSourceFile(sourceFiles[0]!)
+  project.removeSourceFile(sourceTSXFiles[0]!)
+  const sourceTSFiles = project.addSourceFilesAtPaths(`${path}/**/*.ts`)
+  for (const sourceFile of sourceTSFiles) {
+    result.push(...extractChineseIdentifiers(sourceFile))
+  }
+  project.removeSourceFile(sourceTSFiles[0]!)
   return result
 }
 
@@ -91,7 +108,7 @@ export const astFilesCommand = (program: Command) => {
     .command('ast [...dirnames]')
     .description('ast file which you choose')
     .action(async (dirnames: string, _options) => {
-      const files = fileList()
+      const files = await getWorkspacePackages()
       if (files.length === 0) {
         return log.show('file: 当前文件夹为空', { type: 'success' })
       }
@@ -102,12 +119,9 @@ export const astFilesCommand = (program: Command) => {
         const dirList: string[] = parseNames(dirnames)
         filesList.push(...dirList)
       } else {
-        const choices: string[] = await createCheckbox({
-          message: 'Choose file you want to Delete',
-          options: files.map((file) => ({
-            value: file,
-            label: file,
-          })),
+        const choices = await createCheckbox({
+          message: 'Choose file you want to ast',
+          options: files.map((item) => ({ label: item.name, value: item.path })),
         })
         filesList.push(...choices)
 

@@ -12,5 +12,5 @@ type IsTuple<T> = true extends IsAny<T> | IsNever<T>
   ? true
   : false
 
-type AnyFunction = (...args: any[]) => any
+type AnyFunction<I = any, R = any> = (...args: I[]) => R
 type AnyObject<T = any> = Record<PropertyKey, T>
