@@ -25,6 +25,5 @@ Example:
 }
 
 export const ERROR_MESSAGE = {
-  notRootWorkspace:
-    "It's not workspace root directory, Please open this command in the workspace root directory"
+  notRootWorkspace: "It's not workspace root directory, Please open this command in the workspace root directory",
 }

@@ -3,7 +3,6 @@ import { colors, createConfirm, createSelect, createSpinner, log, x } from '@nem
 
 import { getCurrentBranch, getRemoteOptions } from '../utils'
 
-
 const handlePush = async (branch: string) => {
   const spinner = createSpinner(`Pushing branch ${branch} to remote...`)
   const process = x('git', ['push', 'origin', branch])

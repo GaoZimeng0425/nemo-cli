@@ -1,9 +1,14 @@
-import { colors, createSpinner, createX, dynamicX, log, type PromptOptions, type Spinner, x } from '@nemo-cli/shared'
+import { spawn } from 'node:child_process'
+import { unlinkSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { colors, createConfirm, createSpinner, log, x, xASync } from '@nemo-cli/shared'
 
 const remotePrefix = /^origin\//
 
+// creatordate committerdate authordate
 export const getRemoteBranches = async (): Promise<{ branches: string[] }> => {
-  const originBranches = await x('git', ['branch', '-r'])
+  const originBranches = await x('git', ['branch', '-r', '--sort=-committerdate'])
   const branches = originBranches.stdout
     .split('\n')
     .filter((line) => line.trim() && !line.includes('->'))
@@ -16,7 +21,7 @@ const currentBranchPrefix = /^\* /
 const formatBranch = (branch?: string) => branch?.trim().replace(currentBranchPrefix, '')
 
 export const getLocalBranches = async (): Promise<{ branches: string[]; currentBranch: string | undefined }> => {
-  const originBranches = await x('git', ['branch'])
+  const originBranches = await x('git', ['branch', '--sort=-committerdate'])
   const list = originBranches.stdout.split('\n')
   const currentBranch = list.find((line) => line.includes('*'))
 
@@ -31,10 +36,8 @@ export const getLocalBranches = async (): Promise<{ branches: string[]; currentB
 }
 
 export const getCurrentBranch = async () => {
-  const result = await dynamicX('git', ['branch', '--show-current'])
-  if (result.exitCode) {
-    log.error(`Failed to get current branch. Command exited with code ${result.exitCode}.`)
-    log.error('Error message:', result.stderr)
+  const [error, result] = await xASync('git', ['branch', '--show-current'])
+  if (error) {
     return ''
   }
   return result.stdout.trim()
@@ -68,29 +71,186 @@ export const getLocalOptions = async () => {
 }
 
 export const getGitDiffFiles = async (branch: string) => {
-  const result = await createX('git', ['diff', branch, '--name-only'])
-  if (!result) return []
+  const [error, result] = await xASync('git', ['diff', branch, '--name-only'])
+  if (error) return []
   return result.stdout.split('\n').filter((line) => line.trim())
 }
 
-export const handleGitPull = async (branch: string, stash = false) => {
+/**
+ * 处理合并提交信息
+ */
+const handleMergeCommit = async () => {
+  try {
+    // 检查是否有待提交的合并
+    const [error, result] = await xASync('git', ['status', '--porcelain'])
+    if (error) return
+    const statusOutput = result.stdout
+    const hasUncommittedChanges = statusOutput.trim().length > 0
+
+    if (!hasUncommittedChanges) {
+      return
+    }
+
+    log.show('\n📝 Merge commit detected. You can customize the commit message.', { type: 'info' })
+
+    const shouldCustomize = await createConfirm({
+      message: 'Do you want to customize the merge commit message?',
+    })
+
+    if (!shouldCustomize) {
+      // 使用默认的合并提交信息
+      await xASync('git', ['commit', '--no-edit'])
+      log.show('Using default merge commit message.', { type: 'info' })
+      return
+    }
+
+    // 获取默认的合并提交信息
+    const [processError, processResult] = await xASync('git', ['log', '--format=%B', '-n', '1', 'HEAD'])
+    if (processError) return
+    const defaultMessage = processResult.stdout
+
+    // 创建临时文件用于编辑
+    const tempFile = join(tmpdir(), `merge-commit-${Date.now()}.txt`)
+    writeFileSync(tempFile, defaultMessage)
+
+    // 打开编辑器让用户编辑
+    const editor = process.env.EDITOR || process.env.VISUAL || 'vim'
+
+    log.show(`Opening ${editor} to edit commit message...`, { type: 'info' })
+    log.show('Save and close the editor to continue, or close without saving to cancel.', { type: 'info' })
+
+    const editProcess = spawn(editor, [tempFile], {
+      stdio: 'inherit',
+      shell: true,
+    })
+
+    const editExitCode = await new Promise<number>((resolve) => {
+      editProcess.on('close', (code) => {
+        resolve(code || 0)
+      })
+    })
+
+    if (editExitCode !== 0) {
+      log.show('Editor was closed without saving. Using default commit message.', { type: 'warn' })
+      await xASync('git', ['commit', '--no-edit'])
+      unlinkSync(tempFile)
+      return
+    }
+
+    // 读取编辑后的提交信息
+    const { readFileSync } = await import('node:fs')
+    const editedMessage = readFileSync(tempFile, 'utf-8')
+    unlinkSync(tempFile)
+
+    if (!editedMessage.trim()) {
+      log.show('Commit message is empty. Using default commit message.', { type: 'warn' })
+      await xASync('git', ['commit', '--no-edit'])
+      return
+    }
+
+    // 使用编辑后的提交信息进行提交
+    const commitProcess = spawn('git', ['commit', '-F', '-'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: true,
+    })
+
+    commitProcess.stdin?.write(editedMessage)
+    commitProcess.stdin?.end()
+
+    const commitExitCode = await new Promise<number>((resolve) => {
+      commitProcess.on('close', (code) => {
+        resolve(code || 0)
+      })
+    })
+
+    if (commitExitCode === 0) {
+      log.show('Merge commit completed with custom message.', { type: 'success' })
+    } else {
+      throw new Error('Failed to create merge commit with custom message')
+    }
+  } catch (error) {
+    log.show('Error handling merge commit:', { type: 'error' })
+    log.error(error)
+
+    // 如果出错，尝试使用默认提交
+    try {
+      await xASync('git', ['commit', '--no-edit'])
+      log.show('Fallback: Using default merge commit message.', { type: 'info' })
+    } catch (fallbackError) {
+      log.show('Failed to create merge commit. Please handle manually.', { type: 'error' })
+      throw fallbackError
+    }
+  }
+}
+
+export const handleGitPull = async (branch: string, _stash = false) => {
   const spinner = createSpinner('Pulling from remote')
   try {
-    const { stdout, exitCode, stderr } = await createX('git', ['pull', 'origin', branch])
-
-    if (stderr) {
-      log.show(stderr, { type: 'warn' })
+    const process = x('git', ['pull', 'origin', branch], {
+      nodeOptions: {
+        stdio: 'inherit',
+      },
+    })
+    for await (const line of process) {
+      log.show(line)
     }
-
-    if (stdout) {
-      log.show(stdout)
-      spinner.message(`Command output: ${stdout}`)
+    const { exitCode, stderr, stdout } = await process
+    if (exitCode) {
+      log.show(`Failed to pull from remote. Command exited with code ${exitCode}.`, { type: 'error' })
+      spinner.stop('Pull failed')
+      throw new Error(stderr)
     }
+    if (stdout.includes('Merge branch') || stdout.includes('Merge made by')) {
+      // 检查是否有合并提交信息需要处理
+      await handleMergeCommit()
+    }
+    spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
+  } catch (error) {
+    spinner.stop('Pull failed')
+    log.error(error)
+    throw error
+  }
+}
+export const _handleGitPull = async (branch: string, _stash = false) => {
+  const spinner = createSpinner('Pulling from remote')
+  try {
+    // 使用 stdio: 'inherit' 来支持交互式操作
+    const process = spawn('git', ['pull', 'origin', branch], {
+      stdio: ['inherit', 'pipe', 'pipe'],
+      shell: true,
+    })
+
+    let stdout = ''
+    let stderr = ''
+
+    process.stdout?.on('data', (data) => {
+      const output = data.toString()
+      stdout += output
+      log.show(output)
+      spinner.message(output)
+    })
+
+    process.stderr?.on('data', (data) => {
+      const output = data.toString()
+      stderr += output
+      log.show(output, { type: 'warn' })
+    })
+
+    const exitCode = await new Promise<number>((resolve) => {
+      process.on('close', (code) => {
+        resolve(code || 0)
+      })
+    })
 
     if (exitCode) {
       log.show(`Failed to pull from remote. Command exited with code ${exitCode}.`, { type: 'error' })
       spinner.stop('Pull failed')
       throw new Error(stderr)
+    }
+
+    if (stdout.includes('Merge branch') || stdout.includes('Merge made by')) {
+      // 检查是否有合并提交信息需要处理
+      await handleMergeCommit()
     }
 
     spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
@@ -102,7 +262,7 @@ export const handleGitPull = async (branch: string, stash = false) => {
 }
 
 export const handleGitStash = async () => {
-  const process = x('git', ['stash'])
+  const process = x('git', ['stash', 'save', 'nemo-cli-stash'])
   for await (const line of process) {
     log.show(line)
   }
@@ -114,6 +274,7 @@ export const handleGitStash = async () => {
   }
   return { stdout, exitCode, stderr }
 }
+
 export const handleGitPop = async () => {
   const process = x('git', ['stash', 'pop'])
   for await (const line of process) {
@@ -138,8 +299,8 @@ export const isBranchMergedToMain = async (branches: string[]): Promise<BranchIn
 
   const list: BranchInfo[] = []
   try {
-    const fetchResult = await dynamicX('git', ['fetch', 'origin'])
-    if (fetchResult.exitCode) {
+    const [fetchError] = await xASync('git', ['fetch', 'origin'])
+    if (fetchError) {
       log.show('Failed to fetch latest changes from remote. Proceeding with local information.', { type: 'warn' })
     }
 
@@ -148,9 +309,9 @@ export const isBranchMergedToMain = async (branches: string[]): Promise<BranchIn
     await Promise.all(
       branches.map(async (branch) => {
         try {
-          await dynamicX('git', ['merge-base', '--is-ancestor', branch, 'origin/main'])
+          await xASync('git', ['merge-base', '--is-ancestor', branch, 'origin/main'])
           list.push({ branch, isMerged: true })
-        } catch (error) {
+        } catch {
           list.push({ branch, isMerged: false })
         }
       })
@@ -159,7 +320,7 @@ export const isBranchMergedToMain = async (branches: string[]): Promise<BranchIn
     spinner.stop('Fetching latest changes from remote Done')
 
     return list
-  } catch (error) {
+  } catch {
     return list
   }
 }

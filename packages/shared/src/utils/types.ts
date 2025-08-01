@@ -1,5 +1,4 @@
-// biome-ignore lint/suspicious/noPrototypeBuiltins: need to use hasOwnProperty
-export const hasOwn = (target: unknown, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(target, key)
+export const hasOwn = (target: Record<string, unknown>, key: PropertyKey): boolean => Object.hasOwn(target, key)
 export const has = <T extends object, K extends PropertyKey>(target: T, key: K): boolean => Reflect.has(target, key)
 
 const isType =

@@ -1,7 +1,4 @@
-type IndexOf<T extends unknown[], U, Record extends 0[] = []> = T extends [
-  infer First,
-  ...infer Rest
-]
+type IndexOf<T extends unknown[], U, Record extends 0[] = []> = T extends [infer First, ...infer Rest]
   ? Equal<First, U> extends true
     ? Record['length']
     : IndexOf<Rest, U, [...Record, 0]>

@@ -70,7 +70,7 @@ export function checkoutCommand(command: Command) {
 
       if (isLocal) {
         const { options } = await getLocalOptions()
-        const selectedBranch = await createSearch({
+        const selectedBranch = await createSelect({
           message: 'Select the branch to checkout',
           options,
         })

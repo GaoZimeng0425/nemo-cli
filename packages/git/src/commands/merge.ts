@@ -5,9 +5,9 @@ import {
   createSearch,
   createSelect,
   createSpinner,
-  dynamicX,
   isEmpty,
   log,
+  xASync,
 } from '@nemo-cli/shared'
 
 import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
@@ -19,7 +19,11 @@ const handleMerge = async (branch: string) => {
   await handleGitStash()
 
   // 使用 stdio: 'inherit' 来支持交互式合并确认
-  const process = dynamicX('git', args, { stdio: 'inherit' })
+  const process = xASync('git', args, {
+    nodeOptions: {
+      stdio: 'inherit',
+    },
+  })
 
   const { exitCode, stderr } = await process
   if (exitCode) {

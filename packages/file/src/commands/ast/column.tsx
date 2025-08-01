@@ -1,3 +1,5 @@
+// biome-ignore: test
+// @ts-nocheck
 import type { ColumnProps } from '@arco-design/web-react/es/Table/interface'
 
 import { DotBadge } from '@prime-next/design/components/common/status-badge'
@@ -22,7 +24,7 @@ export const baseColumn: ColumnProps<ProjectDataChangeItemResponseType>[] = [
     dataIndex: 'changeType',
     width: 120,
     render: (changeType: number) => (
-      <DotBadge size="xs" className="whitespace-nowrap" variant={changeType === 1 ? 'success' : 'danger'}>
+      <DotBadge className="whitespace-nowrap" size="xs" variant={changeType === 1 ? 'success' : 'danger'}>
         {CHANGE_TYPE_MAP[changeType] ?? BASE_EMPTY_TEXT}
       </DotBadge>
     ),
@@ -34,7 +36,7 @@ export const baseColumn: ColumnProps<ProjectDataChangeItemResponseType>[] = [
     render: (changeCategory: number) => {
       if (isEmpty(changeCategory)) return BASE_EMPTY_TEXT
       return (
-        <BaseBadge variant={changeCategory} size="xs">
+        <BaseBadge size="xs" variant={changeCategory}>
           {CHANGE_CATEGORY_MAP[changeCategory]}
         </BaseBadge>
       )
@@ -56,3 +58,21 @@ export const baseColumn: ColumnProps<ProjectDataChangeItemResponseType>[] = [
     dataIndex: 'borrowerOrgName',
   },
 ]
+
+const name = '高子 var'
+name({
+  a: 1,
+  name: '高子蒙 function name',
+})
+
+console.log({
+  a: 1,
+  name: '高子蒙 console.log object',
+})
+
+console.log('高子蒙 console.log 2')
+
+a.b('高子蒙 a.b')
+a.b({
+  name: '高子蒙 a.b.name',
+})

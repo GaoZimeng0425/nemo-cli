@@ -3,19 +3,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@nemo-cli/shared/*": [
-        "../packages/shared/src/*"
-      ]
+      "@/*": ["./*"],
+      "@nemo-cli/shared/*": ["../packages/shared/src/*"]
     },
     "rootDir": "./src",
     "outDir": "./dist",
     "tsBuildInfoFile": "dist/.tsBuildInfoFile.json"
   },
-  "include": [
-    "src",
-    "../global.d.ts"
-  ]
+  "include": ["src", "../global.d.ts"]
 }

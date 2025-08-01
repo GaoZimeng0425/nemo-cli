@@ -3,61 +3,41 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "check"
-        ]
+        "cacheableOperations": ["build", "test", "check"]
       }
     }
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "cache": true
     },
     "test": {
-      "dependsOn": [
-        "^test"
-      ],
+      "dependsOn": ["^test"],
       "cache": true
     },
     "check": {
-      "dependsOn": [
-        "^check"
-      ],
+      "dependsOn": ["^check"],
       "cache": true
     },
     "dev": {
-      "dependsOn": [
-        "^dev"
-      ],
+      "dependsOn": ["^dev"],
       "cache": true
     },
     "build-dts": {
-      "dependsOn": [
-        "^build-dts"
-      ],
+      "dependsOn": ["^build-dts"],
       "cache": true
     },
     "coverage": {
-      "dependsOn": [
-        "^coverage"
-      ],
+      "dependsOn": ["^coverage"],
       "cache": true
     },
     "prepublish": {
-      "dependsOn": [
-        "^prepublish"
-      ],
+      "dependsOn": ["^prepublish"],
       "cache": true
     },
     "prepack": {
-      "dependsOn": [
-        "^prepack"
-      ],
+      "dependsOn": ["^prepack"],
       "cache": true
     }
   },

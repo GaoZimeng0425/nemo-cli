@@ -15,7 +15,6 @@ export const init = () => {
     .description(`${pkg.name} Make file operations easier`)
     .addHelpText('after', HELP_MESSAGE.file)
 
-
   astFilesCommand(program)
   deleteFilesCommand(program)
   cleanCommand(program)

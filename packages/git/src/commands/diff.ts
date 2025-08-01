@@ -1,4 +1,4 @@
-import { type Command, createOptions, createSelect, createSpinner, log, type Result, x } from '@nemo-cli/shared'
+import { type Command, createOptions, createSelect, log, type Result, x } from '@nemo-cli/shared'
 
 import { getCurrentBranch, getLocalBranches, getRemoteBranches } from '../utils'
 

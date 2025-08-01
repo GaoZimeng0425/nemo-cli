@@ -1,3 +1,5 @@
+// biome-ignore: test
+// @ts-nocheck
 'use client'
 import type { FC } from 'react'
 import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs'
@@ -55,8 +57,8 @@ const FilterForm: FC<{ onSubmit: (values: ProjectDataChangeSearchRequestType) =>
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
         className={cn('grid w-full grid-cols-4 items-center justify-start gap-4')}
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
         <FormField
           control={form.control}
@@ -77,7 +79,7 @@ const FilterForm: FC<{ onSubmit: (values: ProjectDataChangeSearchRequestType) =>
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <SourceSelect isUpdate {...field} placeholder={t('数据来源')} />
+                <SourceSelect isUpdate {...field} placeholder={t('数据来源 t()')} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,9 +141,9 @@ const FilterForm: FC<{ onSubmit: (values: ProjectDataChangeSearchRequestType) =>
 
         <FormActions
           className={cn(isExpanded && 'col-span-2')}
-          onReset={handleReset}
-          onExpand={() => setIsExpanded(!isExpanded)}
           isExpanded={isExpanded}
+          onExpand={() => setIsExpanded(!isExpanded)}
+          onReset={handleReset}
         />
       </form>
     </Form>

@@ -70,7 +70,7 @@ export const isEmptyDir = (src: string) => {
   return list.length === 0
 }
 
-export const dirList = (src = './') => {
+export const dirList = (src = './'): string[] => {
   const files = fileList(src)
   return files.filter((file) => fse.statSync(`${src}/${file}`).isDirectory())
 }
