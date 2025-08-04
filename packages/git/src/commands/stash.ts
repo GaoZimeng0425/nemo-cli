@@ -1,5 +1,5 @@
 import type { Command } from '@nemo-cli/shared'
-import { createOptions, createSelect, log, xASync } from '@nemo-cli/shared'
+import { createOptions, createSelect, exit, log, xASync } from '@nemo-cli/shared'
 
 import { handleGitStash, handleGitStashCheck } from '../utils'
 
@@ -43,7 +43,13 @@ const handleDrop = handleCheck(async (stashes: string[]) => {
     options: createOptions([ALL_STASH, ...stashes]),
     initialValue: ALL_STASH,
   })
-  const params = selectedStash === ALL_STASH ? ['stash', 'clear'] : ['stash', StashCommand.DROP, selectedStash]
+  const name = selectedStash.split(':')?.[0]
+  if (!name) {
+    log.show('Invalid stash name.', { type: 'error' })
+    exit(0)
+  }
+  const params = selectedStash === ALL_STASH ? ['stash', 'clear'] : ['stash', StashCommand.DROP, name]
+
   const [error] = await xASync('git', params)
   if (error) {
     log.show('Failed to clear stash.', { type: 'error' })
