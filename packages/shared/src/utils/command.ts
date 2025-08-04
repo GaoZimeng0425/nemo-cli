@@ -8,10 +8,7 @@ import { type Options, type Output, type Result, x as tinyexec } from 'tinyexec'
 import { log } from './log'
 // import { isEmpty, isString } from './types'
 
-export const exit = (code: number) => {
-  log.show(`Command exited with code ${code}`, { type: 'error' })
-  process.exit(code)
-}
+export const exit = (code: number) => process.exit(code)
 
 export const createHelpExample = (...commands: string[]) => {
   const commandsString = commands.map((command) => `  $ ${command}`).join('\n')

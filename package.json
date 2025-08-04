@@ -15,7 +15,8 @@
     "build-dts": "nx run-many --target=build-dts --batch=true --all --parallel",
     "dev_": "nx run-many --target=dev --batch=true --all --parallel",
     "prepare": "husky",
-    "commitlint": "commitlint --edit"
+    "commitlint": "commitlint --edit",
+    "lint": "lint-staged"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",
