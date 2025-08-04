@@ -184,7 +184,7 @@ const handleMergeCommit = async () => {
 }
 
 export const handleGitPull = async (branch: string, _stash = false) => {
-  const spinner = createSpinner('Pulling from remote')
+  log.show('Pulling from remote...', { type: 'step' })
   try {
     const [error, result] = await xASync('git', ['pull', 'origin', branch], {
       nodeOptions: {
@@ -192,15 +192,14 @@ export const handleGitPull = async (branch: string, _stash = false) => {
       },
     })
     if (error) {
-      spinner.stop(`Failed to pull from remote. Command exited with code ${error.message}.`)
+      log.show(`Failed to pull from remote. Command exited with code ${error.message}.`, { type: 'error' })
       return
     }
     if (result.stdout.includes('Merge branch') || result.stdout.includes('Merge made by')) {
       await handleMergeCommit()
     }
-    spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
+    log.show(`Successfully pulled from remote: ${colors.bgGreen(branch)}`, { type: 'success' })
   } catch (error) {
-    spinner.stop('Pull failed')
     log.error(error)
     return
   }
