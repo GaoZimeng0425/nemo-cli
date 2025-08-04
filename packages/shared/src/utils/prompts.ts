@@ -97,7 +97,7 @@ export const createSelect = async <Value>(opts: SelectOptions<Value>) => {
     cancel('User cancelled')
     exit(0)
   }
-  return result
+  return result as Value
 }
 
 export const createInput = async (opts: TextOptions) => {

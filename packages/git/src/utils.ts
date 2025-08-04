@@ -186,29 +186,23 @@ const handleMergeCommit = async () => {
 export const handleGitPull = async (branch: string, _stash = false) => {
   const spinner = createSpinner('Pulling from remote')
   try {
-    const process = x('git', ['pull', 'origin', branch], {
+    const [error, result] = await xASync('git', ['pull', 'origin', branch], {
       nodeOptions: {
         stdio: 'inherit',
       },
     })
-    for await (const line of process) {
-      log.show(line)
+    if (error) {
+      spinner.stop(`Failed to pull from remote. Command exited with code ${error.message}.`)
+      return
     }
-    const { exitCode, stderr, stdout } = await process
-    if (exitCode) {
-      log.show(`Failed to pull from remote. Command exited with code ${exitCode}.`, { type: 'error' })
-      spinner.stop('Pull failed')
-      throw new Error(stderr)
-    }
-    if (stdout.includes('Merge branch') || stdout.includes('Merge made by')) {
-      // 检查是否有合并提交信息需要处理
+    if (result.stdout.includes('Merge branch') || result.stdout.includes('Merge made by')) {
       await handleMergeCommit()
     }
     spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
   } catch (error) {
     spinner.stop('Pull failed')
     log.error(error)
-    throw error
+    return
   }
 }
 export const _handleGitPull = async (branch: string, _stash = false) => {
@@ -288,14 +282,9 @@ export const handleGitPop = async () => {
     log.show('No stashes found.', { type: 'warn' })
     return
   }
-  const process = x('git', ['stash', 'pop'])
-  for await (const line of process) {
-    log.show(line)
-  }
-  const { exitCode, stderr } = await process
-  if (exitCode) {
-    log.show(stderr, { type: 'error' })
-  } else {
+  const [error, result] = await xASync('git', ['stash', 'pop'])
+  if (!error) {
+    log.show(result.stdout)
     log.show('Successfully popped changes.')
   }
 }
