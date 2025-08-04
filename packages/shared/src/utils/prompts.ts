@@ -12,13 +12,16 @@ import {
   type SpinnerOptions,
   select,
   spinner,
+  type TaskLogOptions,
   type TextOptions,
+  taskLog,
   tasks,
   text,
 } from '@clack/prompts'
 import { search } from '@inquirer/prompts'
 import Fuse from 'fuse.js'
 
+import { exit } from './command'
 import { log } from './log'
 import { isString } from './types'
 
@@ -36,7 +39,7 @@ const createPrompt = <T extends AnyFunction>(fn: T) => {
 
     if (isCancel(result)) {
       cancel('User cancelled')
-      process.exit(0)
+      exit(0)
     }
     return result
   }
@@ -78,7 +81,7 @@ export const createCheckbox = async <Value>(opts: MultiSelectOptions<Value>) => 
 
   if (isCancel(result)) {
     cancel('User cancelled')
-    process.exit(0)
+    exit(0)
   }
   return result
 }
@@ -92,7 +95,7 @@ export const createSelect = async <Value>(opts: SelectOptions<Value>) => {
 
   if (isCancel(result)) {
     cancel('User cancelled')
-    process.exit(0)
+    exit(0)
   }
   return result
 }
@@ -102,7 +105,7 @@ export const createInput = async (opts: TextOptions) => {
 
   if (isCancel(result)) {
     cancel('User cancelled')
-    process.exit(0)
+    exit(0)
   }
   return result
 }
@@ -117,22 +120,12 @@ export const createGroupMultiSelect = async <Value>(opts: GroupMultiSelectOption
   return result
 }
 
-export const createMultiSelect = async <Value>(opts: MultiSelectOptions<Value>) => {
-  const result = await multiselect(opts)
-
-  if (isCancel(result)) {
-    cancel('User cancelled')
-    process.exit(0)
-  }
-  return result
-}
-
 export const createGroup = async <Value>(opts: PromptGroup<Value>) => {
   const result = await group(opts)
 
   if (isCancel(result)) {
     cancel('User cancelled')
-    process.exit(0)
+    exit(0)
   }
   return result
 }
@@ -144,4 +137,6 @@ export const createSpinner = (message: string, options?: SpinnerOptions) => {
   return s
 }
 
-export { intro, outro, stream } from '@clack/prompts'
+export const createTaskLog = (title: string, options?: TaskLogOptions) => taskLog({ title, ...options })
+
+export { intro, outro, progress, stream } from '@clack/prompts'

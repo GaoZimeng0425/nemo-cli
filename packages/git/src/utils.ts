@@ -261,21 +261,33 @@ export const _handleGitPull = async (branch: string, _stash = false) => {
   }
 }
 
-export const handleGitStash = async () => {
-  const process = x('git', ['stash', 'save', 'nemo-cli-stash'])
-  for await (const line of process) {
-    log.show(line)
+const createStashName = () => `NEMO-CLI-STASH:${Date.now()}`
+export const handleGitStash = async (name: string = createStashName()) => {
+  const [error, result] = await xASync('git', ['stash', 'save', name])
+  if (error) {
+    log.show(`Failed to stash changes. ${name}`, { type: 'error' })
+    return false
   }
-  const { exitCode, stderr, stdout } = await process
-  if (exitCode) {
-    log.show(stderr, { type: 'error' })
-  } else {
-    log.show('Successfully stashed changes.')
+  if (result?.stdout.includes(name)) {
+    log.show(`Successfully stashed changes. ${name}`, { type: 'success' })
+    return true
   }
-  return { stdout, exitCode, stderr }
+  log.show('No file changes.')
+  return false
+}
+
+export const handleGitStashCheck = async (): Promise<string[]> => {
+  const [error, result] = await xASync('git', ['stash', 'list'])
+  if (error) return []
+  return result.stdout.split('\n').filter((line) => line.trim())
 }
 
 export const handleGitPop = async () => {
+  const stashes = await handleGitStashCheck()
+  if (stashes.length === 0) {
+    log.show('No stashes found.', { type: 'warn' })
+    return
+  }
   const process = x('git', ['stash', 'pop'])
   for await (const line of process) {
     log.show(line)

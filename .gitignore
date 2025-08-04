@@ -6,7 +6,6 @@ test/e2e/reports
 test/e2e/screenshots
 coverage
 **/dist
-.vscode
 
 课件
 *.tsbuildinfo

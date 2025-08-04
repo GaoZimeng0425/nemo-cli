@@ -1,6 +1,6 @@
 import { type Command, createSelect, log } from '@nemo-cli/shared'
 
-import { getRemoteOptions, handleGitPull } from '../utils'
+import { getRemoteOptions, handleGitPop, handleGitPull, handleGitStash } from '../utils'
 
 export function pullCommand(command: Command) {
   command
@@ -24,6 +24,10 @@ export function pullCommand(command: Command) {
         return
       }
 
+      const hasStash = await handleGitStash()
+
       await handleGitPull(selectedBranch)
+
+      hasStash && handleGitPop()
     })
 }

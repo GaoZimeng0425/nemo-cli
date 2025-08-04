@@ -7,6 +7,7 @@ import { listCommand } from './commands/list'
 import { mergeCommand } from './commands/merge'
 import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
+import { stashCommand } from './commands/stash'
 import { HELP_MESSAGE } from './constants'
 
 export const pkg = readPackage(import.meta, '..')
@@ -24,6 +25,7 @@ export const init = () => {
   deleteCommand(command)
   diffCommand(command)
   mergeCommand(command)
+  stashCommand(command)
 
   return command
 }
