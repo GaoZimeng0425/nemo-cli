@@ -1,34 +1,35 @@
-import type { Command } from '@nemo-cli/shared'
-import { createCheckbox, createInput, getWorkspacePackages, log, ora, x } from '@nemo-cli/shared'
+import type { Command, Spinner } from '@nemo-cli/shared'
+import {
+  colors,
+  createCheckbox,
+  createInput,
+  createSpinner,
+  exit,
+  getWorkspacePackages,
+  isError,
+  log,
+  xASync,
+} from '@nemo-cli/shared'
 
-const addHandle = async (packageName: string[], dependencies: string[]) => {
+const addHandle = async (packageName: string[], dependencies: string[], { loading }: { loading: Spinner }) => {
   if (!packageName || dependencies.length === 0) {
-    log.show('Package name and at least one dependency are required.', { type: 'error' })
-    return
+    loading.stop('Package name and at least one dependency are required.')
+    exit(1)
   }
 
   const depsString = dependencies.join(' ')
-  log.show(`Attempting to add dependencies [${depsString}] to package [${packageName.join(',')}]...`)
+  log.show(
+    `Attempting to add dependencies ${colors.bgGreen(depsString)} to package ${colors.bgGreen(packageName.join(','))}...`
+  )
 
-  try {
-    const filter = packageName.map((name) => `--filter=${name}`)
-    const commandParts = ['add', ...filter, ...dependencies]
-    log.show(`Executing command: pnpm add ${filter.join(' ')} ${depsString}`)
-
-    const process = await x('pnpm', commandParts)
-
-    if (process.exitCode) {
-      log.show(`Failed to add dependencies. Command exited with code ${process.exitCode}.`, { type: 'error' })
-      log.show(process.stdout, { type: 'error' })
-    } else {
-      log.show(`Successfully added dependencies [${depsString}] to package [${packageName}].`)
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      log.show(`An error occurred while adding dependencies: ${error.message}`, { type: 'error' })
-    } else {
-      log.show(`An error occurred while adding dependencies: ${error}`, { type: 'error' })
-    }
+  const filter = packageName.map((name) => `--filter=${name}`)
+  const commandParts = ['add', ...filter, ...dependencies]
+  loading.message(`Executing command: ${colors.bgGreen('pnpm ', commandParts.join(' '))}`)
+  const [error, result] = await xASync('pnpm', commandParts)
+  if (error) {
+    loading.stop(`An error occurred while adding dependencies: ${isError(error) ? error.message : error}`)
+  } else {
+    log.show(result.stdout, { type: 'success' })
   }
 }
 
@@ -68,8 +69,8 @@ export const addCommand = (program: Command) => {
       }
 
       let finalDependencies = dependencies
-      // Corrected condition for prompting
       if (finalDependencies.length === 0) {
+        // Corrected condition for prompting
         const depsInput = await createInput({
           message: 'Enter dependency names (space-separated):',
         })
@@ -83,18 +84,9 @@ export const addCommand = (program: Command) => {
           .filter((d: string) => d)
       }
 
-      // Ensure selectedPackage is not undefined before calling addHandle
-      if (selectedPackage && finalDependencies.length > 0) {
-        const spinner = ora('Adding dependencies...').start()
-        await addHandle(selectedPackage, finalDependencies)
-        spinner.succeed('Dependencies added successfully')
-      } else if (selectedPackage) {
-        // finalDependencies is empty
-        log.show('No dependencies provided to add.', { type: 'warn' })
-      } else {
-        // This case should ideally not be reached if prompts work correctly
-        log.show('Package selection failed unexpectedly.', { type: 'error' })
-      }
+      const spinner = createSpinner('Adding dependencies...')
+      await addHandle(selectedPackage, finalDependencies, { loading: spinner })
+      spinner.stop('Dependencies added successfully')
     })
 
   return program

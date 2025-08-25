@@ -38,9 +38,10 @@ const handleList = handleCheck(async (stashes: string[]) => {
 
 const ALL_STASH = 'all'
 const handleDrop = handleCheck(async (stashes: string[]) => {
+  const options = stashes.length > 1 ? [ALL_STASH, ...stashes] : stashes
   const selectedStash = await createSelect({
     message: 'Select the stash to clear',
-    options: createOptions([ALL_STASH, ...stashes]),
+    options: createOptions(options),
     initialValue: ALL_STASH,
   })
   const name = selectedStash.split(':')?.[0]

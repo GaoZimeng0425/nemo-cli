@@ -83,7 +83,7 @@ export const createCheckbox = async <Value>(opts: MultiSelectOptions<Value>) => 
     cancel('User cancelled')
     exit(0)
   }
-  return result
+  return result as Value[]
 }
 
 export const createConfirm = createPrompt(confirm)
@@ -107,7 +107,7 @@ export const createInput = async (opts: TextOptions) => {
     cancel('User cancelled')
     exit(0)
   }
-  return result
+  return result as string
 }
 
 export const createGroupMultiSelect = async <Value>(opts: GroupMultiSelectOptions<Value>) => {

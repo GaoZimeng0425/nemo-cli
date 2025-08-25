@@ -275,13 +275,14 @@ export const handleGitStashCheck = async (): Promise<string[]> => {
   return result.stdout.split('\n').filter((line) => line.trim())
 }
 
-export const handleGitPop = async () => {
+export const handleGitPop = async (branch: string) => {
   const stashes = await handleGitStashCheck()
-  if (stashes.length === 0) {
-    log.show('No stashes found.', { type: 'warn' })
+  const stashName = stashes.find((stash) => stash.includes(branch))
+  if (!stashName) {
+    log.show(`No stash found for this branch: ${colors.bgRed(branch)}.`, { type: 'warn' })
     return
   }
-  const [error, result] = await xASync('git', ['stash', 'pop'])
+  const [error, result] = await xASync('git', ['stash', 'pop', stashName])
   if (!error) {
     log.show(result.stdout)
     log.show('Successfully popped changes.')

@@ -88,3 +88,26 @@ export function glob(pattern: string, options?: Partial<GlobOptions>): Promise<s
 export function glob(pattern: string, options: Partial<GlobOptions> = {}) {
   return originalGlob(pattern, { ignore: 'node_modules/**', ...options })
 }
+
+/**
+ * 读取当前执行文件夹内的 .gitignore 文件内容
+ * @param cwd 当前工作目录，默认为 process.cwd()
+ * @returns .gitignore 文件内容，如果文件不存在则返回 null
+ */
+export const readGitignore = (cwd: string = process.cwd()): string[] => {
+  const gitignorePath = resolve(cwd, '.gitignore')
+
+  if (!fse.existsSync(gitignorePath)) {
+    log.verbose('gitignore', `未找到 .gitignore 文件: ${gitignorePath}`)
+    return []
+  }
+
+  try {
+    const content = fse.readFileSync(gitignorePath, 'utf-8')
+    log.verbose('gitignore', `成功读取 .gitignore 文件: ${gitignorePath}`)
+    return content.split('\n')
+  } catch (err) {
+    log.error('gitignore', `读取 .gitignore 文件失败: ${(err as Error).message}`)
+    return []
+  }
+}

@@ -1,4 +1,4 @@
-import { type Command, createCheckbox, deleteFiles, fileList, log, parseNames } from '@nemo-cli/shared'
+import { type Command, createCheckbox, createOptions, deleteFiles, fileList, log, parseNames } from '@nemo-cli/shared'
 
 export const cleanCommand = (program: Command) => {
   program
@@ -19,10 +19,7 @@ export const cleanCommand = (program: Command) => {
       } else {
         const choices: string[] = await createCheckbox({
           message: 'Choose file you want to Clean',
-          options: files.map((file) => ({
-            value: file,
-            label: file,
-          })),
+          options: createOptions(files),
         })
         delFilesList.push(...choices)
       }

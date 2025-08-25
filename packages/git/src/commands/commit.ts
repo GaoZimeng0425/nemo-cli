@@ -67,30 +67,19 @@ export const commitCommand = (command: Command) => {
         }))
       }
 
-      let selectedFiles: string[] = []
+      const selectedFiles = await createGroupMultiSelect({
+        message: 'Select files to stage for commit:',
+        options: fileGroups,
+        initialValues: gitStatus.staged,
+        required: true,
+      })
 
-      // 如果有工作区文件，让用户选择要添加到暂存区的文件
-      if (gitStatus.unstaged.length > 0) {
-        selectedFiles = await createGroupMultiSelect({
-          message: 'Select files to stage for commit:',
-          options: fileGroups,
-          initialValues: gitStatus.staged,
-          required: true,
-        })
-
+      if (selectedFiles.length > 0) {
         // 2. 将选择的工作区文件添加到暂存区
-        if (selectedFiles.length > 0) {
-          const addSpinner = createSpinner('Adding files to staging area...')
-          await addFiles(selectedFiles)
-          addSpinner.stop()
-          log.show(`Added ${selectedFiles.length} file(s) to staging area`, { type: 'success' })
-        }
-      } else {
-        // 如果没有工作区文件，仅展示暂存区文件
-        log.show('\n📦 Files ready for commit:', { type: 'info' })
-        gitStatus.staged.forEach((file) => {
-          log.show(`  ✅ ${file}`, { type: 'step' })
-        })
+        const addSpinner = createSpinner('Adding files to staging area...')
+        await addFiles(selectedFiles)
+        addSpinner.stop()
+        log.show(`Added ${selectedFiles.length} file(s) to staging area`, { type: 'success' })
       }
 
       //3. 获取当前cwd文件夹下 commitlint 文件中的 type-enum 进行选择

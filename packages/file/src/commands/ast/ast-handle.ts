@@ -129,7 +129,6 @@ type IdentifiersType = {
   identifiers: string[]
 }
 
-const defaultExcludeDirs = ['node_modules', 'dist', 'build', '.git']
 // 高级排除目录处理函数
 type ASTHandlerOptions = {
   excludeDirs?: string[]
@@ -137,6 +136,7 @@ type ASTHandlerOptions = {
   includePatterns?: string[]
   extensions?: string[]
 }
+const defaultExcludeDirs = ['node_modules', 'dist', 'build', '.git', '.next']
 export const astHandler = async (path: string, options: ASTHandlerOptions = {}) => {
   const {
     excludeDirs: userExcludeDirs = [],
@@ -146,6 +146,7 @@ export const astHandler = async (path: string, options: ASTHandlerOptions = {}) 
   } = options
 
   const current: IdentifiersType[] = []
+  // const defaultExcludeDirs = readGitignore()
 
   const excludeDirs = [...defaultExcludeDirs, ...userExcludeDirs]
 

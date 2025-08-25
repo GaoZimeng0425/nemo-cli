@@ -23,15 +23,15 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "biome.enabled": true,
-  "cSpell.words": ["cfonts", "rolldown", "tinyexec", "tsdown"],
+  "cSpell.words": ["cfonts", "rolldown", "tinyexec", "tsdown", "unconfig"],
   "css.customData": [".vscode/tailwind.json"],
   "css.format.enable": false,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
     "quickfix.biome.correctness.noUnusedImports": "never",
     "quickfix.biome.correctness.noUnusedVariables": "never",
     "source.action.useSortedAttributes.biome": "explicit",
     "source.action.useSortedKeys.biome": "explicit",
+    "source.action.useSortedProperties.biome": "explicit",
     "source.fixAll.biome": "explicit",
     "source.fixAll.eslint": "never",
     "source.fixAll.ts": "never",

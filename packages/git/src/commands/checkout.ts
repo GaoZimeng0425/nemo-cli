@@ -20,7 +20,7 @@ const handleCheckout = async (
     args.push(`origin/${branch}`)
   }
 
-  const hasStash = await handleGitStash()
+  const hasStash = await handleGitStash(branch)
 
   const process = x('git', args)
 
@@ -36,7 +36,7 @@ const handleCheckout = async (
     spinner.stop(`Successfully checked out branch ${branch}.`)
   }
 
-  hasStash && handleGitPop()
+  hasStash && handleGitPop(branch)
 }
 
 export function checkoutCommand(command: Command) {
@@ -44,14 +44,13 @@ export function checkoutCommand(command: Command) {
     .command('checkout')
     .alias('co')
     .argument('[branch]', 'The branch to checkout')
-    .option('-l, --local', 'Checkout a local branch')
+    .option('-l, --local', 'Checkout a local branch', true)
     .option('-r, --remote', 'Checkout a remote branch')
     .option('-b, --branch <branch>', 'Create and checkout a new branch')
     .description('Checkout a branch')
     .action(async (_inputBranch, params: { local?: boolean; remote?: boolean; branch?: string; _: string[] }) => {
-      let isLocal = params.local
+      let isLocal = params.local && !params.remote
       const branch = params.branch
-
       if (branch) {
         handleCheckout(branch, { isNew: true })
         return
@@ -71,14 +70,14 @@ export function checkoutCommand(command: Command) {
       if (isLocal) {
         const { options } = await getLocalOptions()
         const selectedBranch = await createSelect({
-          message: 'Select the branch to checkout',
+          message: `Select the ${colors.bgGreen(' local ')} branch to checkout`,
           options,
         })
         handleCheckout(selectedBranch)
       } else {
         const { options } = await getRemoteOptions()
         const selectedBranch = await createSearch({
-          message: 'Select the branch to checkout',
+          message: `Select the ${colors.bgYellow(' remote ')} branch to checkout`,
           options,
         })
 

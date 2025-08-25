@@ -1,22 +1,25 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createConfirm, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
+import { BigText, colors, createConfirm, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
 
 import { getCurrentBranch, getRemoteOptions } from '../utils'
 
 const handlePush = async (branch: string) => {
   const spinner = createSpinner(`Pushing branch ${branch} to remote...`)
-  const process = x('git', ['push', 'origin', branch])
+  try {
+    const process = x('git', ['push', 'origin', branch])
+    for await (const line of process) {
+      spinner.message(line)
+    }
 
-  for await (const line of process) {
-    spinner.message(line)
-  }
-
-  const code = process.exitCode
-  if (code) {
-    spinner.stop(`Failed to push branch ${branch}. Command exited with code ${process.exitCode}.`)
-    log.error(process)
-  } else {
+    const code = process.exitCode
+    if (code) {
+      throw new Error(`Failed code ${code}`)
+    }
     spinner.stop(colors.green(`Successfully pushed branch ${colors.bgGreen(branch)} to remote.`))
+  } catch (error) {
+    spinner.stop()
+    BigText({ text: `Failed to push branch ${branch}.` })
+    log.error(error)
   }
 }
 

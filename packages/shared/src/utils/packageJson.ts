@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises'
 import path from 'node:path'
+import fse from 'fs-extra/esm'
 
-import { log } from './log' // Assuming log utility exists
+import { log } from './log'
 
 interface DependencyInfo {
   name: string
@@ -20,8 +20,7 @@ export async function getPackageDependencies(packageDir: string): Promise<Depend
 
   try {
     log.info(`Reading package.json from: ${packageJsonPath}`)
-    const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8')
-    const packageJson = JSON.parse(packageJsonContent) as PackageJson
+    const packageJson = (await fse.readJSON(packageJsonPath)) as PackageJson
 
     if (packageJson.dependencies) {
       for (const [name, version] of Object.entries(packageJson.dependencies)) {

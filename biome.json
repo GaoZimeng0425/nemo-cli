@@ -22,7 +22,8 @@
           }
         },
         "useSortedAttributes": "on",
-        "useSortedKeys": "off"
+        "useSortedKeys": "off",
+        "useSortedProperties": "on"
       }
     }
   },

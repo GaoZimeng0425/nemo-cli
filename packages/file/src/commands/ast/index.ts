@@ -42,12 +42,12 @@ export const astFilesCommand = (program: Command) => {
             ?.split(',')
             .map((dir) => dir.trim())
             .filter((dir) => dir.length > 0)
-          const spinner = createSpinner('Analyzing...')
 
-          await sleep(400)
+          const spinner = createSpinner(`Analyzing ${filePath}...`)
+          await sleep(300)
           const literals = await astHandler(filePath, { excludeDirs })
-          spinner.stop('Analyzing done')
-          await sleep(400)
+          spinner.stop(`Analyzing ${filePath} done`)
+          await sleep(300)
 
           if (literals.length === 0) {
             spinner.stop('No Chinese literals found')
