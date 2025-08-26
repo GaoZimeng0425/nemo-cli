@@ -1,5 +1,13 @@
 import type { Command, PackageInfo } from '@nemo-cli/shared'
-import { createCheckbox, createSpinner, getDiffFiles, getWorkspacePackages, log, sleep } from '@nemo-cli/shared'
+import {
+  createCheckbox,
+  createSpinner,
+  getDiffFiles,
+  getWorkspacePackages,
+  isError,
+  log,
+  sleep,
+} from '@nemo-cli/shared'
 
 import { astHandler } from './ast-handle'
 
@@ -61,7 +69,8 @@ export const astFilesCommand = (program: Command) => {
               log.show(`${item.identifiers.join('\n')}`, { type: 'success' })
             }
           }
-        } catch (e: any) {
+        } catch (e: unknown) {
+          if (!isError(e)) return
           log.show(`Failed to process ${file}: ${e.message}`, { type: 'error' })
         }
       }
