@@ -5,6 +5,8 @@ import { type GlobOptions, glob as originalGlob, type Path } from 'glob'
 import { log } from './log'
 import { dirname } from './pathname'
 
+// const url = new URL(import.meta.resolve('./data.json'))
+// const data = JSON.parse(fse.readFileSync(url, 'utf-8'))
 type Package = {
   name: string
   version: `${number}.${number}.${number}`

@@ -36,7 +36,15 @@
     "source.fixAll.eslint": "never",
     "source.fixAll.ts": "never",
     "source.organizeImports": "never",
-    "source.organizeImports.biome": "explicit"
+    "source.organizeImports.biome": "explicit",
+    "source.removeUnused.ts": "never",
+    "source.removeUnusedImports": "never",
+    "source.removeUnusedVariables": "never",
+    "source.addMissingImports.ts": "never",
+    "source.addMissingTypeImports.ts": "never",
+    "source.sortImports": "never",
+    "source.biome": "explicit",
+    "source.organizeLinkDefinitions": "never"
   },
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnPaste": false,

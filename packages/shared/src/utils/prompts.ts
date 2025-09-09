@@ -7,6 +7,8 @@ import {
   isCancel,
   type MultiSelectOptions,
   multiselect,
+  type NoteOptions,
+  note,
   type PromptGroup,
   type SelectOptions,
   type SpinnerOptions,
@@ -84,6 +86,24 @@ export const createCheckbox = async <Value>(opts: MultiSelectOptions<Value>) => 
     exit(0)
   }
   return result as Value[]
+}
+
+export const createNote = async ({
+  message = '',
+  title = '',
+  opts,
+}: {
+  message?: string
+  title?: string
+  opts?: NoteOptions
+}) => {
+  const result = await note(message, title, opts)
+
+  if (isCancel(result)) {
+    cancel('User cancelled')
+    exit(0)
+  }
+  return result
 }
 
 export const createConfirm = createPrompt(confirm)

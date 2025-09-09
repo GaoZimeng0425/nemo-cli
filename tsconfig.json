@@ -45,6 +45,7 @@
   "exclude": ["packages/*/*.js"],
   "include": [
     "packages/*/*.ts",
+    "packages/*/*.json",
     "packages/*/*.d.ts",
     "packages/*/src",
     "packages/*/__tests__",

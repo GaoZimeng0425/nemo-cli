@@ -34,6 +34,7 @@ export const getDiffFiles = async () => {
 }
 
 // 获取Git状态信息
+// const porcelain_states = ["M", "T", "R", "D", "A", "C"];
 export const getGitStatus = async () => {
   const status = await x('git', ['status', '--porcelain'])
   const lines = status.stdout.split('\n').filter((line) => line.trim() !== '')
