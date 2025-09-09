@@ -1,6 +1,14 @@
 import path from 'node:path'
 import type { Command } from '@nemo-cli/shared'
-import { createCheckbox, createSelect, getPackageDependencies, getWorkspacePackages, log, x } from '@nemo-cli/shared'
+import {
+  createCheckbox,
+  createSelect,
+  getPackageDependencies,
+  getWorkspaceNames,
+  handleError,
+  log,
+  x,
+} from '@nemo-cli/shared'
 
 async function removeHandle(packageName: string, dependencies: string[]) {
   if (!packageName || dependencies.length === 0) {
@@ -30,14 +38,8 @@ async function removeHandle(packageName: string, dependencies: string[]) {
     } else {
       log.success(`Successfully removed dependencies [${depsString}] from package [${packageName}].`)
     }
-  } catch (error: any) {
-    log.error(`An error occurred while removing dependencies: ${error.message}`)
-    if (error.stdout) {
-      log.info(`Command output (stdout):\n${error.stdout}`)
-    }
-    if (error.stderr) {
-      log.error(`Command output (stderr):\n${error.stderr}`)
-    }
+  } catch (error: unknown) {
+    handleError(error, 'An error occurred while removing dependencies: ')
   }
 }
 
@@ -48,13 +50,13 @@ export function removeCommand(command: Command) {
     .description('Remove dependencies from a specific workspace package.')
     .action(async () => {
       log.info('Fetching workspace packages...')
-      const packages = await getWorkspacePackages()
-      if (!packages || packages.length === 0) {
+      const workspaceNames = await getWorkspaceNames()
+      if (!workspaceNames || workspaceNames.length === 0) {
         log.error('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
         return
       }
 
-      const packageChoices = packages.map((pkg) => ({
+      const packageChoices = workspaceNames.map((pkg) => ({
         value: { name: pkg.name, path: pkg.path },
         label: `${pkg.name} (path: ${pkg.path})`,
       }))

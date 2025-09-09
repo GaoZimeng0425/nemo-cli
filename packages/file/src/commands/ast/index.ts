@@ -1,13 +1,5 @@
-import type { Command, PackageInfo } from '@nemo-cli/shared'
-import {
-  createCheckbox,
-  createSpinner,
-  getDiffFiles,
-  getWorkspacePackages,
-  isError,
-  log,
-  sleep,
-} from '@nemo-cli/shared'
+import type { Command, PackageNameInfo } from '@nemo-cli/shared'
+import { createCheckbox, createSpinner, getDiffFiles, getWorkspaceNames, isError, log, sleep } from '@nemo-cli/shared'
 
 import { astHandler } from './ast-handle'
 
@@ -19,10 +11,10 @@ export const astFilesCommand = (program: Command) => {
     .option('-e, --exclude <dirs>', 'exclude directories (comma-separated)')
     .description('ast file which you choose')
     .action(async ({ all, incremental, exclude }: { all: boolean; incremental: boolean; exclude?: string }) => {
-      const files: PackageInfo[] = []
+      const files: PackageNameInfo[] = []
       if (all) {
-        const packages = await getWorkspacePackages()
-        files.push(...packages)
+        const workspaceNames = await getWorkspaceNames()
+        files.push(...workspaceNames)
       } else if (incremental) {
         const packages = await getDiffFiles()
         console.log('🚀 : astFilesCommand : packages:', packages)

@@ -1,12 +1,12 @@
 import { readPackage } from './utils/file'
 
 export * from './constants'
-export * from './ui'
 export * from './utils/color'
 export * from './utils/command'
 export * from './utils/common'
 export * from './utils/config'
 export * from './utils/env'
+export * from './utils/error'
 export * from './utils/file'
 export * from './utils/format'
 export * from './utils/git-handle'

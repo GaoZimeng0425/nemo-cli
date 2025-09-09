@@ -14,6 +14,7 @@ type Package = {
   description: string
   workspaces: string[] | Record<string, string[]>
 }
+
 export const readPackage = (importMeta: { url: string }, ...paths: string[]): Package => {
   try {
     const path = resolve(dirname(importMeta), ...paths)

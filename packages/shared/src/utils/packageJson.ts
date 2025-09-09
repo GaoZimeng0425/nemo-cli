@@ -1,6 +1,7 @@
 import path from 'node:path'
 import fse from 'fs-extra/esm'
 
+import { handleError } from './error'
 import { log } from './log'
 
 interface DependencyInfo {
@@ -36,12 +37,8 @@ export async function getPackageDependencies(packageDir: string): Promise<Depend
 
     log.info(`Found ${dependenciesList.length} dependencies in ${packageJsonPath}`)
     return dependenciesList
-  } catch (err: any) {
-    if (err.code === 'ENOENT') {
-      log.error(`package.json not found at ${packageJsonPath}`)
-    } else {
-      log.error(`Failed to read or parse package.json at ${packageJsonPath}: ${err.message}`)
-    }
-    return [] // Return empty array on error
+  } catch (err: unknown) {
+    handleError(err, `Failed to read or parse package.json at ${packageJsonPath}: `)
+    return []
   }
 }

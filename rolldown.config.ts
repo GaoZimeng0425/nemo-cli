@@ -1,3 +1,4 @@
+import { merge } from 'es-toolkit'
 import { defineConfig, type RolldownOptions } from 'rolldown'
 import { dts } from 'rolldown-plugin-dts'
 
@@ -19,8 +20,5 @@ export const config: RolldownOptions = {
 }
 
 export const mergeConfig = (inputConfig: RolldownOptions) => {
-  return defineConfig({
-    ...config,
-    ...inputConfig,
-  })
+  return defineConfig(merge(config, inputConfig))
 }

@@ -7,7 +7,7 @@ const handleMerge = async (branch: string) => {
   const spinner = createSpinner(`Merging branch ${branch}...`)
   const args = ['merge', branch]
 
-  const hasStash = await handleGitStash()
+  const stashName = await handleGitStash()
 
   // 使用 stdio: 'inherit' 来支持交互式合并确认
   const [error] = await xASync('git', args, {
@@ -19,7 +19,7 @@ const handleMerge = async (branch: string) => {
 
   spinner.stop(`Successfully merged branch ${branch}.`)
 
-  hasStash && handleGitPop()
+  stashName && handleGitPop(stashName)
 }
 
 export function mergeCommand(command: Command) {

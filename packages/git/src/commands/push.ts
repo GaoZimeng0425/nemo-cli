@@ -1,5 +1,6 @@
 import type { Command } from '@nemo-cli/shared'
-import { BigText, colors, createConfirm, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
+import { colors, createConfirm, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
+import { BigText } from '@nemo-cli/ui'
 
 import { getCurrentBranch, getRemoteOptions } from '../utils'
 

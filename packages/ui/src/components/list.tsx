@@ -1,7 +1,6 @@
 import type { FC } from 'react'
+import type { PromptOptions } from '@nemo-cli/shared'
 import { Box, render, Text } from 'ink'
-
-import type { PromptOptions } from '../utils/prompts'
 
 interface ListProps<T extends string | number | boolean | symbol = string> {
   items: PromptOptions<T>[]

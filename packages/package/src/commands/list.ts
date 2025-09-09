@@ -1,6 +1,6 @@
 import path from 'node:path'
 import type { Command } from '@nemo-cli/shared'
-import { createSelect, getPackageDependencies, getWorkspacePackages, log } from '@nemo-cli/shared'
+import { createSelect, getPackageDependencies, getWorkspaceNames, log } from '@nemo-cli/shared'
 
 function displayDependencies(
   packageName: string,
@@ -41,13 +41,13 @@ export function listCommand(command: Command) {
     .description('List dependencies of a specific workspace package.')
     .action(async () => {
       log.info('Fetching workspace packages...')
-      const packages = await getWorkspacePackages()
-      if (!packages || packages.length === 0) {
+      const workspaceNames = await getWorkspaceNames()
+      if (!workspaceNames || workspaceNames.length === 0) {
         log.error('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
         return
       }
 
-      const packageChoices = packages.map((pkg) => ({
+      const packageChoices = workspaceNames.map((pkg) => ({
         label: `${pkg.name} (path: ${pkg.path})`,
         value: { name: pkg.name, path: pkg.path },
       }))

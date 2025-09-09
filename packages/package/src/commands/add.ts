@@ -1,92 +1,94 @@
-import type { Command, Spinner } from '@nemo-cli/shared'
-import {
-  colors,
-  createCheckbox,
-  createInput,
-  createSpinner,
-  exit,
-  getWorkspacePackages,
-  isError,
-  log,
-  xASync,
-} from '@nemo-cli/shared'
+import type { Command } from '@nemo-cli/shared'
+import { createCheckbox, createInput, getWorkspaceNames, isString } from '@nemo-cli/shared'
+import { ErrorMessage, Message, ProcessMessage } from '@nemo-cli/ui'
 
-const addHandle = async (packageName: string[], dependencies: string[], { loading }: { loading: Spinner }) => {
-  if (!packageName || dependencies.length === 0) {
-    loading.stop('Package name and at least one dependency are required.')
-    exit(1)
+import { HELP_MESSAGE } from '../constants'
+
+type AddHandleOptions = {
+  workspaces: string[]
+  saveProd?: boolean
+  exact?: boolean
+  peer?: boolean
+}
+
+const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
+  const { saveProd = true, exact = false, peer = false, workspaces } = options
+
+  const flags = [
+    saveProd ? '--save-prod' : '--save-dev',
+    exact ? '--save-exact' : '',
+    peer ? '--save-peer' : '',
+  ].filter(Boolean)
+
+  const filter = workspaces.map((name) => `--filter=${name}`)
+  const commandParts = [...flags, 'add', ...filter, ...dependencies]
+
+  const instance = ProcessMessage({
+    command: 'pnpm ',
+    commandArgs: commandParts,
+    onSuccess: () => {
+      Message({
+        text: 'Dependencies added successfully',
+        name: 'summer',
+      })
+    },
+    onError: (_error) => {
+      Message({
+        text: 'Dependencies added failed',
+        name: 'passion',
+      })
+      // spinner.stop(`An error occurred while adding dependencies: ${error}`)
+    },
+  })
+  await instance.waitUntilExit()
+}
+
+const ensurePackage = async (input: string | string[]): Promise<string[]> => {
+  const inputList = isString(input) ? [input] : input
+  const packageNames = inputList?.map((input) => input.trim()) || []
+
+  if (packageNames.length === 0) {
+    const packageName = await createInput({
+      message: 'Enter dependency names (space-separated):',
+      validate: (name) => (!name ? 'Please enter the package name you want to install' : undefined),
+    })
+    packageNames.push(packageName)
   }
-
-  const depsString = dependencies.join(' ')
-  log.show(
-    `Attempting to add dependencies ${colors.bgGreen(depsString)} to package ${colors.bgGreen(packageName.join(','))}...`
-  )
-
-  const filter = packageName.map((name) => `--filter=${name}`)
-  const commandParts = ['add', ...filter, ...dependencies]
-  loading.message(`Executing command: ${colors.bgGreen('pnpm ', commandParts.join(' '))}`)
-  const [error, result] = await xASync('pnpm', commandParts)
-  if (error) {
-    loading.stop(`An error occurred while adding dependencies: ${isError(error) ? error.message : error}`)
-  } else {
-    log.show(result.stdout, { type: 'success' })
-  }
+  return packageNames
 }
 
 export const addCommand = (program: Command) => {
   program
     .command('add [dependencies...]')
-    .alias('a')
+    .alias('install')
+    .alias('i')
     .description('Add dependencies to a specific workspace package.')
-    .option('-p, --package <packageName>', 'Specify the target package directly')
-    .action(async (dependencies: string[], options: { package?: string }) => {
-      let selectedPackage = options.package?.split(',') ?? []
+    .option('-D, --save-dev', 'Is Development dependencies')
+    .option('-S, --save-prod', 'Is Productive dependencies')
+    .option('-E, --exact', 'Is exact dependencies')
+    .addHelpText('after', HELP_MESSAGE.install)
+    .action(async (dependencies: string[], options: { saveDev?: boolean; saveProd?: boolean; exact?: boolean }) => {
+      const workspaceNames = await getWorkspaceNames()
+      if (!workspaceNames?.length) {
+        ErrorMessage({
+          text: 'No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.',
+          name: 'summer',
+        })
+        return
+      }
 
-      if (selectedPackage.length > 0) {
-        log.show(`Target package specified via option: ${selectedPackage}`)
-      } else {
-        log.show('Fetching workspace packages...')
-        const packages = await getWorkspacePackages()
-        if (!packages || packages.length === 0) {
-          log.show('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
-          return
-        }
-
-        const packageChoices = packages.map((pkg) => ({
+      const workspaces = await createCheckbox({
+        message: 'Select a workspace to add dependencies to:',
+        options: workspaceNames.map((pkg) => ({
           label: `${pkg.name} (${pkg.path})`,
           value: pkg.name,
-        }))
+        })),
+        required: true,
+      })
 
-        selectedPackage = await createCheckbox({
-          message: 'Select a workspace to add dependencies to:',
-          options: packageChoices,
-        })
+      const finalDependencies = await ensurePackage(dependencies)
 
-        if (selectedPackage.length === 0) {
-          log.show('No package selected. Aborting.', { type: 'error' })
-          return
-        }
-      }
-
-      let finalDependencies = dependencies
-      if (finalDependencies.length === 0) {
-        // Corrected condition for prompting
-        const depsInput = await createInput({
-          message: 'Enter dependency names (space-separated):',
-        })
-        if (!depsInput) {
-          log.show('No dependencies entered. Aborting.', { type: 'error' })
-          return
-        }
-        finalDependencies = depsInput
-          .split(' ')
-          .map((d: string) => d.trim())
-          .filter((d: string) => d)
-      }
-
-      const spinner = createSpinner('Adding dependencies...')
-      await addHandle(selectedPackage, finalDependencies, { loading: spinner })
-      spinner.stop('Dependencies added successfully')
+      await addHandle(finalDependencies, { workspaces, ...options })
     })
 
   return program

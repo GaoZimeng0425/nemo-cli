@@ -1,6 +1,14 @@
 import path from 'node:path'
 import type { Command } from '@nemo-cli/shared'
-import { createCheckbox, createSelect, getPackageDependencies, getWorkspacePackages, log, x } from '@nemo-cli/shared'
+import {
+  createCheckbox,
+  createSelect,
+  getPackageDependencies,
+  getWorkspaceNames,
+  handleError,
+  log,
+  x,
+} from '@nemo-cli/shared'
 
 // New upgradeHandle function
 async function upgradeHandle(packageName: string, dependencies: string[]) {
@@ -33,14 +41,8 @@ async function upgradeHandle(packageName: string, dependencies: string[]) {
       } else {
         log.success(`Successfully upgraded ${dep} in ${packageName}.`)
       }
-    } catch (error: any) {
-      log.error(`An error occurred while upgrading ${dep} in ${packageName}: ${error.message}`)
-      if (error.stdout) {
-        log.info(`Command output for ${dep} (stdout):\n${error.stdout}`)
-      }
-      if (error.stderr) {
-        log.error(`Command output for ${dep} (stderr):\n${error.stderr}`)
-      }
+    } catch (error: unknown) {
+      handleError(error, `An error occurred while upgrading ${dep} in ${packageName}: `)
     }
   }
   log.info(`Finished upgrade process for package [${packageName}].`)
@@ -55,13 +57,13 @@ export function upgradeCommand(command: Command) {
     // Old options (-L, -g) are removed as per requirements
     .action(async () => {
       log.info('Fetching workspace packages...')
-      const packages = await getWorkspacePackages()
-      if (!packages || packages.length === 0) {
+      const workspaceNames = await getWorkspaceNames()
+      if (!workspaceNames || workspaceNames.length === 0) {
         log.error('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
         return
       }
 
-      const packageChoices = packages.map((pkg) => ({
+      const packageChoices = workspaceNames.map((pkg) => ({
         label: `${pkg.name} (path: ${pkg.path})`,
         value: { name: pkg.name, path: pkg.path }, // Store both name and relative path
       }))

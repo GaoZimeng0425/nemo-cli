@@ -1,6 +1,7 @@
 import type { Command } from '@nemo-cli/shared'
 import { createOptions, createSelect, exit, log, xASync } from '@nemo-cli/shared'
 
+import { HELP_MESSAGE } from '../constants/stash'
 import { handleGitStash, handleGitStashCheck } from '../utils'
 
 enum StashCommand {
@@ -58,23 +59,51 @@ const handleDrop = handleCheck(async (stashes: string[]) => {
     log.show('Successfully cleared stash.', { type: 'success' })
   }
 })
-
 export const stashCommand = (command: Command) => {
-  command
-    .command('stash <command> [name]')
+  // 创建主 stash 命令
+  const stashCmd = command
+    .command('stash')
     .alias('st')
-    .description('Stash current branch')
-    .action(async (command: StashCommand, name: string) => {
-      if (command === StashCommand.POP) {
-        await handlePop()
-      } else if (command === StashCommand.LIST) {
-        await handleList()
-      } else if (command === StashCommand.DROP) {
-        await handleDrop()
-      } else if (command === StashCommand.SAVE) {
-        await handleGitStash(name)
-      } else {
-        log.show('Invalid command.', { type: 'error' })
-      }
+    .description('Git stash management')
+    .addHelpText('after', HELP_MESSAGE.main)
+
+  // 子命令：保存 stash
+  stashCmd
+    .command('save [message]')
+    .alias('s')
+    .description('Save current changes to stash')
+    .action(async (message: string) => {
+      await handleGitStash(message)
     })
+
+  // 子命令：列出 stash
+  stashCmd
+    .command('list')
+    .alias('ls')
+    .alias('l')
+    .description('List all stashes')
+    .action(async () => {
+      await handleList()
+    })
+
+  // 子命令：弹出 stash
+  stashCmd
+    .command('pop')
+    .alias('p')
+    .description('Pop the most recent stash')
+    .action(async () => {
+      await handlePop()
+    })
+
+  // 子命令：删除 stash
+  stashCmd
+    .command('drop')
+    .alias('clear')
+    .alias('d')
+    .description('Drop/clear stashes')
+    .action(async () => {
+      await handleDrop()
+    })
+
+  return stashCmd
 }

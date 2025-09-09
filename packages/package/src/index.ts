@@ -1,6 +1,7 @@
 import { createCommand, readPackage } from '@nemo-cli/shared'
 
 import { addCommand } from './commands/add'
+import { cleanCommand } from './commands/clean'
 import { listCommand } from './commands/list'
 import { removeCommand } from './commands/remove'
 import { upgradeCommand } from './commands/upgrade'
@@ -18,6 +19,7 @@ export const init = () => {
   upgradeCommand(command)
   removeCommand(command)
   listCommand(command)
+  cleanCommand(command)
 
   return command
 }

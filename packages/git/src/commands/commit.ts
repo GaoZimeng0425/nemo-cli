@@ -2,6 +2,7 @@ import type { Command } from '@nemo-cli/shared'
 import {
   addFiles,
   colors,
+  createConfirm,
   createGroupMultiSelect,
   createSpinner,
   exit,
@@ -14,14 +15,11 @@ import {
 
 const lintHandle = async () => {
   const [error, result] = await xASync('lint-staged')
-  if (error) {
-    log.show(error.message, { type: 'error' })
-    exit(0)
-  }
-
+  if (error) return false
   if (result.stdout.includes('No staged files')) {
     log.show('No staged files.', { type: 'error' })
     exit(0)
+    return false
   }
 
   return true
@@ -35,8 +33,16 @@ export const commitCommand = (command: Command) => {
       intro(colors.bgYellowBright(' Git Commit Message '))
 
       const spinner = createSpinner('linting...')
-      await lintHandle()
+      const lintResult = await lintHandle()
+      console.log('🚀 : commitCommand : lintResult:', lintResult)
       spinner.stop()
+      if (!lintResult) {
+        const confirm = await createConfirm({
+          message: 'Lint failed. Do you want to continue?',
+          initialValue: false,
+        })
+        !confirm && exit(0)
+      }
 
       // 1. 获取Git状态并展示工作区和暂存区文件
       const gitStatus = await getGitStatus()

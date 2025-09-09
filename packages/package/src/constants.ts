@@ -1,22 +1,8 @@
-const createHelpExample = (...commands: string[]) => {
-  const commandsString = commands.map((command) => `  $ ${command}`).join('\n')
-  return `
-Example:
-${commandsString}
-`
-}
+import { createHelpExample } from '@nemo-cli/shared'
+
 export const HELP_MESSAGE = {
-  install: `
-Example:
-  $ np install commander @inquirer/prompts
-  $ np install typescript unbuild vitest --dev --exact
-    `,
-  main: `
-Example:
-  $ np --version
-  $ np --help
-  $ np <command> [options]
-  `,
+  install: createHelpExample('np add commander @inquirer/prompts', 'np add typescript unbuild vitest --dev --exact'),
+  main: createHelpExample('np --version', 'np --help', 'np <command> [options]'),
   clean: createHelpExample('np clean [dirname]'),
   up: createHelpExample('np up'), // Example for the refactored interactive upgrade command
   remove: createHelpExample('np remove'), // Example for the interactive remove command

@@ -8,29 +8,25 @@
   "type": "module",
   "scripts": {
     "coverage": "vitest run --coverage",
-    "graph": "nx graph",
     "preinstall": "npx only-allow pnpm",
-    "dev": "concurrently 'pnpm --filter=!./packages/shared dev' 'pnpm --filter=./packages/shared dev'",
-    "build": "nx run-many --target=build --batch=true --all --parallel",
-    "build-dts": "nx run-many --target=build-dts --batch=true --all --parallel",
-    "dev_": "nx run-many --target=dev --batch=true --all --parallel",
+    "dev": "pnpm run -r --parallel dev",
+    "build": "pnpm run -r --parallel build",
+    "build-dts": "pnpm run -r --parallel build-dts",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
-    "lint": "lint-staged",
     "sea": "node --experimental-sea-config sea-config.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "^2.2.3",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@types/node": "^24.3.0",
-    "concurrently": "^9.2.0",
+    "@types/node": "^24.3.1",
+    "@typescript/native-preview": "7.0.0-dev.20250904.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
-    "nx": "21.4.1",
-    "rolldown": "1.0.0-beta.34",
-    "rolldown-plugin-dts": "^0.15.7",
-    "tsdown": "^0.14.1",
+    "lint-staged": "^16.1.6",
+    "rolldown": "1.0.0-beta.35",
+    "rolldown-plugin-dts": "^0.16.1",
+    "tsdown": "^0.14.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
@@ -40,8 +36,12 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "@slack/web-api": "^7.10.0",
+    "dotenv": "^17.2.2",
     "es-toolkit": "^1.39.10",
-    "unconfig": "^7.3.3"
+    "unconfig": "^7.3.3",
+    "zod": "^4.1.5",
+    "zod-validation-error": "^4.0.1"
   },
   "lint-staged": {
     "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [

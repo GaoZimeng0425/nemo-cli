@@ -1,4 +1,4 @@
-export const cached = <Func extends (...args: any[]) => any>(fn: Func) => {
+export const cached = <Func extends AnyFunction>(fn: Func) => {
   const map: Map<PropertyKey, ReturnType<Func>> = new Map()
   return (content: PropertyKey): ReturnType<Func> => {
     if (map.has(content)) return map.get(content)!

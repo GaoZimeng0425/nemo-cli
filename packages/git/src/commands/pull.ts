@@ -24,10 +24,10 @@ export function pullCommand(command: Command) {
         return
       }
 
-      const hasStash = await handleGitStash()
+      const stashName = await handleGitStash()
 
       await handleGitPull(selectedBranch)
 
-      hasStash && handleGitPop()
+      stashName && handleGitPop(stashName)
     })
 }

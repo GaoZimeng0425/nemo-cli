@@ -8,6 +8,7 @@ coverage
 **/dist
 
 *.tsbuildinfo
+.next
 
 .nx/cache
 .nx/workspace-data

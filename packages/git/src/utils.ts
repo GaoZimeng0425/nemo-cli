@@ -255,18 +255,18 @@ export const _handleGitPull = async (branch: string, _stash = false) => {
 }
 
 const createStashName = () => `NEMO-CLI-STASH:${Date.now()}`
-export const handleGitStash = async (name: string = createStashName()) => {
+export const handleGitStash = async (name: string = createStashName()): Promise<null | string> => {
   const [error, result] = await xASync('git', ['stash', 'save', name])
   if (error) {
     log.show(`Failed to stash changes. ${name}`, { type: 'error' })
-    return false
+    return null
   }
   if (result?.stdout.includes(name)) {
     log.show(`Successfully stashed changes. ${name}`, { type: 'success' })
-    return true
+    return name
   }
   log.show('No file changes.')
-  return false
+  return null
 }
 
 export const handleGitStashCheck = async (): Promise<string[]> => {
@@ -282,7 +282,12 @@ export const handleGitPop = async (branch: string) => {
     log.show(`No stash found for this branch: ${colors.bgRed(branch)}.`, { type: 'warn' })
     return
   }
-  const [error, result] = await xASync('git', ['stash', 'pop', stashName])
+  const name = stashName.split(':')[0]
+  if (!name) {
+    log.error(name, 'is not valid')
+    return
+  }
+  const [error, result] = await xASync('git', ['stash', 'pop', name])
   if (!error) {
     log.show(result.stdout)
     log.show('Successfully popped changes.')
@@ -323,5 +328,16 @@ export const isBranchMergedToMain = async (branches: string[]): Promise<BranchIn
     return list
   } catch {
     return list
+  }
+}
+
+export const checkGitRepository = async () => {
+  try {
+    const [error, result] = await xASync('git rev-parse --is-inside-work-tree')
+    if (error) return false
+    const output = result.stdout.trim()
+    return output === 'true'
+  } catch (err) {
+    return false
   }
 }

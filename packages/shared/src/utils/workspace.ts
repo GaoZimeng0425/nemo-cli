@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import yaml from 'yaml'
 
+import { handleError } from './error'
 import { filterDirList, glob, readJSON } from './file'
 import { log } from './log' // Assuming log utility exists
 
@@ -9,7 +10,7 @@ interface PnpmWorkspaceConfig {
   packages?: string[]
 }
 
-export interface PackageInfo {
+export interface PackageNameInfo {
   name: string
   path: string // Relative path from workspace root
 }
@@ -30,10 +31,9 @@ async function findWorkspaceRoot(startDir: string = process.cwd()): Promise<stri
   }
 }
 
-export async function getWorkspacePackages(): Promise<PackageInfo[]> {
-  const workspacePackages: PackageInfo[] = []
+export async function getWorkspaceDirs(): Promise<{ root: string; packages: string[] }> {
+  const workspaceRoot = await findWorkspaceRoot()
   try {
-    const workspaceRoot = await findWorkspaceRoot()
     log.info(`Found workspace root at: ${workspaceRoot}`)
 
     const workspaceConfigPath = path.join(workspaceRoot, 'pnpm-workspace.yaml')
@@ -42,32 +42,47 @@ export async function getWorkspacePackages(): Promise<PackageInfo[]> {
 
     if (!workspaceConfig?.packages?.length) {
       log.warn('No packages defined in pnpm-workspace.yaml or file is empty.')
-      return []
+      return {
+        root: workspaceRoot,
+        packages: [],
+      }
     }
-
     log.info(`Workspace package patterns: ${workspaceConfig.packages.join(', ')}`)
-
+    const dirs: string[] = []
     for (const pattern of workspaceConfig.packages) {
       const packagePaths = await glob(pattern, { cwd: workspaceRoot, absolute: true })
+      dirs.push(...packagePaths)
+    }
+    return {
+      root: workspaceRoot,
+      packages: filterDirList(dirs),
+    }
+  } catch (err: unknown) {
+    handleError(err, 'Failed to get workspace dirs: ')
+    return { root: workspaceRoot, packages: [] }
+  }
+}
 
-      const packageDirs = filterDirList(packagePaths)
+export async function getWorkspaceNames(): Promise<PackageNameInfo[]> {
+  const workspacePackages: PackageNameInfo[] = []
+  try {
+    const { root, packages } = await getWorkspaceDirs()
 
-      for (const packageDir of packageDirs) {
-        const packageJson = readJSON(`${packageDir}/package.json`)
-        if (packageJson) {
-          workspacePackages.push({
-            name: packageJson.name,
-            path: path.relative(workspaceRoot, packageDir),
-          })
-        } else {
-          log.warn(`Skipping directory ${packageDir} as package.json does not contain a name.`)
-        }
+    for (const packageDir of packages) {
+      const packageJson = readJSON(`${packageDir}/package.json`)
+      if (packageJson) {
+        workspacePackages.push({
+          name: packageJson.name,
+          path: path.relative(root, packageDir),
+        })
+      } else {
+        log.warn(`Skipping directory ${packageDir} as package.json does not contain a name.`)
       }
     }
     log.info(`Found ${workspacePackages.length} packages.`)
     return workspacePackages
-  } catch (err: any) {
-    log.error(`Failed to get workspace packages: ${err.message}`)
+  } catch (err: unknown) {
+    handleError(err, 'Failed to get workspace packages: ')
     return [] // Return empty array on error as per robust error handling
   }
 }

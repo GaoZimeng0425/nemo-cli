@@ -161,7 +161,6 @@ export const xASync = async (
 ): Promise<[Error, null] | [null, Output]> => {
   try {
     const result = await tinyexec(command, args, options)
-
     if (result.exitCode) {
       log.show(`Failed to execute command ${command}. Command exited with code ${result.exitCode}.`, { type: 'error' })
       log.show(result.stderr, { type: 'error' })

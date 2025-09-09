@@ -2,7 +2,6 @@ packages:
   - packages/*
 onlyBuiltDependencies:
   - esbuild
-  - nx
   - unrs-resolver
 overrides:
   '@nemo-cli/package': link:packages/package

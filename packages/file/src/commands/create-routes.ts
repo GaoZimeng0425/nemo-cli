@@ -1,13 +1,4 @@
-import {
-  type Command,
-  colors,
-  createSelect,
-  createSpinner,
-  exit,
-  getWorkspacePackages,
-  glob,
-  log,
-} from '@nemo-cli/shared'
+import { type Command, colors, createSelect, createSpinner, exit, getWorkspaceNames, glob, log } from '@nemo-cli/shared'
 
 const handleCreateRoutes = async (appPath: string) => {
   const spinner = createSpinner('Creating routes')
@@ -31,15 +22,15 @@ export function createRoutesCommand(command: Command) {
     .alias('cr')
     .description('Create routes')
     .action(async () => {
-      const packages = await getWorkspacePackages()
-      if (!packages.length) {
+      const workspaceNames = await getWorkspaceNames()
+      if (!workspaceNames.length) {
         log.error('No packages found. Please check your workspace.')
         exit(1)
       }
 
       const selectedApp = await createSelect({
         message: 'Select the package to create routes',
-        options: packages.map((pkg) => ({
+        options: workspaceNames.map((pkg) => ({
           value: pkg.path,
           label: pkg.name,
         })),
