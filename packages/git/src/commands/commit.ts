@@ -20,6 +20,7 @@ import { ErrorMessage } from '@nemo-cli/ui'
 
 import { getCurrentBranch } from '../utils'
 import { commitOptions } from './commit-options'
+import { pushInteractive } from './push'
 
 const lintHandle = async () => {
   const [error, result] = await xASync('lint-staged')
@@ -39,8 +40,6 @@ const handleCommit = async (message: string) => {
     spinner.stop('Committed')
   }
 }
-
-const TAG = ' (WIP)'
 
 export const commitCommand = (command: Command) => {
   command
@@ -124,6 +123,10 @@ export const commitCommand = (command: Command) => {
 
       // 7. 发送 git commit 命令
       confirm && (await handleCommit(message))
+
+      // 8. 发送 git push 命令
+      const confirmPush = await createConfirm({ message: 'Do you want to push to remote?' })
+      confirmPush && (await pushInteractive())
       outro(colors.bgGreen(' Git Commit Success '))
     })
 }

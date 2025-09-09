@@ -30,26 +30,30 @@ export function pushCommand(command: Command) {
     .alias('ps')
     .description('Push current branch to remote')
     .action(async () => {
-      const currentBranch = await getCurrentBranch()
-      if (!currentBranch) {
-        log.error('No branch selected. Aborting push operation.')
-        return
-      }
-      const check = await createConfirm({
-        message: `Do you want to push ${colors.bgGreen(currentBranch)} to remote?`,
-      })
-
-      if (check) {
-        await handlePush(currentBranch)
-        return
-      }
-
-      const { options } = await getRemoteOptions()
-      const selectedBranch = await createSelect({
-        message: 'Select the branch to push',
-        options,
-        initialValue: 'main',
-      })
-      handlePush(selectedBranch)
+      await pushInteractive()
     })
+}
+
+export const pushInteractive = async () => {
+  const currentBranch = await getCurrentBranch()
+  if (!currentBranch) {
+    log.error('No branch selected. Aborting push operation.')
+    return
+  }
+  const check = await createConfirm({
+    message: `Do you want to push ${colors.bgGreen(currentBranch)} to remote?`,
+  })
+
+  if (check) {
+    await handlePush(currentBranch)
+    return
+  }
+
+  const { options } = await getRemoteOptions()
+  const selectedBranch = await createSelect({
+    message: 'Select the branch to push',
+    options,
+    initialValue: 'main',
+  })
+  await handlePush(selectedBranch)
 }
