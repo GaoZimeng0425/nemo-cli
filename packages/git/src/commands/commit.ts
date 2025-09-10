@@ -12,14 +12,21 @@ import {
   exit,
   getGitStatus,
   intro,
+  loadConfig,
   log,
   outro,
   xASync,
 } from '@nemo-cli/shared'
 import { ErrorMessage } from '@nemo-cli/ui'
+import type { LoadConfigResult } from 'unconfig'
 
 import { getCurrentBranch } from '../utils'
-import { commitOptions } from './commit-options'
+import {
+  type CommitlintConfigType,
+  commitlintConfig,
+  mergeCommitScopeEnumOptions,
+  mergeCommitTypeEnumOptions,
+} from './commit-options'
 import { pushInteractive } from './push'
 
 const lintHandle = async () => {
@@ -40,6 +47,18 @@ const handleCommit = async (message: string) => {
     spinner.stop('Committed')
   }
 }
+const handleLint = async () => {
+  const spinner = createSpinner('linting...')
+  const lintResult = await lintHandle()
+  if (!lintResult) {
+    const confirm = await createConfirm({
+      message: 'Lint failed. Do you want to continue?',
+      initialValue: false,
+    })
+    !confirm && exit(0)
+  }
+  spinner.stop('linting done')
+}
 
 export const commitCommand = (command: Command) => {
   command
@@ -49,22 +68,11 @@ export const commitCommand = (command: Command) => {
       console.clear()
       intro(colors.bgCyan.black(' Git Commit Message '))
 
-      const spinner = createSpinner('linting...')
-      const lintResult = await lintHandle()
-      spinner.stop('linting done')
-      if (!lintResult) {
-        const confirm = await createConfirm({
-          message: 'Lint failed. Do you want to continue?',
-          initialValue: false,
-        })
-        !confirm && exit(0)
-      }
-
       // 1. 获取Git状态并展示工作区和暂存区文件
       const { staged, unstaged } = await getGitStatus()
 
-      // 如果没有任何文件变更，提示用户
       if (staged.length === 0 && unstaged.length === 0) {
+        // 如果没有任何文件变更，提示用户
         ErrorMessage({ text: 'No changes detected. Nothing to commit.' })
         exit(0)
       }
@@ -74,8 +82,8 @@ export const commitCommand = (command: Command) => {
 
       log.show(`Changes to be committed:\n${staged.map((text) => colors.green(text)).join('\n')}`, { type: 'success' })
 
-      // 工作区文件组（可选择）
       if (unstaged.length > 0) {
+        // 工作区文件组（可选择）
         fileGroups = createOptions(unstaged)
         const selectedFiles = await createCheckbox({
           message: 'Select files to stage for commit (optional):',
@@ -90,16 +98,26 @@ export const commitCommand = (command: Command) => {
         }
       }
 
+      await handleLint()
+
+      const options: LoadConfigResult<CommitlintConfigType> = await loadConfig({
+        sources: [
+          {
+            files: 'commitlint.config',
+            extensions: ['js', 'ts', 'cjs', 'mjs', 'json', ''],
+          },
+        ],
+      })
+
       //3. 获取当前cwd文件夹下 commitlint 文件中的 type-enum 进行选择
-      // const options = 'commitlint.config.mjs'
       const commitType = await createSelect({
         message: 'Select type:',
-        options: commitOptions.commit_type.options,
+        options: mergeCommitTypeEnumOptions((options.config ?? commitlintConfig)!.rules['type-enum'][2] as string[]),
       })
       //4. 获取当前cwd文件夹下 commitlint 文件中的 scope-enum 进行选择
       const commitScope = await createSelect({
         message: 'Select scope:',
-        options: commitOptions.commit_scope.options,
+        options: mergeCommitScopeEnumOptions((options.config ?? commitlintConfig)!.rules['scope-enum'][2] as string[]),
       })
       //5. 用户输入 Write a brief title describing the commit , 限制 80个字符
       const commitTitle = await createInput({

@@ -19,7 +19,7 @@ const ProcessMessageUI = ({ command, commandArgs, onSuccess, onError }: ProcessM
   const { exit } = useApp()
   const executeCommand = useCallback(async () => {
     try {
-      const process = x(command, commandArgs)
+      const process = x(command.trim(), commandArgs)
       for await (const line of process) {
         setProgress((prev) => prev + 1)
         setMessages((prev) => [...prev, line])
@@ -30,7 +30,7 @@ const ProcessMessageUI = ({ command, commandArgs, onSuccess, onError }: ProcessM
     } finally {
       exit()
     }
-  }, [command, commandArgs, onError, onSuccess, exit])
+  }, [command, commandArgs, onSuccess, onError, exit])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: unMounted
   useEffect(() => {
@@ -40,8 +40,9 @@ const ProcessMessageUI = ({ command, commandArgs, onSuccess, onError }: ProcessM
   return (
     <Provider>
       <Box flexDirection="column">
-        <Static items={messages}>{(message) => <Text key={message}>{message}</Text>}</Static>
-
+        <Box flexDirection="column" gap={1}>
+          <Static items={messages}>{(message) => <Text key={message}>{message}</Text>}</Static>
+        </Box>
         <ProgressBar value={progress} />
         <Box alignItems="center" borderStyle="round" flexDirection="row" gap={1} paddingX={1}>
           <Spinner />

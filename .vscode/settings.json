@@ -23,7 +23,17 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "biome.enabled": true,
-  "cSpell.words": ["cfonts", "committerdate", "inkjs", "rolldown", "tinyexec", "tsdown", "unconfig"],
+  "cSpell.words": [
+    "cfonts",
+    "committerdate",
+    "inkjs",
+    "rolldown",
+    "tinyexec",
+    "tsdown",
+    "unconfig",
+    "worktree",
+    "worktrees"
+  ],
   "css.customData": [".vscode/tailwind.json"],
   "css.format.enable": false,
   "editor.codeActionsOnSave": {

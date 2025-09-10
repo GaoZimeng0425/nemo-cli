@@ -24,7 +24,7 @@ const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
   const commandParts = [...flags, 'add', ...filter, ...dependencies]
 
   const instance = ProcessMessage({
-    command: 'pnpm ',
+    command: 'pnpm',
     commandArgs: commandParts,
     onSuccess: () => {
       Message({
