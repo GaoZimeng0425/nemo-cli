@@ -302,33 +302,24 @@ export const handleGitPop = async (branch: string) => {
 export type BranchInfo = { isMerged: boolean; branch: string }
 export const isBranchMergedToMain = async (branches: string[]): Promise<BranchInfo[]> => {
   const spinner = createSpinner('Fetching latest changes from remote')
-
-  const list: BranchInfo[] = []
-  try {
-    const [fetchError] = await xASync('git', ['fetch', 'origin'])
-    if (fetchError) {
-      log.show('Failed to fetch latest changes from remote. Proceeding with local information.', { type: 'warn' })
-    }
-
-    spinner.message('Checking if branches are merged to main')
-
-    await Promise.all(
-      branches.map(async (branch) => {
-        try {
-          await xASync('git', ['merge-base', '--is-ancestor', branch, 'origin/main'])
-          list.push({ branch, isMerged: true })
-        } catch {
-          list.push({ branch, isMerged: false })
-        }
-      })
-    )
-
+  const [fetchError] = await xASync('git', ['fetch', 'origin', '--prune'])
+  if (fetchError) {
+    spinner.stop('Failed to fetch latest changes from remote. Proceeding with local information.')
+  } else {
     spinner.stop('Fetching latest changes from remote Done')
-
-    return list
-  } catch {
-    return list
   }
+
+  // const [error, result] = await xASync('git', ['branch', '--merged', 'origin/main'])
+  return Promise.all<BranchInfo>(
+    branches.map(async (branch) => {
+      // const [_, result] = await xASync('git', ['log', `origin/main..${branch}`])
+      // list.push({ branch, isMerged: !!result?.stdout.trim() })
+      const [_, result] = await xASync('git', ['merge-base', '--is-ancestor', branch, 'origin/main'], {
+        quiet: true,
+      })
+      return { branch, isMerged: !!result }
+    })
+  )
 }
 
 export const checkGitRepository = async () => {

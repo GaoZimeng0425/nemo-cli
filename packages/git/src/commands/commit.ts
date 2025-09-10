@@ -1,4 +1,4 @@
-import type { Command, PromptOptions } from '@nemo-cli/shared'
+import type { Command } from '@nemo-cli/shared'
 import {
   addFiles,
   colors,
@@ -48,7 +48,7 @@ const handleCommit = async (message: string) => {
   }
 }
 const handleLint = async () => {
-  const spinner = createSpinner('linting...')
+  const spinner = createSpinner('run lint-staged linting...')
   const lintResult = await lintHandle()
   if (!lintResult) {
     const confirm = await createConfirm({
@@ -57,7 +57,7 @@ const handleLint = async () => {
     })
     !confirm && exit(0)
   }
-  spinner.stop('linting done')
+  spinner.stop('lint-staged done')
 }
 
 export const commitCommand = (command: Command) => {
@@ -78,23 +78,24 @@ export const commitCommand = (command: Command) => {
       }
 
       // 创建选项对象，用于分组多选
-      let fileGroups: PromptOptions[] = []
 
       log.show(`Changes to be committed:\n${staged.map((text) => colors.green(text)).join('\n')}`, { type: 'success' })
 
       if (unstaged.length > 0) {
         // 工作区文件组（可选择）
-        fileGroups = createOptions(unstaged)
         const selectedFiles = await createCheckbox({
           message: 'Select files to stage for commit (optional):',
-          options: fileGroups,
+          options: createOptions(unstaged),
           required: false,
         })
 
         if (selectedFiles.length > 0) {
           // 2. 将选择的工作区文件添加到暂存区
           await addFiles(selectedFiles)
-          log.show(`Added ${selectedFiles.length} file(s) to staging area`, { type: 'success' })
+          createNote({
+            message: `Added ${selectedFiles.length} unstaged file(s) to staging area.\n${selectedFiles.map((file) => colors.green(file)).join('\n')}`,
+            title: 'Add Files',
+          })
         }
       }
 
