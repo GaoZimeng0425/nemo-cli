@@ -40,17 +40,13 @@
     "cli-table3": "^0.6.5",
     "figlet": "^1.9.1",
     "figures": "^6.1.0",
-    "fuse.js": "^7.1.0",
-    "gradient-string": "^3.0.0",
     "ink": "^6.3.0",
     "ink-big-text": "^2.0.0",
     "ink-gradient": "^3.0.0",
     "ink-markdown": "^1.0.4",
     "ink-table": "^3.1.0",
     "marked": "^16.2.1",
-    "match-sorter": "^8.1.0",
-    "react": "^19.1.1",
-    "terminal-link": "^5.0.0"
+    "react": "^19.1.1"
   },
   "devDependencies": {
     "@types/react": "^19.1.12"

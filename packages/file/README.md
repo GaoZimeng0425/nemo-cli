@@ -10,7 +10,7 @@ $ pnpm add @nemo-cli/package --global
 ## Usage
 
 ```
-$ n file delete [...filenames]
-$ n file clean
-$ n file list [...dirnames]
+$ nf delete [...filenames]
+$ nf clean
+$ nf list [...dirnames]
 ```
