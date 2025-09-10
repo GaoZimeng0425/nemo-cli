@@ -1,5 +1,15 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createConfirm, createSearch, createSelect, createSpinner, isEmpty, log, x } from '@nemo-cli/shared'
+import {
+  colors,
+  createConfirm,
+  createInput,
+  createSearch,
+  createSelect,
+  createSpinner,
+  isEmpty,
+  log,
+  x,
+} from '@nemo-cli/shared'
 
 import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
 
@@ -39,20 +49,22 @@ const handleCheckout = async (
   stashName && handleGitPop(stashName)
 }
 
+const allDigits = /^\d+$/
 export function checkoutCommand(command: Command) {
   command
     .command('checkout')
     .alias('co')
-    .argument('[branch]', 'The branch to checkout')
     .option('-l, --local', 'Checkout a local branch', true)
     .option('-r, --remote', 'Checkout a remote branch')
-    .option('-b, --branch <branch>', 'Create and checkout a new branch')
+    .option('-b, --branch [branch]', 'Create and checkout a new branch')
     .description('Checkout a branch')
-    .action(async (_inputBranch, params: { local?: boolean; remote?: boolean; branch?: string; _: string[] }) => {
+    .action(async (params: { local?: boolean; remote?: boolean; branch?: string | true }) => {
       let isLocal = params.local && !params.remote
       const branch = params.branch
       if (branch) {
-        handleCheckout(branch, { isNew: true })
+        const newBranchName = branch === true ? await createInput({ message: 'Enter the new branch name:' }) : branch
+        const isAllDigits = allDigits.test(newBranchName)
+        handleCheckout(isAllDigits ? `feature/PRIME-${newBranchName}` : newBranchName, { isNew: true })
         return
       }
 
