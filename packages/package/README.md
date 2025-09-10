@@ -9,8 +9,12 @@ $ pnpm add @nemo-cli/package --global
 
 ## Usage
 
-```
-$ npnpm install [...packages]
-$ npnpm install -D -E
-$ npnpm install [...packages] -S -E
+```bash
+np add [...packages]
+np add -D -E
+np add [...packages] -S -E
+
+np remove
+
+np upgrade
 ```
