@@ -23,7 +23,7 @@ const handleDelete = async (branch: BranchInfo, { isLocal }: { isLocal: boolean 
     if (!confirm) return
   }
 
-  const spinner = createSpinner(`Deleting branch ${branch}...`)
+  const spinner = createSpinner(`Deleting branch ${branch.branch}...`)
   let process: Result
   if (isLocal) {
     process = x('git', ['branch', '-d', branch.branch])
