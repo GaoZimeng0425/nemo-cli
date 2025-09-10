@@ -24,12 +24,10 @@ const handleDelete = async (branch: BranchInfo, { isLocal }: { isLocal: boolean 
   }
 
   const spinner = createSpinner(`Deleting branch ${branch.branch}...`)
-  let process: Result
-  if (isLocal) {
-    process = x('git', ['branch', '-d', branch.branch])
-  } else {
-    process = x('git', ['push', 'origin', '--delete', branch.branch])
-  }
+  const process: Result = x(
+    'git',
+    isLocal ? ['branch', '-d', branch.branch] : ['push', 'origin', '--delete', branch.branch]
+  )
 
   for await (const line of process) {
     spinner.message(line)
