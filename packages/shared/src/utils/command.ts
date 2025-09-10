@@ -5,6 +5,7 @@ import { type Options, type Output, type Result, x as tinyexec } from 'tinyexec'
 
 // import { $, type ProcessPromise, type Options as ZxOptions } from 'zx'
 
+import { handleError } from './error'
 import { log } from './log'
 import { isError } from './types'
 // import { isEmpty, isString } from './types'
@@ -157,24 +158,23 @@ export const x = (command: string, args?: string[], options: Partial<Options> = 
 export const xASync = async (
   command: string,
   args?: string[],
-  options?: Partial<Options>
+  options?: Partial<Options> & { quiet?: boolean }
 ): Promise<[Error, null] | [null, Output]> => {
   try {
     const result = await tinyexec(command, args, options)
     if (result.exitCode) {
-      log.show(`Failed to execute command ${command}. Command exited with code ${result.exitCode}.`, { type: 'error' })
-      log.show(result.stderr, { type: 'error' })
+      !options?.quiet &&
+        log.show(`Failed to execute command ${command}. Command exited with code ${result.exitCode}.`, {
+          type: 'error',
+        })
+      !options?.quiet && log.show(result.stderr, { type: 'error' })
       return [new Error(result.stderr), null]
     }
 
     return [null, result]
   } catch (error) {
-    if (isError(error)) {
-      log.show(`Failed to execute command ${command}.`, { type: 'error' })
-      log.show(error.message, { type: 'error' })
-      return [error, null]
-    }
-    return [new Error(error as string), null]
+    handleError(error, `Failed to execute command ${command}.`)
+    return [isError(error) ? error : new Error(error as string), null]
   }
 }
 
