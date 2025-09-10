@@ -33,8 +33,7 @@ const lintHandle = async () => {
   const [error, result] = await xASync('lint-staged')
   if (error) return false
   if (result.stdout.includes('No staged files')) {
-    log.show('No staged files.', { type: 'error' })
-    exit(0)
+    return true
   }
   return true
 }
@@ -66,7 +65,8 @@ export const commitCommand = (command: Command) => {
     .description('Commit a message')
     .action(async () => {
       console.clear()
-      intro(colors.bgCyan.black(' Git Commit Message '))
+      const title = colors.bgRed(`  ${await getCurrentBranch()}  `)
+      intro(`${colors.bgCyan(' Current Branch: ')} ${title}`)
 
       // 1. 获取Git状态并展示工作区和暂存区文件
       const { staged, unstaged } = await getGitStatus()
@@ -80,6 +80,7 @@ export const commitCommand = (command: Command) => {
       // 创建选项对象，用于分组多选
 
       log.show(`Changes to be committed:\n${staged.map((text) => colors.green(text)).join('\n')}`, { type: 'success' })
+      const selectedStaged = staged
 
       if (unstaged.length > 0) {
         // 工作区文件组（可选择）
@@ -89,6 +90,8 @@ export const commitCommand = (command: Command) => {
           required: false,
         })
 
+        selectedStaged.push(...selectedFiles)
+
         if (selectedFiles.length > 0) {
           // 2. 将选择的工作区文件添加到暂存区
           await addFiles(selectedFiles)
@@ -97,6 +100,11 @@ export const commitCommand = (command: Command) => {
             title: 'Add Files',
           })
         }
+      }
+
+      if (selectedStaged.length === 0) {
+        ErrorMessage({ text: 'No staged files. Nothing to commit.' })
+        exit(0)
       }
 
       await handleLint()
@@ -141,7 +149,8 @@ export const commitCommand = (command: Command) => {
       const confirm = await createConfirm({ message: 'Are you sure you want to commit?' })
 
       // 7. 发送 git commit 命令
-      confirm && (await handleCommit(message))
+      if (!confirm) return
+      await handleCommit(message)
 
       // 8. 发送 git push 命令
       const confirmPush = await createConfirm({ message: 'Do you want to push to remote?' })
