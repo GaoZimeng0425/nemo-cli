@@ -1,6 +1,6 @@
 import path from 'node:path'
 import type { Command } from '@nemo-cli/shared'
-import { createSelect, getPackageDependencies, getWorkspaceNames, log } from '@nemo-cli/shared'
+import { colors, createNote, createSelect, getPackageDependencies, getWorkspaceNames, log } from '@nemo-cli/shared'
 
 function displayDependencies(
   packageName: string,
@@ -16,21 +16,21 @@ function displayDependencies(
   const devDeps = dependencies.filter((dep) => dep.type === 'devDependencies')
 
   if (prodDeps.length > 0) {
-    log.success('  Production:')
-    for (const dep of prodDeps) {
-      log.info(`    - ${dep.name}: ${dep.version}`)
-    }
+    createNote({
+      message: prodDeps.map((d) => `- ${colors.green(d.name)} ${d.version}`).join('\n'),
+      title: 'Production',
+    })
   } else {
-    log.info('  Production: (No production dependencies)')
+    log.show('  Production: (No production dependencies)', { type: 'warn' })
   }
 
   if (devDeps.length > 0) {
-    log.info('  Development:')
-    for (const dep of devDeps) {
-      log.info(`    - ${dep.name}: ${dep.version}`)
-    }
+    createNote({
+      message: devDeps.map((d) => `- ${colors.green(d.name)} ${d.version}`).join('\n'),
+      title: 'Development',
+    })
   } else {
-    log.info('  Development: (No development dependencies)')
+    log.show('  Development: (No development dependencies)', { type: 'warn' })
   }
 }
 
@@ -64,7 +64,8 @@ export function listCommand(command: Command) {
       const workspaceRoot = process.cwd() // Assuming CLI runs from workspace root
       const selectedPackageDir = path.join(workspaceRoot, selectedPackageInfo.path)
 
-      log.info(`Fetching dependencies for package ${selectedPackageInfo.name}...`)
+      log.show(`Fetching dependencies for package ${selectedPackageInfo.name}...`)
+
       const dependencies = await getPackageDependencies(selectedPackageDir)
 
       if (!dependencies || dependencies.length === 0) {

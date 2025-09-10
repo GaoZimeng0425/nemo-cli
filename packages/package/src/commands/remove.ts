@@ -3,6 +3,7 @@ import type { Command } from '@nemo-cli/shared'
 import {
   createCheckbox,
   createSelect,
+  createSpinner,
   getPackageDependencies,
   getWorkspaceNames,
   handleError,
@@ -95,7 +96,8 @@ export function removeCommand(command: Command) {
         log.info('No dependencies selected for removal. Aborting.')
         return
       }
-
+      const spinner = createSpinner('Removing dependencies...')
       await removeHandle(selectedPackageInfo.name, selectedDependencies)
+      spinner.stop('Removed dependencies')
     })
 }
