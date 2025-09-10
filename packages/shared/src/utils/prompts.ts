@@ -88,7 +88,7 @@ export const createCheckbox = async <Value>(opts: MultiSelectOptions<Value>) => 
   return result as Value[]
 }
 
-export const createNote = async ({
+export const createNote = ({
   message = '',
   title = '',
   opts,
@@ -96,15 +96,7 @@ export const createNote = async ({
   message?: string
   title?: string
   opts?: NoteOptions
-}) => {
-  const result = await note(message, title, opts)
-
-  if (isCancel(result)) {
-    cancel('User cancelled')
-    exit(0)
-  }
-  return result
-}
+}) => note(message, title, opts)
 
 export const createConfirm = createPrompt(confirm)
 
