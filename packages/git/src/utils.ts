@@ -322,9 +322,14 @@ export const isBranchMergedToMain = async (branches: string[]): Promise<BranchIn
   )
 }
 
+export const getGitRoot = async () => {
+  const [error, result] = await xASync('git', ['rev-parse', '--show-toplevel'])
+  if (error) return ''
+  return result.stdout.trim()
+}
 export const checkGitRepository = async () => {
   try {
-    const [error, result] = await xASync('git rev-parse --is-inside-work-tree')
+    const [error, result] = await xASync('git', ['rev-parse', '--is-inside-work-tree'], { quiet: true })
     if (error) return false
     const output = result.stdout.trim()
     return output === 'true'

@@ -1,4 +1,5 @@
-import { createCommand, readPackage } from '@nemo-cli/shared'
+import { createCommand, exit, readPackage } from '@nemo-cli/shared'
+import { ErrorMessage } from '@nemo-cli/ui'
 
 import { branchCommand } from './commands/branch'
 import { checkoutCommand } from './commands/checkout'
@@ -10,6 +11,7 @@ import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
 import { stashCommand } from './commands/stash'
 import { HELP_MESSAGE } from './constants'
+import { checkGitRepository } from './utils'
 
 export const pkg = readPackage(import.meta, '..')
 
@@ -32,7 +34,13 @@ export const init = () => {
   return command
 }
 
-export const run = () => {
+export const run = async () => {
+  const isGitRepository = await checkGitRepository()
+  if (!isGitRepository) {
+    ErrorMessage({ text: 'Not a git repository' })
+    exit(0)
+  }
+
   const command = init()
   command.parse(process.argv)
 }
