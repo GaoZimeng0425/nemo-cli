@@ -31,10 +31,8 @@ import { pushInteractive } from './push'
 
 const lintHandle = async () => {
   const [error, result] = await xASync('lint-staged')
+  if (error?.message === 'spawn lint-staged ENOENT') return true
   if (error) return false
-  if (result.stdout.includes('No staged files')) {
-    return true
-  }
   return true
 }
 const handleCommit = async (message: string) => {
@@ -140,10 +138,11 @@ export const commitCommand = (command: Command) => {
       const commitBody = await createInput({
         message: 'Write a detailed description of the changes (optional):',
       })
-      const branch = await getCurrentBranch()
+      const ticket = await getTicket()
+
       const scopeMessage = commitScope ? `(${commitScope})` : ''
-      const message = `${commitType}${scopeMessage}: ${branch} ${commitTitle}\n${commitBody}`
-      const previewMessage = `${colors.blue(commitType)}${colors.green(scopeMessage)}: ${colors.redBright(branch)} ${commitTitle}\n${commitBody}`
+      const message = `${commitType}${scopeMessage}: ${ticket} ${commitTitle}\n${commitBody}`
+      const previewMessage = `${colors.blue(commitType)}${colors.green(scopeMessage)}: ${colors.redBright(ticket)} ${commitTitle}\n${commitBody}`
       createNote({ message: previewMessage, title: 'Commit Message' })
 
       const confirm = await createConfirm({ message: 'Are you sure you want to commit?' })
@@ -157,4 +156,21 @@ export const commitCommand = (command: Command) => {
       confirmPush && (await pushInteractive())
       outro(colors.bgGreen(' Git Commit Success '))
     })
+}
+
+export const REGEX_SLASH_TAG = new RegExp(/\/(\w+-\d+)/)
+export const REGEX_START_TAG = new RegExp(/^(\w+-\d+)/)
+export const REGEX_START_UND = new RegExp(/^([A-Z]+-[[a-zA-Z\]\d]+)_/)
+export const REGEX_SLASH_UND = new RegExp(/\/([A-Z]+-[[a-zA-Z\]\d]+)_/)
+export const REGEX_SLASH_NUM = new RegExp(/\/(\d+)/)
+export const REGEX_START_NUM = new RegExp(/^(\d+)/)
+
+const getTicket = async () => {
+  const branch = await getCurrentBranch()
+  const chain = [REGEX_START_UND, REGEX_SLASH_UND, REGEX_SLASH_TAG, REGEX_SLASH_NUM, REGEX_START_TAG, REGEX_START_NUM]
+  for (const regex of chain) {
+    const match = branch.match(regex)
+    if (match) return match[1]
+  }
+  return branch
 }
