@@ -1,7 +1,7 @@
 {
-  "name": "@nemo-cli/ui",
+  "name": "@nemo-cli/ai",
   "version": "0.0.1",
-  "description": "React TUI Components",
+  "description": "AI CLI",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",
   "license": "ISC",
@@ -33,20 +33,12 @@
     "prepack": "rolldown"
   },
   "dependencies": {
-    "@inkjs/ui": "^2.0.0",
+    "@ai-sdk/deepseek": "^1.0.18",
+    "@ai-sdk/google": "^2.0.14",
+    "@ai-sdk/openai": "^2.0.30",
     "@nemo-cli/shared": "workspace:*",
-    "cfonts": "^3.3.1",
-    "chalk": "^5.6.2",
-    "cli-table3": "^0.6.5",
-    "figlet": "^1.9.2",
-    "figures": "^6.1.0",
-    "ink": "^6.3.0",
-    "ink-big-text": "^2.0.0",
-    "ink-gradient": "^3.0.0",
-    "ink-markdown": "^1.0.4",
-    "ink-table": "^3.1.0",
-    "marked": "^16.3.0",
-    "react": "^19.1.1"
+    "@nemo-cli/ui": "workspace:*",
+    "ai": "^5.0.44"
   },
   "devDependencies": {
     "@types/react": "^19.1.13"

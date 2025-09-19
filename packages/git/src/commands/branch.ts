@@ -1,6 +1,7 @@
 import {
   type Command,
   colors,
+  createCheckbox,
   createConfirm,
   createNote,
   createSelect,
@@ -8,14 +9,21 @@ import {
   log,
   type Result,
   x,
-  xASync,
 } from '@nemo-cli/shared'
 import { ErrorMessage, Message } from '@nemo-cli/ui'
-
 import { HELP_MESSAGE } from '../constants'
-import { type BranchInfo, getLocalBranches, getRemoteBranches, isBranchMergedToMain } from '../utils'
+import {
+  type BranchInfo,
+  getBranchCommitTime,
+  getLocalBranches,
+  getRemoteBranches,
+  isBranchMergedToMain,
+} from '../utils'
 
-const handleDelete = async (branch: BranchInfo, { isLocal }: { isLocal: boolean }) => {
+const formatTime = (time: number) => new Date(time * 1000).toLocaleString()
+const formatBranch = (branch: string) => (branch.startsWith('origin/') ? branch.slice(7) : branch)
+
+const handleDelete = async (branch: BranchInfo, { isRemote }: { isRemote: boolean }) => {
   if (!branch.isMerged) {
     const confirm = await createConfirm({
       message: `Branch ${branch.branch} is not merged to main. Are you sure you want to delete it?`,
@@ -26,7 +34,7 @@ const handleDelete = async (branch: BranchInfo, { isLocal }: { isLocal: boolean 
   const spinner = createSpinner(`Deleting branch ${branch.branch}...`)
   const process: Result = x(
     'git',
-    isLocal ? ['branch', '-D', branch.branch] : ['push', 'origin', '--delete', branch.branch]
+    isRemote ? ['push', 'origin', '--delete', formatBranch(branch.branch)] : ['branch', '-D', branch.branch]
   )
 
   for await (const line of process) {
@@ -74,8 +82,7 @@ export function branchCommand(command: Command) {
 
       const lastCommitBranches = await Promise.all(
         mergedBranches.map(async (branch) => {
-          const [_, result] = await xASync('git', ['show', '--format=%at', `${branch}`])
-          const time = result?.stdout.split('\n')[0] ?? Date.now()
+          const time = await getBranchCommitTime(branch)
           return {
             branch,
             lastCommitTime: Number(time),
@@ -98,7 +105,7 @@ export function branchCommand(command: Command) {
       if (!confirm) return
       // 6. 删除分支
       await Promise.all(
-        deleteBranches.map((branch) => handleDelete({ branch: branch.branch, isMerged: true }, { isLocal: true }))
+        deleteBranches.map((branch) => handleDelete({ branch: branch.branch, isMerged: true }, { isRemote: false }))
       )
       Message({ text: 'Successfully deleted branches' })
     })
@@ -107,16 +114,17 @@ export function branchCommand(command: Command) {
     .command('delete')
     .description('Git branch delete')
     .addHelpText('after', HELP_MESSAGE.branchDelete)
-    .option('-l, --local', 'local branch', true)
     .option('-r, --remote', 'remote branch')
-    .action(async (options: { local?: boolean; remote?: boolean }) => {
+    .action(async (options: { remote?: boolean }) => {
       const { branches } = options.remote ? await getRemoteBranches() : await getLocalBranches()
       if (!branches || branches.length === 0) {
         ErrorMessage({ text: 'No branches found. Please check your git repository.' })
         return
       }
       const mergeInfoList: BranchInfo[] = await isBranchMergedToMain(
-        branches.filter((branch) => !excludeBranch.includes(branch))
+        (options.remote ? branches.map((branch) => `origin/${branch}`) : branches).filter(
+          (branch) => !excludeBranch.includes(branch)
+        )
       )
 
       if (mergeInfoList.length === 0) {
@@ -124,26 +132,35 @@ export function branchCommand(command: Command) {
         return
       }
 
-      const enhancedOptions = mergeInfoList.map((branch) => {
-        return {
-          label: `${branch.branch} ${branch.isMerged ? colors.green('(merged)') : colors.yellow('(not merged)')}`,
-          value: {
-            branch: branch.branch,
-            isMerged: branch.isMerged,
-          },
-          hint: branch.isMerged ? 'Safe to delete - already merged to main' : 'Caution - not merged to main',
-        }
-      })
+      const enhancedOptions = await Promise.all(
+        mergeInfoList.map(async (branch) => {
+          const lastCommitTime = await getBranchCommitTime(branch.branch)
+          return {
+            label: `${branch.branch} ${branch.isMerged ? colors.green('(merged)') : colors.yellow('(not merged)')}`,
+            value: {
+              lastCommitTime,
+              branch: branch.branch,
+              isMerged: branch.isMerged,
+            },
+            hint: `last commit: ${formatTime(Number(lastCommitTime))}`,
+          }
+        })
+      )
 
-      const selectedBranch = await createSelect({
+      const deleteBranches = await createCheckbox({
         message: 'Select the branch to delete',
         options: enhancedOptions,
       })
 
-      if (!selectedBranch) {
+      if (!deleteBranches.length) {
         log.error('No branch selected. Aborting delete operation.')
         return
       }
-      await handleDelete(selectedBranch, { isLocal: !options.remote })
+      await Promise.all(
+        deleteBranches.map((branch) =>
+          handleDelete({ branch: branch.branch, isMerged: true }, { isRemote: options.remote ?? false })
+        )
+      )
+      Message({ text: 'Successfully deleted branches' })
     })
 }

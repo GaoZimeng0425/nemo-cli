@@ -2,7 +2,8 @@ import { spawn } from 'node:child_process'
 import { unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { colors, createConfirm, createSpinner, log, x, xASync } from '@nemo-cli/shared'
+
+import { colors, createConfirm, createNote, createSpinner, handleError, log, x, xASync } from '@nemo-cli/shared'
 
 const remotePrefix = /^origin\//
 
@@ -289,8 +290,7 @@ export const handleGitPop = async (branch: string) => {
   }
   const [error, result] = await xASync('git', ['stash', 'pop', name])
   if (!error) {
-    log.show(result.stdout)
-    log.show('Successfully popped changes.')
+    createNote({ message: result.stdout, title: 'Successfully popped changes.' })
   }
 }
 
@@ -310,14 +310,17 @@ export const isBranchMergedToMain = async (branches: string[]): Promise<BranchIn
   }
 
   // const [error, result] = await xASync('git', ['branch', '--merged', 'origin/main'])
+  const remoteMainBranch = await getRemoteMainBranch()
+
+  if (!remoteMainBranch) return []
   return Promise.all<BranchInfo>(
     branches.map(async (branch) => {
-      // const [_, result] = await xASync('git', ['log', `origin/main..${branch}`])
-      // list.push({ branch, isMerged: !!result?.stdout.trim() })
-      const [_, result] = await xASync('git', ['merge-base', '--is-ancestor', branch, 'origin/main'], {
-        quiet: true,
-      })
-      return { branch, isMerged: !!result }
+      const [error, result] = await xASync('git', ['log', `${remoteMainBranch}..${branch}`], { quiet: true })
+      if (error) return { branch, isMerged: false }
+      // const [_, result] = await xASync('git', ['merge-base', '--is-ancestor', branch, remoteMainBranch], {
+      //   quiet: true,
+      // })
+      return { branch, isMerged: !result?.stdout.trim() }
     })
   )
 }
@@ -336,4 +339,35 @@ export const checkGitRepository = async () => {
   } catch (err) {
     return false
   }
+}
+
+export const getRemoteMainBranch = async () => {
+  const [error, result] = await xASync('git', ['symbolic-ref', 'refs/remotes/origin/HEAD'])
+  if (error) return null
+  const branches = result.stdout.trim().split('/')
+  return branches.splice(2).join('/')
+}
+
+export const guessLocalMainBranch = async () => {
+  try {
+    // 获取所有本地分支列表
+    const [error, result] = await xASync('git', ['branch', '--list'])
+    if (error) return null
+    const branches = result.stdout.trim().split('\n')
+    if (branches.includes('main')) {
+      return 'main'
+    }
+    if (branches.includes('master')) {
+      return 'master'
+    }
+    return null
+  } catch (error) {
+    handleError(error, 'Failed to guess local main branch')
+    return null
+  }
+}
+
+export const getBranchCommitTime = async (branch: string) => {
+  const [_, result] = await xASync('git', ['show', '--format=%at', `${branch}`])
+  return result?.stdout.split('\n')[0] ?? Date.now()
 }

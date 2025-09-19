@@ -1,23 +1,11 @@
 import type { Command } from '@nemo-cli/shared'
-import {
-  colors,
-  createConfirm,
-  createInput,
-  createSearch,
-  createSelect,
-  createSpinner,
-  isEmpty,
-  log,
-  x,
-} from '@nemo-cli/shared'
-
+import { colors, createConfirm, createInput, createSearch, createSelect, isEmpty, log, x } from '@nemo-cli/shared'
 import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
 
 const handleCheckout = async (
   branch: string,
   { isNew = false, isRemote = false }: { isNew?: boolean; isRemote?: boolean } = {}
 ) => {
-  const spinner = createSpinner(`Checking out branch ${branch}...`)
   const args = ['checkout']
 
   if (isNew || isRemote) {
@@ -40,10 +28,10 @@ const handleCheckout = async (
 
   const { exitCode, stderr } = await process
   if (exitCode) {
-    spinner.stop(`Failed to checkout branch ${branch}. Command exited with code ${exitCode}.`)
+    log.show(`Failed to checkout branch ${branch}. Command exited with code ${exitCode}.`, { type: 'error' })
     log.show(stderr, { type: 'error' })
   } else {
-    spinner.stop(`Successfully checked out branch ${branch}.`)
+    log.show(`Successfully checked out branch ${branch}.`, { type: 'success' })
   }
 
   stashName && handleGitPop(stashName)

@@ -2,12 +2,11 @@ import process from 'node:process'
 import { Command } from 'commander'
 import { merge } from 'es-toolkit'
 import { type Options, type Output, type Result, x as tinyexec } from 'tinyexec'
-
-// import { $, type ProcessPromise, type Options as ZxOptions } from 'zx'
+import { $, type ProcessPromise, type Options as ZXOptions } from 'zx'
 
 import { handleError } from './error'
 import { log } from './log'
-import { isError } from './types'
+import { isEmpty, isError } from './types'
 // import { isEmpty, isString } from './types'
 
 export const exit = (code: number) => process.exit(code)
@@ -43,16 +42,14 @@ export const createCommand = (name: string): Command => {
 // }
 
 // 动态命令构建函数
-// export const buildCommand = (command: string, dynamicParts: (string | number | boolean | null | undefined)[] = []) => {
-//   const validParts = dynamicParts
-//     .filter((part) => !isEmpty(isString(part) ? part.trim() : part))
-//     .map((part) => part?.toString())
+export const buildCommand = (command: string, dynamicParts: (string | number | boolean | null | undefined)[] = []) => {
+  const validParts = dynamicParts.filter((part) => !isEmpty(part)).map((part) => part?.toString())
 
-//   return {
-//     command,
-//     parts: validParts,
-//   }
-// }
+  return {
+    command,
+    parts: validParts,
+  }
+}
 
 // 增强的动态命令执行函数
 export const x = (command: string, args?: string[], options: Partial<Options> = {}) => {
@@ -60,6 +57,7 @@ export const x = (command: string, args?: string[], options: Partial<Options> = 
     {
       nodeOptions: {
         cwd: process.cwd(),
+        FORCE_COLOR: '1',
       },
       throwOnError: true,
     },
@@ -69,23 +67,24 @@ export const x = (command: string, args?: string[], options: Partial<Options> = 
 }
 
 // 新增：动态命令执行器
-// export const dynamicX = (
-//   baseCommand: string,
-//   dynamicParts: (string | number | boolean | null | undefined)[] = [],
-//   options: DynamicCommandOptions = {}
-// ): ProcessPromise => {
-//   const { command, parts } = buildCommand(baseCommand, dynamicParts)
+export { $ }
+export const zx = (
+  baseCommand: string,
+  dynamicParts: (string | number | boolean | null | undefined)[] = [],
+  options: Partial<ZXOptions> = {}
+): ProcessPromise => {
+  const { command, parts } = buildCommand(baseCommand, dynamicParts)
+  const { signal } = new AbortController()
 
-//   try {
-//     const $$ = isEmpty(options) ? $ : $(options)
+  try {
+    const $$ = isEmpty(options) ? $ : $({ ...options, signal })
 
-//     const a = $$`${command} ${parts}`
-//     return a
-//   } catch (error: any) {
-//     log.info(`\nFailed to execute dynamic command: ${command} ${error.message}\n`, { type: 'error' })
-//     throw error
-//   }
-// }
+    return $$`${command} ${parts}`
+  } catch (error: unknown) {
+    handleError(error, `Failed to execute dynamic command: ${command}`)
+    throw error
+  }
+}
 
 // 模板字符串命令构建器
 // export const template = (strings: TemplateStringsArray, ...values: any[]) => {
@@ -128,33 +127,21 @@ export const x = (command: string, args?: string[], options: Partial<Options> = 
 //   return await Promise.all(promises)
 // }
 
-// 串行命令执行器
-// export const serialX = async (
-//   commands: Array<{
-//     command: string
-//     args?: string[]
-//     options?: DynamicCommandOptions
-//     continueOnError?: boolean
-//   }>
-// ) => {
-//   const results = []
-
-//   for (const { command, args = [], options = {}, continueOnError = false } of commands) {
-//     try {
-//       const result = await dynamicX(command, args, options)
-//       results.push(result)
-//     } catch (error) {
-//       if (!continueOnError) {
-//         throw error
-//       }
-//       log.show(`Command failed but continuing: ${command}`, { type: 'warn' })
-//       results.push(null)
-//     }
-//   }
-
-//   return results
-// }
-
+export const checkCommand = async (_command: string) => {
+  try {
+    const a = await $`command -v git >/dev/null 2>&1`
+    console.log('🚀 : checkCommand :  a:', a)
+    const b = await tinyexec('command', ['-v', 'git', '>/dev/null', '2>&1'])
+    console.log('🚀 : checkCommand :  b:', b)
+    const [error, result] = await xASync('command', ['-v', _command, '>/dev/null', '2>&1'])
+    console.log('🚀 : checkCommand : result:', result)
+    if (error) return false
+    return !!result.stdout
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
 export const xASync = async (
   command: string,
   args?: string[],

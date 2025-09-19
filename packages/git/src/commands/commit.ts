@@ -1,3 +1,5 @@
+import type { LoadConfigResult } from 'unconfig'
+
 import type { Command } from '@nemo-cli/shared'
 import {
   addFiles,
@@ -18,8 +20,6 @@ import {
   xASync,
 } from '@nemo-cli/shared'
 import { ErrorMessage } from '@nemo-cli/ui'
-import type { LoadConfigResult } from 'unconfig'
-
 import { getCurrentBranch } from '../utils'
 import {
   type CommitlintConfigType,

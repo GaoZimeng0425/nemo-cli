@@ -18,16 +18,16 @@
     "sea": "node --experimental-sea-config sea-config.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.3",
+    "@biomejs/biome": "^2.2.4",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@types/node": "^24.3.1",
-    "@typescript/native-preview": "7.0.0-dev.20250909.1",
+    "@types/node": "^24.5.0",
+    "@typescript/native-preview": "7.0.0-dev.20250916.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
-    "rolldown": "1.0.0-beta.36",
-    "rolldown-plugin-dts": "^0.16.1",
-    "tsdown": "^0.15.0",
+    "rolldown": "1.0.0-beta.38",
+    "rolldown-plugin-dts": "^0.16.5",
+    "tsdown": "^0.15.1",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
@@ -41,7 +41,7 @@
     "dotenv": "^17.2.2",
     "es-toolkit": "^1.39.10",
     "unconfig": "^7.3.3",
-    "zod": "^4.1.5",
+    "zod": "^4.1.8",
     "zod-validation-error": "^4.0.1"
   },
   "lint-staged": {
