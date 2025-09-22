@@ -36,12 +36,17 @@ export const readJSON = (path: string, _overwrite = false) => {
   log.error('file', `你所查找的${path}文件不存在`)
 }
 
-export const writeJSON = (path: string, content: string, force = false) => {
+export const writeJSON = (path: string, content: AnyObject, force = false) => {
   const exist = fse.existsSync(path)
   if (!exist) {
     force ? fse.ensureDirSync(path) : log.error('file', `你所查找的${path}文件不存在`)
   }
-  return fse.writeFileSync(path, content)
+  return fse.writeFileSync(path, JSON.stringify(content, null, 2))
+}
+
+export const readFile = (importMeta: { url: string }, ...paths: string[]): string => {
+  const path = resolve(dirname(importMeta), ...paths)
+  return fse.readFileSync(path, 'utf-8')
 }
 
 export const copyFile = (src: PathLike, dest: PathLike, _overwrite = false) => {

@@ -1,7 +1,7 @@
 {
-  "name": "@nemo-cli/ui",
+  "name": "@nemo-cli/mail",
   "version": "0.0.1",
-  "description": "React TUI Components",
+  "description": "Mail CLI",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",
   "license": "ISC",
@@ -33,22 +33,14 @@
     "prepack": "rolldown"
   },
   "dependencies": {
-    "@inkjs/ui": "^2.0.0",
     "@nemo-cli/shared": "workspace:*",
-    "cfonts": "^3.3.1",
-    "chalk": "^5.6.2",
-    "cli-table3": "^0.6.5",
-    "figlet": "^1.9.2",
-    "figures": "^6.1.0",
-    "ink": "^6.3.0",
-    "ink-big-text": "^2.0.0",
-    "ink-gradient": "^3.0.0",
-    "ink-markdown": "^1.0.4",
-    "ink-table": "^3.1.0",
-    "marked": "^16.3.0",
+    "@nemo-cli/ui": "workspace:*",
+    "@react-email/components": "^0.5.3",
+    "nodemailer": "^7.0.6",
     "react": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "catalog:"
+    "@types/react": "catalog:",
+    "@types/nodemailer": "^7.0.1"
   }
 }

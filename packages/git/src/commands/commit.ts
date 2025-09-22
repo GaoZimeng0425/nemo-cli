@@ -12,6 +12,7 @@ import {
   createSelect,
   createSpinner,
   exit,
+  getCurrentBranch,
   getGitStatus,
   intro,
   loadConfig,
@@ -20,7 +21,6 @@ import {
   xASync,
 } from '@nemo-cli/shared'
 import { ErrorMessage } from '@nemo-cli/ui'
-import { getCurrentBranch } from '../utils'
 import {
   type CommitlintConfigType,
   commitlintConfig,

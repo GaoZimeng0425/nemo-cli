@@ -1,6 +1,7 @@
 import { readPackage } from './utils/file'
 
 export * from './constants'
+export * from './utils/browser'
 export * from './utils/color'
 export * from './utils/command'
 export * from './utils/common'

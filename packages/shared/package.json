@@ -53,6 +53,7 @@
     "ora": "^9.0.0",
     "p-limit": "^7.1.1",
     "package-manager-detector": "^1.3.0",
+    "superjson": "^2.2.2",
     "tinyexec": "^1.0.1",
     "unconfig": "^7.3.3",
     "update-notifier": "^7.3.1",

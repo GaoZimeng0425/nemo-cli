@@ -1,8 +1,7 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createConfirm, createSelect, createSpinner, log, x } from '@nemo-cli/shared'
+import { colors, createConfirm, createSelect, createSpinner, getCurrentBranch, log, x } from '@nemo-cli/shared'
 import { BigText } from '@nemo-cli/ui'
-
-import { getCurrentBranch, getRemoteOptions } from '../utils'
+import { getRemoteOptions } from '../utils'
 
 const handlePush = async (branch: string) => {
   const spinner = createSpinner(`Pushing branch ${branch} to remote...`)

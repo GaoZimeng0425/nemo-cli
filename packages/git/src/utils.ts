@@ -3,7 +3,17 @@ import { unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { colors, createConfirm, createNote, createSpinner, handleError, log, x, xASync } from '@nemo-cli/shared'
+import {
+  colors,
+  createConfirm,
+  createNote,
+  createSpinner,
+  getCurrentBranch,
+  handleError,
+  log,
+  x,
+  xASync,
+} from '@nemo-cli/shared'
 
 const remotePrefix = /^origin\//
 
@@ -34,14 +44,6 @@ export const getLocalBranches = async (): Promise<{ branches: string[]; currentB
     branches,
     currentBranch: formatBranch(currentBranch),
   }
-}
-
-export const getCurrentBranch = async () => {
-  const [error, result] = await xASync('git', ['branch', '--show-current'])
-  if (error) {
-    return ''
-  }
-  return result.stdout.trim()
 }
 
 export const getRemoteOptions = async () => {

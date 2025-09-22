@@ -1,6 +1,5 @@
-import { type Command, createOptions, createSelect, log, type Result, x } from '@nemo-cli/shared'
-
-import { getCurrentBranch, getLocalBranches, getRemoteBranches } from '../utils'
+import { type Command, createOptions, createSelect, getCurrentBranch, log, type Result, x } from '@nemo-cli/shared'
+import { getLocalBranches, getRemoteBranches } from '../utils'
 
 const handleDiff = async (branch: string, { isLocal }: { isLocal: boolean }) => {
   console.log('🚀 : handleDiff : branch:', branch, isLocal)

@@ -6,6 +6,9 @@
   "homepage": "",
   "license": "ISC",
   "type": "module",
+  "bin": {
+    "na": "./bin/index.mjs"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -36,11 +39,13 @@
     "@ai-sdk/deepseek": "^1.0.18",
     "@ai-sdk/google": "^2.0.14",
     "@ai-sdk/openai": "^2.0.30",
+    "@nemo-cli/git": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "ai": "^5.0.44"
+    "@nemo-cli/mail": "workspace:*",
+    "ai": "^5.0.44",
+    "confluence.js": "^2.1.0",
+    "fastmcp": "^3.17.0"
   },
-  "devDependencies": {
-    "@types/react": "^19.1.13"
-  }
+  "devDependencies": {}
 }

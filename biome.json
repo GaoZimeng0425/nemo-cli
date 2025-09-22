@@ -27,6 +27,13 @@
       }
     }
   },
+  "html": {
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "enabled": true
+    }
+  },
   "css": {
     "formatter": {
       "enabled": true
