@@ -121,7 +121,7 @@ export const commitCommand = (command: Command) => {
         message: 'Select type:',
         options: mergeCommitTypeEnumOptions((options.config ?? commitlintConfig)!.rules['type-enum'][2] as string[]),
       })
-      //4. 获取当前cwd文件夹下 commitlint 文件中的 scope-enum 进行选择
+      // 4. 获取当前cwd文件夹下 commitlint 文件中的 scope-enum 进行选择
       const commitScope = await createSelect({
         message: 'Select scope:',
         options: mergeCommitScopeEnumOptions((options.config ?? commitlintConfig)!.rules['scope-enum'][2] as string[]),

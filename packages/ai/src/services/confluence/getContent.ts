@@ -2,15 +2,14 @@ import { client, HOST_WIKI } from '.'
 
 const RELEASE_TITLE = '提测&上线单'
 const TRACK_TITLE = '需求跟踪'
-export const fuzzySearchContent = async ({
-  id,
-  release = false,
-  track = false,
-}: {
+
+type FuzzySearchContentProps = {
   id: number
   release?: boolean
   track?: boolean
-}) => {
+}
+
+export const fuzzySearchContent = async ({ id, release = false, track = false }: FuzzySearchContentProps) => {
   const titles = ['PRIME', id]
 
   if (release) {

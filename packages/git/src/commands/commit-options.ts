@@ -203,7 +203,7 @@ export const mergeCommitScopeEnumOptions = (options: string[]) => {
   // 与 commitScopeOptions 进行对比，如果 options 中存在，则返回 options 中的 value 和 label
   const result = options.includes('none') ? options : options.concat('none')
   return result.map((option) => {
-    const commitScopeOption = commitScopeOptions.find((commitScopeOption) => commitScopeOption.value === option)
+    const commitScopeOption = commitScopeOptions.find((commitScopeOption) => commitScopeOption.label === option)
     return {
       value: commitScopeOption?.value ?? option,
       label: commitScopeOption?.label ?? option,
