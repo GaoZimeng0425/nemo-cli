@@ -36,16 +36,16 @@
     "prepack": "rolldown"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^1.0.18",
-    "@ai-sdk/google": "^2.0.14",
-    "@ai-sdk/openai": "^2.0.30",
+    "@ai-sdk/deepseek": "^1.0.20",
+    "@ai-sdk/google": "^2.0.17",
+    "@ai-sdk/openai": "^2.0.38",
     "@nemo-cli/git": "workspace:*",
+    "@nemo-cli/mail": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "@nemo-cli/mail": "workspace:*",
-    "ai": "^5.0.44",
+    "@slack/bolt": "^4.4.0",
+    "ai": "^5.0.56",
     "confluence.js": "^2.1.0",
-    "fastmcp": "^3.17.0"
-  },
-  "devDependencies": {}
+    "fastmcp": "^3.18.0"
+  }
 }

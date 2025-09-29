@@ -1,5 +1,16 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createConfirm, createInput, createSearch, createSelect, isEmpty, log, x } from '@nemo-cli/shared'
+import {
+  colors,
+  createConfirm,
+  createInput,
+  createOptions,
+  createSearch,
+  createSelect,
+  isEmpty,
+  isString,
+  log,
+  x,
+} from '@nemo-cli/shared'
 import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
 
 const handleCheckout = async (
@@ -37,7 +48,6 @@ const handleCheckout = async (
   stashName && handleGitPop(stashName)
 }
 
-const allDigits = /^\d+$/
 export function checkoutCommand(command: Command) {
   command
     .command('checkout')
@@ -50,9 +60,22 @@ export function checkoutCommand(command: Command) {
       let isLocal = params.local && !params.remote
       const branch = params.branch
       if (branch) {
-        const newBranchName = branch === true ? await createInput({ message: 'Enter the new branch name:' }) : branch
-        const isAllDigits = allDigits.test(newBranchName)
-        handleCheckout(isAllDigits ? `feature/PRIME-${newBranchName}` : newBranchName, { isNew: true })
+        if (isString(branch)) {
+          handleCheckout(branch, { isNew: true })
+          return
+        }
+        const branchType = await createSelect({
+          message: 'Enter the new branch name:',
+          options: createOptions(['feature/PRIME-', 'feature/', 'bugfix/']),
+        })
+        const branchName = await createInput({
+          message: 'Enter the new branch name:',
+          validate: (value) => {
+            if (!value?.trim()) return 'Branch name is required'
+            if (value.length > 15) return 'Branch name must be less than 15 characters'
+          },
+        })
+        handleCheckout(`${branchType}${branchName}`, { isNew: true })
         return
       }
 

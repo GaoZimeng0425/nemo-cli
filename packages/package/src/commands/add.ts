@@ -1,7 +1,5 @@
-import type { Command } from '@nemo-cli/shared'
-import { createCheckbox, createInput, getWorkspaceNames, isString } from '@nemo-cli/shared'
+import { type Command, createCheckbox, createInput, getWorkspaceNames, isString } from '@nemo-cli/shared'
 import { ErrorMessage, Message, ProcessMessage } from '@nemo-cli/ui'
-
 import { HELP_MESSAGE } from '../constants'
 
 type AddHandleOptions = {
@@ -11,6 +9,7 @@ type AddHandleOptions = {
   peer?: boolean
 }
 
+const ROOT_VALUE = 'root'
 const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
   const { saveProd = true, exact = false, peer = false, workspaces } = options
 
@@ -19,8 +18,10 @@ const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
     exact ? '--save-exact' : '',
     peer ? '--save-peer' : '',
   ].filter(Boolean)
+  const isRootWorkspace = workspaces.find((item) => item === ROOT_VALUE)
 
-  const filter = workspaces.map((name) => `--filter=${name}`)
+  const filter = isRootWorkspace ? '-w' : workspaces.map((name) => `--filter=${name}`)
+
   const commandParts = [...flags, 'add', ...filter, ...dependencies]
 
   const instance = ProcessMessage({
@@ -43,6 +44,7 @@ const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
   await instance.waitUntilExit()
 }
 
+const REGEXP_SPLIT_NAMES = /\W+/
 const ensurePackage = async (input: string | string[]): Promise<string[]> => {
   const inputList = isString(input) ? [input] : input
   const packageNames = inputList?.map((input) => input.trim()) || []
@@ -52,7 +54,7 @@ const ensurePackage = async (input: string | string[]): Promise<string[]> => {
       message: 'Enter dependency names (space-separated):',
       validate: (name) => (!name ? 'Please enter the package name you want to install' : undefined),
     })
-    packageNames.push(packageName)
+    return packageName.split(REGEXP_SPLIT_NAMES).filter(Boolean)
   }
   return packageNames
 }
@@ -77,12 +79,16 @@ export const addCommand = (program: Command) => {
         return
       }
 
-      const workspaces = await createCheckbox({
-        message: 'Select a workspace to add dependencies to:',
-        options: workspaceNames.map((pkg) => ({
+      const workspaceOptions = [{ label: 'Root', value: ROOT_VALUE }].concat(
+        workspaceNames.map((pkg) => ({
           label: `${pkg.name} (${pkg.path})`,
           value: pkg.name,
-        })),
+        }))
+      )
+
+      const workspaces = await createCheckbox({
+        message: 'Select a workspace to add dependencies to:',
+        options: workspaceOptions,
         required: true,
       })
 

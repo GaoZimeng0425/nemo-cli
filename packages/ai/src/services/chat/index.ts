@@ -1,10 +1,9 @@
 import { execSync } from 'node:child_process'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { generateObject, streamText } from 'ai'
+import { generateObject, generateText, streamText } from 'ai'
 import z from 'zod/v4'
 
 import { loadEnv } from '@nemo-cli/shared'
-import { Message } from '@nemo-cli/ui'
 
 loadEnv(import.meta, '..', '.env')
 
@@ -12,7 +11,7 @@ const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
 })
 
-const get = () => {
+export const get = () => {
   const diff = getGitDiff()
   const result = generateObject({
     model: google('gemini-2.5-flash'),
@@ -65,7 +64,7 @@ type ChatParams = {
   onReasoning?: (reasoning: string) => void
   onFinish?: ({ message, reasoning }: { message: string; reasoning: string }) => void
 }
-const useChat = async ({ onMessage, onReasoning, onFinish }: ChatParams) => {
+export const useChat = async ({ onMessage, onReasoning, onFinish }: ChatParams) => {
   const diff = getGitDiff()
 
   const result = streamText({
@@ -103,6 +102,23 @@ const useChat = async ({ onMessage, onReasoning, onFinish }: ChatParams) => {
   onFinish?.({ message, reasoning })
 }
 
-const result = await get()
+// const result = await get()
 
-Message({ text: result.object.summary })
+// Message({ text: result.object.summary })
+
+export const translateChat = async ({ message }: { message: string }) => {
+  const response = await generateText({
+    model: google('gemini-2.5-flash'),
+    messages: [
+      {
+        role: 'system',
+        content: '请你扮演一名优秀的资深翻译, 将所有语言翻译为英语. 只返回翻译文字, 不返回其他信息',
+      },
+      {
+        role: 'user',
+        content: `以下是需要翻译的文字: ${message}`,
+      },
+    ],
+  })
+  return response
+}

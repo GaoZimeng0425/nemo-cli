@@ -86,7 +86,16 @@
       },
       "complexity": {},
       "correctness": {
-        "noUnusedVariables": "off",
+        "noUnusedVariables": {
+          "options": {},
+          "level": "info",
+          "fix": "none"
+        },
+        "noUnusedImports": {
+          "options": {},
+          "level": "info",
+          "fix": "none"
+        },
         "noNodejsModules": "off",
         "noUndeclaredDependencies": "off",
         "useExhaustiveDependencies": "info",

@@ -5,6 +5,10 @@
 
 
 # 前置条件
+
+1. 申请 OAuth2.0:
+    - <https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/>
+    - <https://developer.atlassian.com/console/myapps/>
 1. 申请 Confluence Token: https://id.atlassian.com/manage-profile/security/api-tokens
 2. 创建 Google Auth App: https://myaccount.google.com/apppasswords
 3. 添加到 .env 文件中

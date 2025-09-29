@@ -1,4 +1,3 @@
-import { isChinese } from '@nemo-cli/shared'
 import {
   type CallExpression,
   Node,
@@ -7,6 +6,8 @@ import {
   type StringLiteral,
   type VariableDeclaration,
 } from 'ts-morph'
+
+import { isChinese } from '@nemo-cli/shared'
 
 enum JsxEmit {
   None = 0,
@@ -34,7 +35,7 @@ const variableHandle = (node: VariableDeclaration) => {
   }
   return identifiers
 }
-const handleStringLiteral = (node: StringLiteral) => {
+const _handleStringLiteral = (node: StringLiteral) => {
   const identifiers: string[] = []
   const literalValue = node.getLiteralText()
   identifiers.push(literalValue)
