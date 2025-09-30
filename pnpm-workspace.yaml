@@ -1,13 +1,14 @@
 packages:
   - packages/*
 
+catalog:
+  '@types/react': ^19.1.16
+  react: ^19.1.1
+
 onlyBuiltDependencies:
+  - core-js
   - esbuild
   - unrs-resolver
 
 overrides:
   '@nemo-cli/package': link:packages/package
-
-catalog:
-  react: ^19.1.1
-  "@types/react": ^19.1.13

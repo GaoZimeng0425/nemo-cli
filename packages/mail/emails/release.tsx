@@ -34,21 +34,12 @@ export const ReleaseEmail = ({ docLink, title, id }: ReleaseEmailProps) => {
         }}
       >
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Preview>Release Email</Preview>
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-[#eaeaea] border-solid p-[20px]">
-            <Section className="mt-[32px]">
-              <Img
-                alt="Vercel Logo"
-                className="mx-auto my-0"
-                height="37"
-                src="https://github.com/user-attachments/assets/7bc8f7c1-1877-4ddd-89f9-4f8d9bc32ed5"
-                width="40"
-              />
-            </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center font-normal text-[24px] text-black">{title}</Heading>
+          <Preview>上线邮件</Preview>
+          <Container className="mx-auto my-10 max-w-lg rounded border border-[#eaeaea] border-solid p-5">
+            <Heading className="mx-0 my-5 p-0 text-center font-normal text-[24px] text-black">{title}</Heading>
             <Text className="text-[14px] text-black leading-[24px]">Hello Team,</Text>
             <Text className="text-[14px] text-black leading-[24px]">
-              <b>zimeng.gao</b> (
+              <b>发布上线</b> (
               <Link className="text-blue-600 no-underline" href={`mailto:${'zimeng.gao@antalpha.com'}`}>
                 {'zimeng.gao@antalpha.com'}
               </Link>
@@ -110,3 +101,5 @@ export const ReleaseEmail = ({ docLink, title, id }: ReleaseEmailProps) => {
     </Html>
   )
 }
+
+export default ReleaseEmail

@@ -1,5 +1,6 @@
-import { isEmpty } from '@nemo-cli/shared'
 import { ErrorCode, WebClient } from '@slack/web-api'
+
+import { isEmpty } from '@nemo-cli/shared'
 
 const web = new WebClient(process.env.SLACK_TOKEN)
 const SlackMessage = {

@@ -1,0 +1,12 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# React组件规范
+
+- 使用函数组件，禁用类组件
+- 样式使用TailwindCSS
+- 状态管理使用zustand
+- 组件必须有PropTypes类型定义
+- 代码拆分采用动态导入

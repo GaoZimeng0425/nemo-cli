@@ -9,6 +9,6 @@ export default {
       ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert', 'wip', 'release'],
     ],
     'scope-empty': [1, 'always'], // scop 可选
-    'scope-enum': [1, 'always', ['cli', 'git', 'shared', 'utils', 'workspace', 'ai', 'ui']],
+    'scope-enum': [1, 'always', ['git', 'shared', 'ai', 'ui', 'packages', 'mail']],
   },
 }

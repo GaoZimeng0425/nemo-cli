@@ -48,6 +48,7 @@
     "packages/*/*.json",
     "packages/*/*.d.ts",
     "packages/*/src",
+    "packages/mail/emails",
     "packages/*/__tests__",
     "packages/*/*.json",
     "packages/global.d.ts",

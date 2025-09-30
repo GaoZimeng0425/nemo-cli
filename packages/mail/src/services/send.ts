@@ -3,9 +3,10 @@ import nodemailer from 'nodemailer'
 import type Mail from 'nodemailer/lib/mailer'
 
 import { loadEnv, safeAwait } from '@nemo-cli/shared'
-import { ReleaseEmail } from './release'
+import ReleaseEmail from '../../emails/release'
 
 loadEnv(import.meta, '..', '..', '.env')
+
 const TO = ['gaozimeng0425@gmail.com']
 const CC = ['gzm1211@126.com']
 

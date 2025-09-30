@@ -11,24 +11,28 @@
     "coverage": "vitest run --coverage",
     "preinstall": "npx only-allow pnpm",
     "dev": "pnpm run -r --parallel dev",
+    "dev:email": "pnpm run --filter=@nemo-cli/mail dev:email",
+    "dev:slack": "pnpm run --filter=@nemo-cli/ai dev:slack",
     "build": "pnpm run -r --parallel build",
     "build-dts": "pnpm run -r --parallel build-dts",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
+    "compile": "tsc --noEmit",
     "sea": "node --experimental-sea-config sea-config.json"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@types/node": "^24.5.0",
-    "@typescript/native-preview": "7.0.0-dev.20250916.1",
+    "@commitlint/cli": "^20.0.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@types/node": "^24.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20250929.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.6",
-    "rolldown": "1.0.0-beta.38",
-    "rolldown-plugin-dts": "^0.16.5",
-    "tsdown": "^0.15.1",
-    "tsx": "^4.20.5",
+    "lint-staged": "^16.2.3",
+    "rolldown": "1.0.0-beta.41",
+    "rolldown-plugin-dts": "^0.16.11",
+    "semantic-release": "^24.2.9",
+    "tsdown": "^0.15.5",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
@@ -37,13 +41,15 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "@slack/bolt": "^4.4.0",
     "@slack/web-api": "^7.10.0",
-    "dotenv": "^17.2.2",
+    "arktype": "^2.1.22",
+    "dotenv": "^17.2.3",
     "es-toolkit": "^1.39.10",
     "superjson": "^2.2.2",
     "unconfig": "^7.3.3",
-    "zod": "^4.1.8",
-    "zod-validation-error": "^4.0.1"
+    "zod": "^4.1.11",
+    "zod-validation-error": "^4.0.2"
   },
   "lint-staged": {
     "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
