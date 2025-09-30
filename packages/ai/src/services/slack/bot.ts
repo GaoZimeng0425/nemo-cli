@@ -1,4 +1,4 @@
-import SlackBolt from '@slack/bolt'
+import SlackBolt, { type SlackEventMiddlewareArgs } from '@slack/bolt'
 
 import { createSpinner, loadEnv } from '@nemo-cli/shared'
 import { translateChat } from '../chat'
@@ -27,7 +27,7 @@ const ACTION_ID = 'button_click'
 //         type: 'section',
 //         text: {
 //           type: 'mrkdwn',
-//           text: `Hey there <@${message.user}>! !!asd;lfj asdlfjas `,
+//           text: `Hey there <@${message.user}>!`,
 //         },
 //         accessory: {
 //           type: 'button',
@@ -43,14 +43,35 @@ const ACTION_ID = 'button_click'
 //   })
 // })
 
-// app.action(ACTION_ID, async ({ body, ack, say }) => {
-//   // Acknowledge the action
-//   await ack()
-//   await say(`<@${body.user.id}> clicked the button`)
-// })
+app.message(':wave:', async ({ message, say }) => {
+  // Handle only newly posted messages here
+  if (
+    message.subtype === undefined ||
+    message.subtype === 'bot_message' ||
+    message.subtype === 'file_share' ||
+    message.subtype === 'thread_broadcast'
+  ) {
+    await say(`Hello, <@${message.user}>`)
+  }
+})
 
-app.message(async ({ message, say }) => {
-  const response = await translateChat({ message: message.text })
+app.action(ACTION_ID, async ({ body, ack, client, respond }) => {
+  await ack()
+  // Use client.chat.postMessage instead of say, as say is not available in action middleware
+  const channelId = body.channel?.id ?? body.user.id
+  await client.chat.postMessage({
+    channel: channelId,
+    text: `<@${body.user.id}> clicked the button`,
+  })
+  await respond({
+    text: `已处理来自 <@${body.user.id}> 的点击`,
+    response_type: 'ephemeral',
+  })
+})
+
+app.message(async ({ message, say }: SlackEventMiddlewareArgs<'message'>) => {
+  if (message.subtype) return
+  // const response = await translateChat({ message: message.text ?? '' })
 
   await say({
     blocks: [
@@ -58,7 +79,7 @@ app.message(async ({ message, say }) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `<@${message.user}> ${response.text}`,
+          text: `<@${message.user}>`,
         },
         accessory: {
           type: 'button',
@@ -74,23 +95,22 @@ app.message(async ({ message, say }) => {
   })
 })
 
+const REPLACE_BOT_EXPRESSION = /<@.*?>/
 app.event('app_mention', async ({ event, say }) => {
   try {
-    // 提取用户发送的消息（去除 @ 机器人部分）
-    const userMessage = event.text.replace(/<@.*?>/, '').trim()
+    const userMessage = event.text.replace(REPLACE_BOT_EXPRESSION, '').trim()
 
+    const text = `你好 <@${event.user}>！你刚才说：*${userMessage}*`
     // 回复用户
     await say({
       blocks: [
         {
           type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `你好 <@${event.user}>！你刚才说：*${userMessage}*`,
-          },
+          text: { type: 'mrkdwn', text },
         },
       ],
-      text: `你好 @${event.user}！你刚才说：${userMessage}`,
+      text,
+      thread_ts: event.ts,
     })
   } catch (error) {
     console.error('Error responding to mention:', error)

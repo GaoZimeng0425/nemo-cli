@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@react-email/preview-server": "4.2.12",
-    "@types/nodemailer": "^7.0.1",
+    "@types/nodemailer": "^7.0.2",
     "@types/react": "catalog:",
     "react-email": "^4.2.12"
   }
