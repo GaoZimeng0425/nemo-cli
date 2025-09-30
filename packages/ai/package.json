@@ -44,7 +44,6 @@
     "@nemo-cli/mail": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "@slack/bolt": "^4.4.0",
     "ai": "^5.0.59",
     "confluence.js": "^2.1.0",
     "fastmcp": "^3.18.0"

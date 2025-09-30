@@ -44,17 +44,16 @@ const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
   await instance.waitUntilExit()
 }
 
-const REGEXP_SPLIT_NAMES = /\W+/
 const ensurePackage = async (input: string | string[]): Promise<string[]> => {
   const inputList = isString(input) ? [input] : input
   const packageNames = inputList?.map((input) => input.trim()) || []
 
   if (packageNames.length === 0) {
     const packageName = await createInput({
-      message: 'Enter dependency names (space-separated):',
+      message: 'Enter dependency names (space or comma separated):',
       validate: (name) => (!name ? 'Please enter the package name you want to install' : undefined),
     })
-    return packageName.split(REGEXP_SPLIT_NAMES).filter(Boolean)
+    return packageName.split(/[\s,，]+/).filter(Boolean)
   }
   return packageNames
 }
