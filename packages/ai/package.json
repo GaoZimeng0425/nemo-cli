@@ -28,6 +28,7 @@
   "scripts": {
     "dev:slack": "tsx src/services/slack/bot.ts",
     "dev": "rolldown --watch -c ./rolldown.config.ts",
+    "start": "node dist/index.js",
     "build": "rolldown -c ./rolldown.config.ts",
     "build-dts": "rolldown -c ./rolldown.config.ts",
     "test": "vitest",
@@ -37,15 +38,15 @@
     "prepack": "rolldown"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^1.0.20",
-    "@ai-sdk/google": "^2.0.17",
-    "@ai-sdk/openai": "^2.0.42",
+    "@ai-sdk/deepseek": "^1.0.23",
+    "@ai-sdk/google": "^2.0.20",
+    "@ai-sdk/openai": "^2.0.48",
     "@nemo-cli/git": "workspace:*",
     "@nemo-cli/mail": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "ai": "^5.0.59",
+    "ai": "^5.0.68",
     "confluence.js": "^2.1.0",
-    "fastmcp": "^3.18.0"
+    "fastmcp": "^3.19.1"
   }
 }

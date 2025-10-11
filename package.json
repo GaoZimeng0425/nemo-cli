@@ -7,6 +7,7 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
+    "start": "pnpm run -r --parallel start",
     "format": "biome format --write",
     "coverage": "vitest run --coverage",
     "preinstall": "npx only-allow pnpm",
@@ -21,19 +22,19 @@
     "sea": "node --experimental-sea-config sea-config.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
-    "@commitlint/cli": "^20.0.0",
+    "@biomejs/biome": "^2.2.5",
+    "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@types/node": "^24.6.0",
-    "@typescript/native-preview": "7.0.0-dev.20250929.1",
+    "@types/node": "^24.7.1",
+    "@typescript/native-preview": "7.0.0-dev.20251011.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.3",
-    "rolldown": "1.0.0-beta.41",
+    "lint-staged": "^16.2.4",
+    "rolldown": "1.0.0-beta.42",
     "rolldown-plugin-dts": "^0.16.11",
     "semantic-release": "^24.2.9",
-    "tsdown": "^0.15.5",
+    "tsdown": "^0.15.6",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "publishConfig": {
@@ -41,14 +42,14 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@slack/bolt": "^4.4.0",
-    "@slack/web-api": "^7.10.0",
+    "@slack/bolt": "^4.5.0",
+    "@slack/web-api": "^7.11.0",
     "arktype": "^2.1.22",
     "dotenv": "^17.2.3",
-    "es-toolkit": "^1.39.10",
+    "es-toolkit": "^1.40.0",
     "superjson": "^2.2.2",
     "unconfig": "^7.3.3",
-    "zod": "^4.1.11",
+    "zod": "^4.1.12",
     "zod-validation-error": "^4.0.2"
   },
   "lint-staged": {

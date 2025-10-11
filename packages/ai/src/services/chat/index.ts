@@ -3,10 +3,6 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { generateObject, generateText, streamText } from 'ai'
 import z from 'zod/v4'
 
-import { loadEnv } from '@nemo-cli/shared'
-
-loadEnv(import.meta, '..', '.env')
-
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
 })

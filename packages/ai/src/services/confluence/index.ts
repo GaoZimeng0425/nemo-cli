@@ -1,9 +1,5 @@
 import { ConfluenceClient } from 'confluence.js'
 
-import { loadEnv } from '@nemo-cli/shared'
-
-loadEnv(import.meta, '..', '..', '..', '.env')
-
 export const HOST = 'https://antalpha.atlassian.net'
 export const HOST_WIKI = `${HOST}/wiki`
 

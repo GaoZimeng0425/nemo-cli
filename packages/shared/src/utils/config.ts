@@ -16,29 +16,22 @@ type StoreOptions = {
 }
 
 export const loadEnv = (importMeta: { url: string }, ...paths: string[]) => {
-  console.log('🚀 : loadEnv : importMeta:', importMeta.url)
-
   // Try the provided path first
   const providedPath = path.resolve(dirname(importMeta), ...paths)
-  console.log('Trying provided path:', providedPath)
 
   if (existsSync(providedPath)) {
-    console.log('✅ Found .env at provided path:', providedPath)
     dotenvConfig({ path: providedPath, quiet: true })
     return
   }
 
   // If provided path doesn't work, try to find .env file by walking up the directory tree
   let currentDir = dirname(importMeta)
-  console.log('🚀 : loadEnv : currentDir:', currentDir)
   const maxLevels = 10 // Prevent infinite loop
 
   for (let i = 0; i < maxLevels; i++) {
     const envPath = path.join(currentDir, '.env')
-    console.log(`Trying level ${i}:`, envPath)
 
     if (existsSync(envPath)) {
-      console.log('✅ Found .env at:', envPath)
       dotenvConfig({ path: envPath, quiet: true })
       return
     }
@@ -47,9 +40,8 @@ export const loadEnv = (importMeta: { url: string }, ...paths: string[]) => {
     if (parentDir === currentDir) break // Reached root directory
     currentDir = parentDir
   }
-
-  console.log('❌ Could not find .env file')
 }
+
 export const createStore = (name: string, options: StoreOptions): Configstore => {
   if (!options.path) throw Error('Store subpath is necessary!')
 

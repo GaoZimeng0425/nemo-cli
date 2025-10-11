@@ -2,10 +2,8 @@ import { render } from '@react-email/components'
 import nodemailer from 'nodemailer'
 import type Mail from 'nodemailer/lib/mailer'
 
-import { loadEnv, safeAwait } from '@nemo-cli/shared'
+import { safeAwait } from '@nemo-cli/shared'
 import ReleaseEmail from '../../emails/release'
-
-loadEnv(import.meta, '..', '..', '.env')
 
 const TO = ['gaozimeng0425@gmail.com']
 const CC = ['gzm1211@126.com']
@@ -21,7 +19,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export const sendMail = async ({ id, content }: { id: number; content: { webui: string } }) => {
+export const sendReleaseMail = async ({ id, content }: { id: number; content: { webui: string } }) => {
   if (!content.webui) return [new Error('没有上线工单'), null]
   const subject = `PRIME-${id} [上线/预发] 申请`
 

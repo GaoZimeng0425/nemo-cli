@@ -2,6 +2,7 @@ import { FastMCP } from 'fastmcp'
 
 import { addConfluenceMCP } from './services/confluence/mcp'
 import { addMailMCP } from './services/mails/mcp'
+import { run } from './services/slack/bot'
 
 const server = new FastMCP({
   name: 'Prime Workflow',
@@ -14,3 +15,5 @@ addMailMCP(server)
 server.start({
   transportType: 'stdio',
 })
+
+run()
