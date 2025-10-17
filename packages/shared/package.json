@@ -28,13 +28,13 @@
     "build-dts": "rolldown -c ./rolldown.config.ts",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "check": "tsc --incremental --noEmit",
     "prepublish": "npm run build",
-    "prepack": "rolldown"
+    "prepack": "rolldown",
+    "check": "biome check --write"
   },
   "dependencies": {
     "@clack/prompts": "1.0.0-alpha.4",
-    "@inquirer/prompts": "^7.8.6",
+    "@inquirer/prompts": "^7.9.0",
     "@nemo-cli/ui": "workspace:*",
     "@postlight/parser": "^2.2.3",
     "acorn": "^8.15.0",
@@ -53,7 +53,7 @@
     "open": "^10.2.0",
     "ora": "^9.0.0",
     "p-limit": "^7.1.1",
-    "package-manager-detector": "^1.4.0",
+    "package-manager-detector": "^1.4.1",
     "superjson": "^2.2.2",
     "tinyexec": "^1.0.1",
     "unconfig": "^7.3.3",

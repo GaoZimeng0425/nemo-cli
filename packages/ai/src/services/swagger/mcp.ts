@@ -10,6 +10,7 @@ export const addSwaggerMCP = (server: FastMCP) => {
     parameters: z.object({
       APIUrl: z.string(),
     }),
+    // biome-ignore lint/suspicious/noExplicitAny: ignore
     execute: async ({ APIUrl }): Promise<any> => {
       const response = await getJSON(APIUrl)
       return response

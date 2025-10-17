@@ -18,6 +18,3 @@ export const getJSON = async (url: string) => {
 
   return data
 }
-
-const a = await getJSON('/api/v2/rcp')
-console.log('🚀 : a  =:', a)

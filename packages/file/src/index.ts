@@ -1,5 +1,4 @@
 import { createCommand, readPackage } from '@nemo-cli/shared'
-
 import { astFilesCommand } from './commands/ast'
 import { cleanCommand } from './commands/clean'
 import { createRoutesCommand } from './commands/create-routes'

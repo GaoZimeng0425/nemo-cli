@@ -33,20 +33,20 @@
     "build-dts": "rolldown -c ./rolldown.config.ts",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "check": "tsc --incremental --noEmit",
     "prepublish": "npm run build",
-    "prepack": "rolldown"
+    "prepack": "rolldown",
+    "check": "biome check --write"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.23",
-    "@ai-sdk/google": "^2.0.20",
-    "@ai-sdk/openai": "^2.0.48",
+    "@ai-sdk/google": "^2.0.23",
+    "@ai-sdk/openai": "^2.0.52",
     "@nemo-cli/git": "workspace:*",
     "@nemo-cli/mail": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "ai": "^5.0.68",
+    "ai": "^5.0.75",
     "confluence.js": "^2.1.0",
-    "fastmcp": "^3.19.1"
+    "fastmcp": "^3.20.0"
   }
 }

@@ -85,6 +85,13 @@ const commitTypeOptions = [
     trailer: 'Changelog: chore',
   },
   {
+    value: 'revert',
+    label: 'revert',
+    hint: 'Revert a previous commit',
+    emoji: '🔙',
+    trailer: 'Changelog: revert',
+  },
+  {
     value: '',
     label: 'none',
   },

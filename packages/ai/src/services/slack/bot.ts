@@ -53,6 +53,7 @@ app.message(':wave:', async ({ message, say }) => {
   }
 })
 
+// biome-ignore lint/correctness/noUnusedFunctionParameters: ignore
 app.action(ACTION_ID, async ({ body, ack, client, respond }) => {
   await ack()
   // Use client.chat.postMessage instead of say, as say is not available in action middleware

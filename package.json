@@ -15,6 +15,7 @@
     "dev:email": "pnpm run --filter=@nemo-cli/mail dev:email",
     "dev:slack": "pnpm run --filter=@nemo-cli/ai dev:slack",
     "build": "pnpm run -r --parallel build",
+    "check": "pnpm run -r --parallel check",
     "build-dts": "pnpm run -r --parallel build-dts",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
@@ -22,17 +23,17 @@
     "sea": "node --experimental-sea-config sea-config.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.5",
+    "@biomejs/biome": "^2.2.6",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@types/node": "^24.7.1",
-    "@typescript/native-preview": "7.0.0-dev.20251011.1",
+    "@types/node": "^24.8.1",
+    "@typescript/native-preview": "7.0.0-dev.20251016.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.4",
-    "rolldown": "1.0.0-beta.42",
+    "rolldown": "1.0.0-beta.43",
     "rolldown-plugin-dts": "^0.16.11",
-    "semantic-release": "^24.2.9",
-    "tsdown": "^0.15.6",
+    "semantic-release": "^25.0.0",
+    "tsdown": "^0.15.7",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
@@ -44,7 +45,7 @@
   "dependencies": {
     "@slack/bolt": "^4.5.0",
     "@slack/web-api": "^7.11.0",
-    "arktype": "^2.1.22",
+    "arktype": "^2.1.23",
     "dotenv": "^17.2.3",
     "es-toolkit": "^1.40.0",
     "superjson": "^2.2.2",
@@ -54,7 +55,7 @@
   },
   "lint-staged": {
     "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
-      "biome check --files-ignore-unknown=true"
+      "biome check --write --staged"
     ]
   }
 }

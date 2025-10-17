@@ -29,8 +29,8 @@
     "build": "rolldown -c ./rolldown.config.ts",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "check": "tsc --incremental --noEmit",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "check": "biome check --write"
   },
   "type": "module",
   "dependencies": {
@@ -38,6 +38,6 @@
     "@nemo-cli/ui": "workspace:*",
     "acorn": "^8.15.0",
     "acorn-jsx": "^5.3.2",
-    "ts-morph": "^27.0.0"
+    "ts-morph": "^27.0.2"
   }
 }
