@@ -102,7 +102,6 @@
         "useImportExtensions": "off"
       },
       "nursery": {
-        "noSecrets": "off",
         "useExplicitType": "off",
         "useSortedClasses": {
           "fix": "safe",

@@ -28,8 +28,12 @@ export const isURLSearchParams = isType<URLSearchParams>('URLSearchParams')
 
 export const isEmpty = (value: unknown): value is null | undefined | '' | [] | Record<string, never> => {
   if (value == null) return true
-  if (isString(value) && value.trim() === '') return true
-  if (isArray(value) && value.length === 0) return true
-  if (isPlainObject(value) && Object.keys(value).length === 0) return true
+  if (isString(value)) return value.trim() === ''
+  if (isNumber(value)) return !Number.isFinite(value)
+  if (isArray(value)) return value.length === 0
+  if (isPlainObject(value)) return Object.keys(value).length === 0
   return false
 }
+
+// biome-ignore lint/suspicious/noExplicitAny: need to use any
+export type AnyFunction = (...args: any) => any
