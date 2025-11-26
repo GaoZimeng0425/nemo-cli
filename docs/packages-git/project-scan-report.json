@@ -1,0 +1,81 @@
+{
+  "workflow_version": "1.2.0",
+  "timestamps": {
+    "started": "2025-11-26T10:30:00.000Z",
+    "last_updated": "2025-11-26T10:45:00.000Z",
+    "completed": "2025-11-26T10:45:00.000Z"
+  },
+  "mode": "deep_dive",
+  "scan_level": "exhaustive",
+  "target_path": "packages/git",
+  "project_root": "/Users/aa00930/Documents/Learn/nemo-cli",
+  "output_folder": "docs/packages-git",
+  "completed_steps": [
+    {
+      "step": "step_1",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:32:00.000Z",
+      "summary": "Classified as CLI project with single part"
+    },
+    {
+      "step": "step_2",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:34:00.000Z",
+      "summary": "Found README.md existing doc"
+    },
+    {
+      "step": "step_3",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:36:00.000Z",
+      "summary": "Tech stack: TypeScript + Commander.js + Rolldown"
+    },
+    {
+      "step": "step_4",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:38:00.000Z",
+      "summary": "Analyzed 10 command files, 1 utils file, 2 constants files"
+    },
+    {
+      "step": "step_5",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:40:00.000Z",
+      "summary": "Source tree documented with 14 source files"
+    },
+    {
+      "step": "step_6",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:42:00.000Z",
+      "summary": "Dev guide and command reference written"
+    },
+    {
+      "step": "step_10",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:44:00.000Z",
+      "summary": "Master index generated"
+    },
+    {
+      "step": "step_12",
+      "status": "completed",
+      "timestamp": "2025-11-26T10:45:00.000Z",
+      "summary": "Workflow complete"
+    }
+  ],
+  "current_step": "completed",
+  "findings": {
+    "project_classification": "CLI tool for Git operations",
+    "technology_stack": "TypeScript, Commander.js, @clack/prompts, Ink, Rolldown",
+    "architecture_pattern": "Command Pattern with Factory",
+    "source_files_count": 14,
+    "commands_count": 10
+  },
+  "project_types": [{ "part_id": "git", "project_type_id": "cli", "display_name": "CLI Tool" }],
+  "outputs_generated": [
+    "project-scan-report.json",
+    "index.md",
+    "architecture.md",
+    "command-reference.md",
+    "source-tree-analysis.md",
+    "development-guide.md"
+  ],
+  "resume_instructions": "Workflow completed successfully"
+}

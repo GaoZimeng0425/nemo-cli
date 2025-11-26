@@ -1,0 +1,131 @@
+# Workflow Status Template
+
+# This tracks progress through BMM methodology Analysis, Planning, and Solutioning phases.
+# Implementation phase is tracked separately in sprint-status.yaml
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - recommended: Strongly suggested but not required
+#   - conditional: Required only if certain conditions met (e.g., if_has_ui)
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/product-brief.md")
+#   - skipped: Optional/conditional workflow that was skipped
+
+generated: "2025-11-26"
+project: "nemo-cli"
+project_type: "brownfield"
+selected_track: "method"
+field_type: "brownfield"
+workflow_path: "method-brownfield"
+user_description: "添加新功能，实现更简便的 git 操作"
+
+workflow_status:
+  # Prerequisite - Brownfield Documentation
+  - id: "document-project"
+    name: "项目文档化"
+    phase: "prerequisite"
+    status: "required"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:document-project"
+    output: "全面的项目文档"
+    purpose: "在规划前理解现有代码库"
+    conditional: "if_undocumented"
+
+  # Phase 0 - Discovery (Optional)
+  - id: "brainstorm-project"
+    name: "项目头脑风暴"
+    phase: 0
+    status: "optional"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:brainstorm-project"
+    output: "创意探索和构思"
+    note: "探索各种 git 操作简化方案"
+
+  - id: "research"
+    name: "研究"
+    phase: 0
+    status: "skipped"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:research"
+    note: "用户未选择此工作流"
+
+  # Phase 1 - Planning
+  - id: "prd"
+    name: "产品需求文档"
+    phase: 1
+    status: "required"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:prd"
+    output: "专注于新功能/变更的PRD"
+    note: "必须考虑现有系统约束"
+
+  - id: "validate-prd"
+    name: "验证PRD"
+    phase: 1
+    status: "optional"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:validate-prd"
+
+  - id: "create-design"
+    name: "创建设计"
+    phase: 1
+    status: "conditional"
+    agent: "ux-designer"
+    command: "/bmad:bmm:workflows:create-ux-design"
+    condition: "if_has_ui"
+    note: "如果有用户界面需求才需要"
+
+  # Phase 2 - Solutioning
+  - id: "create-architecture"
+    name: "创建架构"
+    phase: 2
+    status: "recommended"
+    agent: "architect"
+    command: "/bmad:bmm:workflows:architecture"
+    output: "集成架构 - 针对此项目的解决方案设计"
+    note: "强烈推荐：将大型棕地上下文提炼为专注的解决方案设计，防止代理混淆"
+
+  - id: "create-epics-and-stories"
+    name: "创建史诗和故事"
+    phase: 2
+    status: "required"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:create-epics-and-stories"
+    note: "必需：将PRD拆分为可实施的史诗和故事，包含完整上下文（PRD + UX + 架构）"
+
+  - id: "test-design"
+    name: "测试设计"
+    phase: 2
+    status: "recommended"
+    agent: "tea"
+    command: "/bmad:bmm:workflows:test-design"
+    output: "系统级可测试性评审"
+    note: "门控检查前的可测试性评估 - 自动检测系统级模式"
+
+  - id: "validate-architecture"
+    name: "验证架构"
+    phase: 2
+    status: "optional"
+    agent: "architect"
+    command: "/bmad:bmm:workflows:validate-architecture"
+
+  - id: "implementation-readiness"
+    name: "实施就绪"
+    phase: 2
+    status: "required"
+    agent: "architect"
+    command: "/bmad:bmm:workflows:implementation-readiness"
+    note: "在实施前验证 PRD + UX + 架构 + 史诗的一致性"
+
+  # Phase 3 - Implementation
+  - id: "sprint-planning"
+    name: "冲刺规划"
+    phase: 3
+    status: "required"
+    agent: "sm"
+    command: "/bmad:bmm:workflows:sprint-planning"
+    note: "创建包含故事的冲刺计划"
