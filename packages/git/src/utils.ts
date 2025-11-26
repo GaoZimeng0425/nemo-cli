@@ -186,10 +186,20 @@ const handleMergeCommit = async () => {
   }
 }
 
-export const handleGitPull = async (branch: string, _stash = false) => {
-  log.show('Pulling from remote...', { type: 'step' })
+export type PullOptions = {
+  rebase?: boolean
+}
+
+export const handleGitPull = async (branch: string, options: PullOptions = {}) => {
+  const { rebase = false } = options
+  const modeText = rebase ? 'rebase' : 'merge'
+  log.show(`Pulling from remote (${modeText} mode)...`, { type: 'step' })
+
   try {
-    const [error, result] = await xASync('git', ['pull', 'origin', branch], {
+    // 构建 git pull 命令参数
+    const args = rebase ? ['pull', '--rebase', 'origin', branch] : ['pull', 'origin', branch]
+
+    const [error, result] = await xASync('git', args, {
       nodeOptions: {
         stdio: 'inherit',
       },
@@ -198,10 +208,13 @@ export const handleGitPull = async (branch: string, _stash = false) => {
       log.show(`Failed to pull from remote. Command exited with code ${error.message}.`, { type: 'error' })
       return
     }
-    if (result.stdout.includes('Merge branch') || result.stdout.includes('Merge made by')) {
+
+    if (!rebase && (result.stdout.includes('Merge branch') || result.stdout.includes('Merge made by'))) {
+      // 仅在 merge 模式下检查合并提交
       await handleMergeCommit()
     }
-    log.show(`Successfully pulled from remote: ${colors.bgGreen(branch)}`, { type: 'success' })
+
+    log.show(`Successfully pulled from remote: ${colors.bgGreen(branch)} (${modeText})`, { type: 'success' })
   } catch (error) {
     log.error(error)
     return
