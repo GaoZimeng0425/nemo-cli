@@ -37,15 +37,15 @@
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
     "@react-email/components": "^1.0.1",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^7.0.11",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@react-email/preview-server": "5.0.4",
+    "@react-email/preview-server": "5.0.5",
     "@types/nodemailer": "^7.0.4",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "react-email": "^5.0.4"
+    "react-email": "^5.0.5"
   }
 }

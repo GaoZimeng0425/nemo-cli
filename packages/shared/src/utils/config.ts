@@ -23,23 +23,7 @@ export const loadEnv = (importMeta: { url: string }, ...paths: string[]) => {
     dotenvConfig({ path: providedPath, quiet: true })
     return
   }
-
-  // If provided path doesn't work, try to find .env file by walking up the directory tree
-  let currentDir = dirname(importMeta)
-  const maxLevels = 10 // Prevent infinite loop
-
-  for (let i = 0; i < maxLevels; i++) {
-    const envPath = path.join(currentDir, '.env')
-
-    if (existsSync(envPath)) {
-      dotenvConfig({ path: envPath, quiet: true })
-      return
-    }
-
-    const parentDir = path.dirname(currentDir)
-    if (parentDir === currentDir) break // Reached root directory
-    currentDir = parentDir
-  }
+  throw new Error(`Environment file not found at ${providedPath}`)
 }
 
 export const createStore = (name: string, options: StoreOptions): Configstore => {
