@@ -1,4 +1,4 @@
-import { merge } from 'es-toolkit'
+import { mergeWith } from 'es-toolkit'
 import { defineConfig, type RolldownOptions } from 'rolldown'
 import { dts } from 'rolldown-plugin-dts'
 
@@ -20,5 +20,12 @@ export const config: RolldownOptions = {
 }
 
 export const mergeConfig = (inputConfig: RolldownOptions) => {
-  return defineConfig(merge(config, inputConfig))
+  return defineConfig(
+    mergeWith(config, inputConfig, (targetValue, sourceValue) => {
+      // 数组拼接而不是按索引合并
+      if ([targetValue, sourceValue].every(Array.isArray)) {
+        return [...targetValue, ...sourceValue]
+      }
+    })
+  )
 }
