@@ -1,34 +1,15 @@
 ---
-description: BMAD BMM Workflow: workflow-init
-globs: 
+description: BMAD BMM Agent: workflow-init
+globs:
 alwaysApply: false
 ---
 
-# Workflow Init - Initial Project Setup
-name: workflow-init
-description: "Initialize a new BMM project by determining level, type, and creating workflow path"
-author: "BMad"
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
 
-# Critical variables from config
-config_source: "{project-root}/.bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
-sprint_artifacts: "{config_source}:sprint_artifacts"
-user_name: "{config_source}:user_name"
-project_name: "{config_source}:project_name"
-communication_language: "{config_source}:communication_language"
-document_output_language: "{config_source}:document_output_language"
-user_skill_level: "{config_source}:user_skill_level"
-date: system-generated
-
-# Workflow components
-installed_path: "{project-root}/.bmad/bmm/workflows/workflow-status/init"
-instructions: "{installed_path}/instructions.md"
-template: "{project-root}/.bmad/bmm/workflows/workflow-status/workflow-status-template.yaml"
-
-# Path data files
-path_files: "{project-root}/.bmad/bmm/workflows/workflow-status/paths/"
-
-# Output configuration
-default_output_file: "{output_folder}/bmm-workflow-status.yaml"
-
-standalone: true
+<steps CRITICAL="TRUE">
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @_bmad/bmm/workflows/workflow-status/init/workflow.yaml
+3. Pass the yaml path _bmad/bmm/workflows/workflow-status/init/workflow.yaml as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+</steps>

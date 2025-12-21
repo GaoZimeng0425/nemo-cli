@@ -1,29 +1,15 @@
 ---
-description: BMAD BMM Workflow: story-ready
-globs: 
+description: BMAD BMM Agent: story-ready
+globs:
 alwaysApply: false
 ---
 
-# Story Ready Workflow (SM Agent)
-name: story-ready
-description: "Marks a drafted story as ready for development and moves it from TODO → IN PROGRESS in the status file. Simple status-update workflow with no searching required."
-author: "BMad"
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
 
-# Critical variables from config
-config_source: "{project-root}/.bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
-user_name: "{config_source}:user_name"
-communication_language: "{config_source}:communication_language"
-date: system-generated
-sprint_artifacts: "{config_source}:sprint_artifacts"
-sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
-
-# Workflow components
-installed_path: "{project-root}/.bmad/bmm/workflows/4-implementation/story-ready"
-instructions: "{installed_path}/instructions.md"
-
-# Variables and inputs
-variables:
-  story_dir: "{config_source}:sprint_artifacts"
-
-standalone: true
+<steps CRITICAL="TRUE">
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @.bmad/bmm/workflows/4-implementation/story-ready/workflow.yaml
+3. Pass the yaml path .bmad/bmm/workflows/4-implementation/story-ready/workflow.yaml as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+</steps>

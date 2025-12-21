@@ -1,33 +1,15 @@
 ---
-description: BMAD CIS Workflow: problem-solving
-globs: 
+description: BMAD CIS Agent: problem-solving
+globs:
 alwaysApply: false
 ---
 
-# Problem Solving Workflow Configuration
-name: "problem-solving"
-description: "Apply systematic problem-solving methodologies to crack complex challenges. This workflow guides through problem diagnosis, root cause analysis, creative solution generation, evaluation, and implementation planning using proven frameworks."
-author: "BMad"
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
 
-# Critical variables load from config_source
-config_source: "{project-root}/.bmad/cis/config.yaml"
-output_folder: "{config_source}:output_folder"
-user_name: "{config_source}:user_name"
-communication_language: "{config_source}:communication_language"
-date: system-generated
-
-# Context can be provided via data attribute when invoking
-# Example: data="{path}/problem-brief.md" provides context
-
-# Module path and component files
-installed_path: "{project-root}/.bmad/cis/workflows/problem-solving"
-template: "{installed_path}/template.md"
-instructions: "{installed_path}/instructions.md"
-
-# Required Data Files
-solving_methods: "{installed_path}/solving-methods.csv"
-
-# Output configuration
-default_output_file: "{output_folder}/problem-solution-{{date}}.md"
-
-standalone: true
+<steps CRITICAL="TRUE">
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @_bmad/cis/workflows/problem-solving/workflow.yaml
+3. Pass the yaml path _bmad/cis/workflows/problem-solving/workflow.yaml as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+</steps>

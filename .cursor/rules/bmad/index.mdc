@@ -56,6 +56,8 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 - @bmad/bmb/workflows/edit-module - edit-module
 - @bmad/bmb/workflows/edit-workflow - edit-workflow
 - @bmad/bmb/workflows/module-brief - module-brief
+- @bmad/bmb/workflows/Meal Prep & Nutrition Plan - Meal Prep & Nutrition Plan
+- @bmad/bmb/workflows/workflow-compliance-check - workflow-compliance-check
 
 ### BMM
 
@@ -64,6 +66,7 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 - @bmad/bmm/agents/architect - architect
 - @bmad/bmm/agents/dev - dev
 - @bmad/bmm/agents/pm - pm
+- @bmad/bmm/agents/quick-flow-solo-dev - quick-flow-solo-dev
 - @bmad/bmm/agents/sm - sm
 - @bmad/bmm/agents/tea - tea
 - @bmad/bmm/agents/tech-writer - tech-writer
@@ -95,13 +98,28 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 - @bmad/bmm/workflows/create-excalidraw-flowchart - create-excalidraw-flowchart
 - @bmad/bmm/workflows/create-excalidraw-wireframe - create-excalidraw-wireframe
 - @bmad/bmm/workflows/document-project - document-project
+- @bmad/bmm/workflows/testarch-atdd - testarch-atdd
+- @bmad/bmm/workflows/testarch-automate - testarch-automate
+- @bmad/bmm/workflows/testarch-ci - testarch-ci
+- @bmad/bmm/workflows/testarch-framework - testarch-framework
+- @bmad/bmm/workflows/testarch-nfr - testarch-nfr
+- @bmad/bmm/workflows/testarch-test-design - testarch-test-design
+- @bmad/bmm/workflows/testarch-test-review - testarch-test-review
+- @bmad/bmm/workflows/testarch-trace - testarch-trace
 - @bmad/bmm/workflows/workflow-init - workflow-init
 - @bmad/bmm/workflows/workflow-status - workflow-status
+- @bmad/bmm/workflows/create-product-brief - create-product-brief
+- @bmad/bmm/workflows/create-prd - create-prd
+- @bmad/bmm/workflows/check-implementation-readiness - check-implementation-readiness
+- @bmad/bmm/workflows/create-architecture - create-architecture
+- @bmad/bmm/workflows/sprint-status - sprint-status
+- @bmad/bmm/workflows/create-tech-spec - create-tech-spec
+- @bmad/bmm/workflows/quick-dev - quick-dev
+- @bmad/bmm/workflows/generate-project-context - generate-project-context
 
 ### CIS
 
 **Agents:**
-- @bmad/cis/agents/README - README
 - @bmad/cis/agents/brainstorming-coach - brainstorming-coach
 - @bmad/cis/agents/creative-problem-solver - creative-problem-solver
 - @bmad/cis/agents/design-thinking-coach - design-thinking-coach

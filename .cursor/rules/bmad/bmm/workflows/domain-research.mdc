@@ -1,34 +1,15 @@
 ---
-description: BMAD BMM Workflow: domain-research
-globs: 
+description: BMAD BMM Agent: domain-research
+globs:
 alwaysApply: false
 ---
 
-# Domain Research Workflow Configuration
-name: domain-research
-description: "Collaborative exploration of domain-specific requirements, regulations, and patterns for complex projects"
-author: "BMad"
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
 
-# Critical variables from config
-config_source: "{project-root}/.bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
-user_name: "{config_source}:user_name"
-communication_language: "{config_source}:communication_language"
-document_output_language: "{config_source}:document_output_language"
-user_skill_level: "{config_source}:user_skill_level"
-date: system-generated
-
-# Module path and component files
-installed_path: "{project-root}/.bmad/bmm/workflows/1-analysis/domain-research"
-instructions: "{installed_path}/instructions.md"
-template: "{installed_path}/template.md"
-
-# Optional knowledge base (if exists)
-domain_knowledge_base: "{installed_path}/domain-knowledge-base.md"
-
-# Output configuration
-default_output_file: "{output_folder}/domain-brief.md"
-
-standalone: true
-
-# Web bundle configuration for standalone deployment
+<steps CRITICAL="TRUE">
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @.bmad/bmm/workflows/1-analysis/domain-research/workflow.yaml
+3. Pass the yaml path .bmad/bmm/workflows/1-analysis/domain-research/workflow.yaml as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+</steps>
