@@ -240,7 +240,7 @@ Continuous deployment to production
 **UX Designer Workflow:**
 
 ```bash
-bmad ux *create-design
+bmad ux *create-ux-design
 ```
 
 **BMad produces:**
@@ -288,8 +288,8 @@ bmad ux *create-design
 
 **BMad ensures:**
 
-- AI agents follow architectural patterns consistently (via story-context)
-- Code standards applied uniformly (via epic-tech-context)
+- AI agents follow architectural patterns consistently
+- Code standards applied uniformly
 - PRD traceability throughout implementation (via acceptance criteria)
 - No "telephone game" between PM, design, and dev
 
@@ -425,7 +425,7 @@ Team C (2 devs): Analytics feature (3 epics)
 
 **Problem:** Teams customize BMad (agents, workflows, configs) but don't want personal tooling in main repo.
 
-**Anti-pattern:** Adding `.bmad/` to `.gitignore` breaks IDE tools, submodule management.
+**Anti-pattern:** Adding `_bmad/` to `.gitignore` breaks IDE tools, submodule management.
 
 ### The Solution: Git Submodules
 
@@ -463,7 +463,7 @@ git commit -m "Add BMM as submodule"
 git clone https://github.com/your-org/your-project.git
 cd your-project
 git submodule update --init --recursive
-# Make personal customizations in .bmad/
+# Make personal customizations in _bmad/
 ```
 
 ### Daily Workflow
@@ -472,7 +472,7 @@ git submodule update --init --recursive
 
 ```bash
 cd /path/to/your-project
-# BMad available at ./.bmad/, load agents normally
+# BMad available at ./_bmad/, load agents normally
 ```
 
 **Update personal config:**
@@ -678,7 +678,7 @@ PMs write BMad PRDs → Stories auto-fed to cloud AI agents → Parallel impleme
 - [FAQ](./faq.md) - Common questions
 - [Scale Adaptive System](./scale-adaptive-system.md) - Project levels explained
 - [Quick Start Guide](./quick-start.md) - Getting started
-- [Workflow Documentation](./README.md#-workflow-guides) - Complete workflow reference
+- [Workflow Documentation](./index.md#-workflow-guides) - Complete workflow reference
 - [Agents Guide](./agents-guide.md) - Understanding BMad agents
 
 ---

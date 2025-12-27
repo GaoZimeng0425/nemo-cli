@@ -16,7 +16,7 @@
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating emotional response content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
+- 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted.
 - 🚫 FORBIDDEN to load next step until C is selected
 
 ## COLLABORATION MENUS (A/P/C):
@@ -29,8 +29,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -163,7 +163,7 @@ Show the generated emotional response content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current emotional response content
+- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with the current emotional response content
 - Process the enhanced emotional insights that come back
 - Ask user: "Accept these improvements to the emotional response definition? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -171,7 +171,7 @@ Show the generated emotional response content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current emotional response definition
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current emotional response definition
 - Process the collaborative emotional insights that come back
 - Ask user: "Accept these changes to the emotional response definition? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -179,8 +179,8 @@ Show the generated emotional response content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/ux-design-specification.md`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
+- Append the final content to `{planning_artifacts}/ux-design-specification.md`
+- Update frontmatter: append step to end of stepsCompleted array
 - Load `./step-05-inspiration.md`
 
 ## APPEND TO DOCUMENT:

@@ -57,7 +57,7 @@ workflow_status:
   - id: "prd"
     name: "产品需求文档"
     phase: 1
-    status: "required"
+    status: "docs/prd.md"
     agent: "pm"
     command: "/bmad:bmm:workflows:prd"
     output: "专注于新功能/变更的PRD"

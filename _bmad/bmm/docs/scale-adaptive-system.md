@@ -32,11 +32,11 @@ BMad Method adapts to three distinct planning tracks:
 
 ### Three Tracks at a Glance
 
-| Track                 | Planning Depth        | Time Investment | Best For                                   |
-| --------------------- | --------------------- | --------------- | ------------------------------------------ |
-| **Quick Flow**        | Tech-spec only        | Hours to 1 day  | Simple features, bug fixes, clear scope    |
-| **BMad Method**       | PRD + Arch + UX       | 1-3 days        | Products, platforms, complex features      |
-| **Enterprise Method** | Method + Test/Sec/Ops | 3-7 days        | Enterprise needs, compliance, multi-tenant |
+| Track                 | Planning Depth        | Best For                                   |
+| --------------------- | --------------------- | ------------------------------------------ |
+| **Quick Flow**        | Tech-spec only        | Simple features, bug fixes, clear scope    |
+| **BMad Method**       | PRD + Arch + UX       | Products, platforms, complex features      |
+| **Enterprise Method** | Method + Test/Sec/Ops | Enterprise needs, compliance, multi-tenant |
 
 ### Decision Tree
 
@@ -611,7 +611,7 @@ Run `workflow-init` on existing projects to migrate to new tracking system. It d
 - **[Brownfield Guide](./brownfield-guide.md)** - Existing codebase workflows
 - **[Glossary](./glossary.md)** - Complete terminology
 - **[FAQ](./faq.md)** - Common questions
-- **[Workflows Guide](./README.md#-workflow-guides)** - Complete workflow reference
+- **[Workflows Guide](./index.md#-workflow-guides)** - Complete workflow reference
 
 ---
 

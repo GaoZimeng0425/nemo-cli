@@ -44,7 +44,9 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 ### BMB
 
 **Agents:**
-- @bmad/bmb/agents/bmad-builder - bmad-builder
+- @bmad/bmb/agents/agent-builder - agent-builder
+- @bmad/bmb/agents/module-builder - module-builder
+- @bmad/bmb/agents/workflow-builder - workflow-builder
 
 **Workflows:**
 - @bmad/bmb/workflows/audit-workflow - audit-workflow

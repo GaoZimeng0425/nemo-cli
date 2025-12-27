@@ -1,0 +1,95 @@
+{
+  "workflow_version": "1.2.0",
+  "timestamps": {
+    "started": "2025-12-21T06:00:00.000Z",
+    "last_updated": "2025-12-21T06:02:00.000Z"
+  },
+  "mode": "initial_scan",
+  "scan_level": "quick",
+  "project_root": "/Users/aa00930/Documents/Learn/nemo-cli",
+  "output_folder": "/Users/aa00930/Documents/Learn/nemo-cli/docs",
+  "completed_steps": [
+    {
+      "step": "step_1",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:02:00.000Z",
+      "summary": "Classified as monorepo with 7 core packages + 4 reference projects"
+    },
+    {
+      "step": "step_2",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:04:00.000Z",
+      "summary": "Found 7 README files + existing docs/packages-git/ documentation"
+    },
+    {
+      "step": "step_3",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:05:00.000Z",
+      "summary": "Tech stack: TypeScript 5.9.3 + pnpm + Rolldown + Biome"
+    },
+    {
+      "step": "step_4-9",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:08:00.000Z",
+      "summary": "Generated source-tree-analysis.md, architecture.md, development-guide.md"
+    },
+    {
+      "step": "step_10",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:10:00.000Z",
+      "summary": "Generated master index.md"
+    },
+    {
+      "step": "step_11",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:12:00.000Z",
+      "summary": "Generated 6 package documentation files"
+    },
+    {
+      "step": "step_12",
+      "status": "completed",
+      "timestamp": "2025-12-21T06:15:00.000Z",
+      "summary": "Workflow complete - all documentation generated"
+    }
+  ],
+  "current_step": "completed",
+  "findings": {
+    "project_classification": {
+      "repository_type": "monorepo",
+      "parts_count": 11,
+      "primary_tech": "TypeScript + pnpm + Rolldown"
+    },
+    "technology_stack": {
+      "language": "TypeScript 5.9.3",
+      "runtime": "Node.js 20.19+/22.12+",
+      "package_manager": "pnpm",
+      "build_tool": "Rolldown",
+      "linter": "Biome",
+      "test_framework": "Vitest",
+      "commit_convention": "Commitlint + Husky"
+    }
+  },
+  "outputs_generated": [
+    "project-scan-report.json",
+    "source-tree-analysis.md",
+    "architecture.md",
+    "development-guide.md",
+    "index.md",
+    "packages-ai/index.md",
+    "packages-shared/index.md",
+    "packages-ui/index.md",
+    "packages-file/index.md",
+    "packages-package/index.md",
+    "packages-mail/index.md"
+  ],
+  "resume_instructions": "Continue from step 2",
+  "project_types": [
+    { "part_id": "git", "project_type_id": "cli", "display_name": "@nemo-cli/git" },
+    { "part_id": "ai", "project_type_id": "cli", "display_name": "@nemo-cli/ai" },
+    { "part_id": "file", "project_type_id": "cli", "display_name": "@nemo-cli/file" },
+    { "part_id": "package", "project_type_id": "cli", "display_name": "@nemo-cli/package" },
+    { "part_id": "shared", "project_type_id": "library", "display_name": "@nemo-cli/shared" },
+    { "part_id": "ui", "project_type_id": "library", "display_name": "@nemo-cli/ui" },
+    { "part_id": "mail", "project_type_id": "library", "display_name": "@nemo-cli/mail" }
+  ]
+}

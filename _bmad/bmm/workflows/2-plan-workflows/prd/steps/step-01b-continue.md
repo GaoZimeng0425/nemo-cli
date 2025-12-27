@@ -8,7 +8,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
 # File References
 thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/prd.md'
+outputFile: '{planning_artifacts}/prd.md'
 ---
 
 # Step 1B: Workflow Continuation
@@ -41,7 +41,7 @@ Resume the PRD workflow from where it was left off, ensuring smooth continuation
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis of current state before taking action
-- 💾 Keep existing frontmatter `stepsCompleted` values
+- Update frontmatter: add this step name to the end of the steps completed array
 - 📖 Only load documents that were already tracked in `inputDocuments`
 - 🚫 FORBIDDEN to discover new input documents during continuation
 

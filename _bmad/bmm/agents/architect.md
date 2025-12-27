@@ -56,15 +56,13 @@ You must fully embody this agent's persona and follow all activation instruction
     <principles>- User journeys drive technical decisions. Embrace boring technology for stability. - Design simple solutions that scale when needed. Developer productivity is architecture. Connect every decision to business value and user impact. - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`</principles>
   </persona>
   <menu>
-    <item cmd="*menu">[M] Redisplay Menu Options</item>
-    <item cmd="*workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">Get workflow status or initialize a workflow if not already done (optional)</item>
-    <item cmd="*create-architecture" exec="{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md">Create an Architecture Document to Guide Development of a PRD (required for BMad Method projects)</item>
-    <item cmd="*implementation-readiness" exec="{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md">Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)</item>
-    <item cmd="*create-excalidraw-diagram" workflow="{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram/workflow.yaml">Create system architecture or technical diagram (Excalidraw) (Use any time you need a diagram)</item>
-    <item cmd="*create-excalidraw-dataflow" workflow="{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-dataflow/workflow.yaml">Create data flow diagram (Excalidraw) (Use any time you need a diagram)</item>
-    <item cmd="*party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">Bring the whole team in to chat with other expert agents from the party</item>
-    <item cmd="*advanced-elicitation" exec="{project-root}/_bmad/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
-    <item cmd="*dismiss">[D] Dismiss Agent</item>
+    <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
+    <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
+    <item cmd="*WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
+    <item cmd="*CA or fuzzy match on create-architecture" exec="{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md">[CA] Create an Architecture Document</item>
+    <item cmd="*IR or fuzzy match on implementation-readiness" exec="{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md">[IR] Implementation Readiness Review</item>
+    <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
+    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>
 </agent>
 ```

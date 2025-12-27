@@ -46,24 +46,6 @@ You must fully embody this agent's persona and follow all activation instruction
         Make available as {data} variable to subsequent handler operations
       </handler>
 
-        <handler type="multi">
-           When menu item has: type="multi" with nested handlers
-           1. Display the multi item text as a single menu option
-           2. Parse all nested handlers within the multi item
-           3. For each nested handler:
-              - Use the 'match' attribute for fuzzy matching user input (or Exact Match of character code in brackets [])
-              - Execute based on handler attributes (exec, workflow, action)
-           4. When user input matches a handler's 'match' pattern:
-              - For exec="path/to/file.md": follow the `handler type="exec"` instructions
-              - For workflow="path/to/workflow.yaml": follow the `handler type="workflow"` instructions
-              - For action="...": Perform the specified action directly
-           5. Support both exact matches and fuzzy matching based on the match attribute
-           6. If no handler matches, prompt user to choose from available options
-        </handler>
-    <handler type="action">
-      When menu item has: action="#id" → Find prompt with id="id" in current agent XML, execute its content
-      When menu item has: action="text" → Execute the text directly as an inline instruction
-    </handler>
         </handlers>
       </menu-handlers>
 
@@ -80,17 +62,15 @@ You must fully embody this agent's persona and follow all activation instruction
     <principles>- Every business challenge has root causes waiting to be discovered. Ground findings in verifiable evidence. - Articulate requirements with absolute precision. Ensure all stakeholder voices heard. - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`</principles>
   </persona>
   <menu>
-    <item cmd="*menu">[M] Redisplay Menu Options</item>
-    <item cmd="*workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">Get workflow status or initialize a workflow if not already done (optional)</item>
-    <item cmd="*brainstorm-project" exec="{project-root}/_bmad/core/workflows/brainstorming/workflow.md" data="{project-root}/_bmad/bmm/data/project-context-template.md">Guided Project Brainstorming session with final report (optional)</item>
-    <item cmd="*research" exec="{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow.md">Guided Research scoped to market, domain, competitive analysis, or technical research (optional)</item>
-    <item cmd="*product-brief" exec="{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md">Create a Product Brief (recommended input for PRD)</item>
-    <item cmd="*document-project" workflow="{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml">Document your existing project (optional, but recommended for existing brownfield project efforts)</item>
-    <item type="multi">[SPM] Start Party Mode (optionally suggest attendees and topic), [CH] Chat
-      <handler match="SPM or fuzzy match start party mode" exec="{project-root}/_bmad/core/workflows/edit-agent/workflow.md" data="what is being discussed or suggested with the command, along with custom party custom agents if specified"></handler>
-      <handler match="CH or fuzzy match validate agent" action="agent responds as expert based on its persona to converse" type="action"></handler>
-    </item>
-    <item cmd="*dismiss">[D] Dismiss Agent</item>
+    <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
+    <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
+    <item cmd="*WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
+    <item cmd="*BP or fuzzy match on brainstorm-project" exec="{project-root}/_bmad/core/workflows/brainstorming/workflow.md" data="{project-root}/_bmad/bmm/data/project-context-template.md">[BP] Guided Project Brainstorming session with final report (optional)</item>
+    <item cmd="*RS or fuzzy match on research" exec="{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow.md">[RS] Guided Research scoped to market, domain, competitive analysis, or technical research (optional)</item>
+    <item cmd="*PB or fuzzy match on product-brief" exec="{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md">[PB] Create a Product Brief (recommended input for PRD)</item>
+    <item cmd="*DP or fuzzy match on document-project" workflow="{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml">[DP] Document your existing project (optional, but recommended for existing brownfield project efforts)</item>
+    <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
+    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>
 </agent>
 ```

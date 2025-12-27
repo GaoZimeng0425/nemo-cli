@@ -28,6 +28,7 @@ phases:
         optional: true
         agent: "analyst"
         command: "brainstorm-project"
+        note: "Uses core brainstorming workflow with project context template"
         included_by: "user_choice"
 
       - id: "research"
@@ -55,15 +56,10 @@ phases:
         output: "Enterprise PRD with compliance requirements"
         note: "Must address existing system constraints and migration strategy"
 
-      - id: "validate-prd"
-        recommended: true
-        agent: "pm"
-        command: "validate-prd"
-
-      - id: "create-design"
+      - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Recommended - must integrate with existing UX patterns"
 
   - phase: 2
@@ -113,7 +109,7 @@ phases:
         required: true
         agent: "architect"
         command: "implementation-readiness"
-        note: "Critical gate - validates all planning + Epics before touching production system"
+        note: "Validates PRD + Architecture + Epics + UX (optional)"
 
   - phase: 3
     name: "Implementation"

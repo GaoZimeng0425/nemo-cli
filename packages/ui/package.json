@@ -40,7 +40,7 @@
     "cli-table3": "^0.6.5",
     "figlet": "^1.9.4",
     "figures": "^6.1.0",
-    "ink": "^6.5.1",
+    "ink": "^6.6.0",
     "ink-big-text": "^2.0.0",
     "ink-gradient": "^3.0.0",
     "ink-markdown": "^1.0.4",

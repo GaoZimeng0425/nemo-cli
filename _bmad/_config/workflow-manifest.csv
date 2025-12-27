@@ -57,5 +57,5 @@ name,description,module,path
 "create-architecture","Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts.","bmm","_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md"
 "sprint-status","Summarize sprint-status.yaml, surface risks, and route to the right implementation workflow.","bmm","_bmad/bmm/workflows/4-implementation/sprint-status/workflow.yaml"
 "create-tech-spec","Conversational spec engineering - ask questions, investigate code, produce implementation-ready tech-spec.","bmm","_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
-"quick-dev","Flexible development - execute tech-specs OR direct instructions with optional planning.","bmm","_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
+"quick-dev","Flexible development - execute tech-specs OR direct instructions with optional planning.","bmm","_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
 "generate-project-context","Creates a concise project-context.md file with critical rules and patterns that AI agents must follow when implementing code. Optimized for LLM context efficiency.","bmm","_bmad/bmm/workflows/generate-project-context/workflow.md"

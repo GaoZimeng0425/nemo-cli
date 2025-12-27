@@ -6,12 +6,12 @@ Get started with BMad Method v6 for your new greenfield project. This guide walk
 
 1. **Install**: `npx bmad-method@alpha install`
 2. **Initialize**: Load Analyst agent → Run "workflow-init"
-3. **Plan**: Load PM agent → Run "prd" (or "tech-spec" for small projects)
-4. **Architect**: Load Architect agent → Run "create-architecture" (10+ stories only)
-5. **Build**: Load SM agent → Run workflows for each story → Load DEV agent → Implement
-6. **Always use fresh chats** for each workflow to avoid hallucinations
-
----
+3. **Plan**: Load PM agent to create a PRD
+4. **Plan UX**: Load UX Expert to create a UX-Design if your application will have a UX/UI element
+5. **Architect**: Load Architect agent → Run "create-architecture"
+6. **Epic Plan**: The PM steps back in to help run the create-epics-and-stories
+7. **Build**: Load SM agent → Run workflows for each story → Load DEV agent → Implement
+8. **Always use fresh chats** for each workflow to avoid context issues
 
 ## What is BMad Method?
 
@@ -35,7 +35,7 @@ _Complete visual flowchart showing all phases, workflows, agents (color-coded), 
 npx bmad-method@alpha install
 ```
 
-The interactive installer will guide you through setup and create a `.bmad/` folder with all agents and workflows.
+The interactive installer will guide you through setup and create a `_bmad/` folder with all agents and workflows.
 
 ---
 
@@ -200,35 +200,21 @@ Once planning and architecture are complete, you'll move to Phase 4. **Important
 3. Tell the agent: "Run sprint-planning"
 4. This creates your `sprint-status.yaml` file that tracks all epics and stories
 
-#### 3.2 Create Epic Context (Optional but Recommended)
-
-1. **Start a new chat** with the **SM agent**
-2. Wait for the menu
-3. Tell the agent: "Run epic-tech-context"
-4. This creates technical context for the current epic before drafting stories
-
-#### 3.3 Draft Your First Story
+#### 3.2 Create Your First Story
 
 1. **Start a new chat** with the **SM agent**
 2. Wait for the menu
 3. Tell the agent: "Run create-story"
-4. This drafts the story file from the epic
+4. This creates the story file from the epic
 
-#### 3.4 Add Story Context (Optional but Recommended)
-
-1. **Start a new chat** with the **SM agent**
-2. Wait for the menu
-3. Tell the agent: "Run story-context"
-4. This creates implementation-specific technical context for the story
-
-#### 3.5 Implement the Story
+#### 3.3 Implement the Story
 
 1. **Start a new chat** with the **DEV agent**
 2. Wait for the menu
 3. Tell the agent: "Run dev-story"
 4. The DEV agent will implement the story and update the sprint status
 
-#### 3.6 Review the Code (Optional but Recommended)
+#### 3.4 Review the Code (Optional but Recommended)
 
 1. **Start a new chat** with the **DEV agent**
 2. Wait for the menu
@@ -240,9 +226,8 @@ Once planning and architecture are complete, you'll move to Phase 4. **Important
 For each subsequent story, repeat the cycle using **fresh chats** for each workflow:
 
 1. **New chat** → SM agent → "Run create-story"
-2. **New chat** → SM agent → "Run story-context"
-3. **New chat** → DEV agent → "Run dev-story"
-4. **New chat** → DEV agent → "Run code-review" (optional but recommended)
+2. **New chat** → DEV agent → "Run dev-story"
+3. **New chat** → DEV agent → "Run code-review" (optional but recommended)
 
 After completing all stories in an epic:
 
@@ -328,11 +313,10 @@ flowchart LR
         direction TB
         D1[Per Epic:<br/>epic context]
         D2[Per Story:<br/>create-story]
-        D3[story-context]
-        D4[dev-story]
-        D5[code-review]
-        D6[SM, DEV]
-        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5 ~~~ D6
+        D3[dev-story]
+        D4[code-review]
+        D5[SM, DEV]
+        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5
     end
 
     P1 --> P2
@@ -366,7 +350,7 @@ A: Yes, once you learn the flow. Use the Quick Reference in Step 2 to go directl
 
 - **During workflows**: Agents guide you with questions and explanations
 - **Community**: [Discord](https://discord.gg/gk8jAdXWmj) - #general-dev, #bugs-issues
-- **Complete guide**: [BMM Workflow Documentation](./README.md#-workflow-guides)
+- **Complete guide**: [BMM Workflow Documentation](./index.md#-workflow-guides)
 - **YouTube tutorials**: [BMad Code Channel](https://www.youtube.com/@BMadCode)
 
 ---

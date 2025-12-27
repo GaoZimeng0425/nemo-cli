@@ -3,13 +3,13 @@ name: 'step-03-users'
 description: 'Define target users with rich personas and map their key interactions with the product'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-users.md'
 nextStepFile: '{workflow_path}/steps/step-04-metrics.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'

@@ -9,7 +9,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
 thisStepFile: '{workflow_path}/steps/step-02-discovery.md'
 nextStepFile: '{workflow_path}/steps/step-03-success.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/prd.md'
+outputFile: '{planning_artifacts}/prd.md'
 
 # Data Files
 projectTypesCSV: '{workflow_path}/project-types.csv'
@@ -64,7 +64,7 @@ This step will generate content and present choices:
 
 - **A (Advanced Elicitation)**: Use discovery protocols to develop deeper insights about the generated content
 - **P (Party Mode)**: Bring multiple perspectives to discuss and improve the generated content
-- **C (Continue)**: Save the content to the document and proceed to next step
+- **C (Continue)**: Append and save the content to the `{outputFile}` and proceed to next step
 
 ## PROTOCOL INTEGRATION:
 
@@ -373,7 +373,7 @@ Show the generated content to the user and present:
 #### IF C (Continue):
 
 - Append the final content to `{outputFile}`
-- Update frontmatter: `stepsCompleted: [1, 2]`
+- Update frontmatter: add this step name to the end of the steps completed array
 - Load `{nextStepFile}`
 
 ## CRITICAL STEP COMPLETION NOTE
