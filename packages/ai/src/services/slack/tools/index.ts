@@ -11,11 +11,11 @@ const google = createGoogleGenerativeAI({
 
 export const tools = [getPRDTool, sendEmailTool]
 
-export const generateTools = ({ message, say }: SlackEventMiddlewareArgs<'message'>) => {
-  if (message.subtype) return
+export function generateTools({ message, say }: SlackEventMiddlewareArgs<'message'>) {
+  if (message.subtype) return null
   const text = message.text ?? ''
   if (!text) return null
-  return generateText({
+  const result = generateText({
     model: google('gemini-2.5-flash'),
     tools: {
       ...getPRDTool({
@@ -66,4 +66,6 @@ export const generateTools = ({ message, say }: SlackEventMiddlewareArgs<'messag
     temperature: 0,
     prompt: text,
   })
+
+  return result as any
 }

@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process'
+import { createDeepSeek } from '@ai-sdk/deepseek'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { generateObject, generateText, streamText } from 'ai'
 import z from 'zod/v4'
@@ -116,5 +117,32 @@ export const translateChat = async ({ message }: { message: string }) => {
       },
     ],
   })
-  return response
+  return response as any
 }
+
+const chat = async () => {
+  const deepseek = createDeepSeek({
+    baseURL: 'https://www.sophnet.com/api/open-apis/v1/',
+    apiKey: 'wb1pJyqXUaxKoD1AR8tkEY_kWw4f-na9UMHedUSMY0YaxUVGMyI9Bq3MuBIYaxBk1qGFO2h-AUWejUC8bo4A',
+    headers: {
+      Authorization: 'Bearer wb1pJyqXUaxKoD1AR8tkEY_kWw4f-na9UMHedUSMY0YaxUVGMyI9Bq3MuBIYaxBk1qGFO2h-AUWejUC8bo4A',
+      'Content-Type': 'application/json',
+    },
+  })
+  const t = generateText({
+    model: deepseek('DeepSeek-V3.2'),
+    messages: [
+      {
+        role: 'system',
+        content: '请你扮演一名优秀的资深翻译, 将所有语言翻译为英语. 只返回翻译文字, 不返回其他信息',
+      },
+      {
+        role: 'user',
+        content: '你可以帮我做什么',
+      },
+    ],
+  })
+  console.log(t)
+}
+
+chat()
