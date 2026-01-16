@@ -25,7 +25,7 @@
   "scripts": {
     "dev:email": "email dev",
     "dev": "rolldown --watch -c ./rolldown.config.ts",
-    "build": "rolldown -c ./rolldown.config.ts",
+    "_build": "rolldown -c ./rolldown.config.ts",
     "build-dts": "rolldown -c ./rolldown.config.ts",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -36,16 +36,16 @@
   "dependencies": {
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "@react-email/components": "^1.0.2",
+    "@react-email/components": "^1.0.4",
     "nodemailer": "^7.0.12",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@react-email/preview-server": "5.1.0",
-    "@types/nodemailer": "^7.0.4",
+    "@react-email/preview-server": "5.2.5",
+    "@types/nodemailer": "^7.0.5",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "react-email": "^5.1.0"
+    "react-email": "^5.2.5"
   }
 }

@@ -1,4 +1,4 @@
-import { resolve } from 'node:path'
+import { dirname as pathDirname, resolve } from 'node:path'
 import fse, { type PathLike } from 'fs-extra'
 import { type GlobOptions, glob as originalGlob, type Path } from 'glob'
 
@@ -39,7 +39,7 @@ export const readJSON = (path: string, _overwrite = false) => {
 export const writeJSON = (path: string, content: AnyObject, force = false) => {
   const exist = fse.existsSync(path)
   if (!exist) {
-    force ? fse.ensureDirSync(path) : log.error('file', `你所查找的${path}文件不存在`)
+    force ? fse.mkdirSync(pathDirname(path), { recursive: true }) : log.error('file', `你所查找的${path}文件不存在`)
   }
   return fse.writeFileSync(path, JSON.stringify(content, null, 2))
 }

@@ -38,6 +38,7 @@
     "@nemo-cli/ui": "workspace:*",
     "acorn": "^8.15.0",
     "acorn-jsx": "^5.3.2",
+    "madge": "^8.0.0",
     "ts-morph": "^27.0.2"
   }
 }

@@ -59,11 +59,11 @@ You must fully embody this agent's persona and follow all activation instruction
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
-    <item cmd="*WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
-    <item cmd="*SP or fuzzy match on sprint-planning" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml">[SP] Generate or re-generate sprint-status.yaml from epic files (Required after Epics+Stories are created)</item>
-    <item cmd="*CS or fuzzy match on create-story" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml">[CS] Create Story (Required to prepare stories for development)</item>
-    <item cmd="*ER or fuzzy match on epic-retrospective" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml" data="{project-root}/_bmad/_config/agent-manifest.csv">[ER] Facilitate team retrospective after an epic is completed (Optional)</item>
-    <item cmd="*CC or fuzzy match on correct-course" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml">[CC] Execute correct-course task (When implementation is off-track)</item>
+    <item cmd="WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
+    <item cmd="SP or fuzzy match on sprint-planning" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml">[SP] Generate or re-generate sprint-status.yaml from epic files (Required after Epics+Stories are created)</item>
+    <item cmd="CS or fuzzy match on create-story" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml">[CS] Create Story (Required to prepare stories for development)</item>
+    <item cmd="ER or fuzzy match on epic-retrospective" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml" data="{project-root}/_bmad/_config/agent-manifest.csv">[ER] Facilitate team retrospective after an epic is completed (Optional)</item>
+    <item cmd="CC or fuzzy match on correct-course" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml">[CC] Execute correct-course task (When implementation is off-track)</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
     <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>

@@ -55,15 +55,15 @@ You must fully embody this agent's persona and follow all activation instruction
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
-    <item cmd="*WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
-    <item cmd="*TF or fuzzy match on test-framework" workflow="{project-root}/_bmad/bmm/workflows/testarch/framework/workflow.yaml">[TF] Initialize production-ready test framework architecture</item>
-    <item cmd="*AT or fuzzy match on atdd" workflow="{project-root}/_bmad/bmm/workflows/testarch/atdd/workflow.yaml">[AT] Generate E2E tests first, before starting implementation</item>
-    <item cmd="*TA or fuzzy match on test-automate" workflow="{project-root}/_bmad/bmm/workflows/testarch/automate/workflow.yaml">[TA] Generate comprehensive test automation</item>
-    <item cmd="*TD or fuzzy match on test-design" workflow="{project-root}/_bmad/bmm/workflows/testarch/test-design/workflow.yaml">[TD] Create comprehensive test scenarios</item>
-    <item cmd="*TR or fuzzy match on test-trace" workflow="{project-root}/_bmad/bmm/workflows/testarch/trace/workflow.yaml">[TR] Map requirements to tests (Phase 1) and make quality gate decision (Phase 2)</item>
-    <item cmd="*NR or fuzzy match on nfr-assess" workflow="{project-root}/_bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml">[NR] Validate non-functional requirements</item>
-    <item cmd="*CI or fuzzy match on continuous-integration" workflow="{project-root}/_bmad/bmm/workflows/testarch/ci/workflow.yaml">[CI] Scaffold CI/CD quality pipeline</item>
-    <item cmd="*RV or fuzzy match on test-review" workflow="{project-root}/_bmad/bmm/workflows/testarch/test-review/workflow.yaml">[RV] Review test quality using comprehensive knowledge base and best practices</item>
+    <item cmd="WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
+    <item cmd="TF or fuzzy match on test-framework" workflow="{project-root}/_bmad/bmm/workflows/testarch/framework/workflow.yaml">[TF] Initialize production-ready test framework architecture</item>
+    <item cmd="AT or fuzzy match on atdd" workflow="{project-root}/_bmad/bmm/workflows/testarch/atdd/workflow.yaml">[AT] Generate E2E tests first, before starting implementation</item>
+    <item cmd="TA or fuzzy match on test-automate" workflow="{project-root}/_bmad/bmm/workflows/testarch/automate/workflow.yaml">[TA] Generate comprehensive test automation</item>
+    <item cmd="TD or fuzzy match on test-design" workflow="{project-root}/_bmad/bmm/workflows/testarch/test-design/workflow.yaml">[TD] Create comprehensive test scenarios</item>
+    <item cmd="TR or fuzzy match on test-trace" workflow="{project-root}/_bmad/bmm/workflows/testarch/trace/workflow.yaml">[TR] Map requirements to tests (Phase 1) and make quality gate decision (Phase 2)</item>
+    <item cmd="NR or fuzzy match on nfr-assess" workflow="{project-root}/_bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml">[NR] Validate non-functional requirements</item>
+    <item cmd="CI or fuzzy match on continuous-integration" workflow="{project-root}/_bmad/bmm/workflows/testarch/ci/workflow.yaml">[CI] Scaffold CI/CD quality pipeline</item>
+    <item cmd="RV or fuzzy match on test-review" workflow="{project-root}/_bmad/bmm/workflows/testarch/test-review/workflow.yaml">[RV] Review test quality using comprehensive knowledge base and best practices</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
     <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>

@@ -83,7 +83,7 @@ workflow_status:
   - id: "create-architecture"
     name: "创建架构"
     phase: 2
-    status: "recommended"
+    status: "docs/architecture.md"
     agent: "architect"
     command: "/bmad:bmm:workflows:architecture"
     output: "集成架构 - 针对此项目的解决方案设计"

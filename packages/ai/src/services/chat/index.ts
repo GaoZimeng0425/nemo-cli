@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process'
 import { createDeepSeek } from '@ai-sdk/deepseek'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { generateObject, generateText, streamText } from 'ai'
+import { generateText, Output, streamText } from 'ai'
 import z from 'zod/v4'
 
 const google = createGoogleGenerativeAI({
@@ -10,10 +10,12 @@ const google = createGoogleGenerativeAI({
 
 export const get = () => {
   const diff = getGitDiff()
-  const result = generateObject({
+  const result = generateText({
     model: google('gemini-2.5-flash'),
-    schema: z.object({
-      summary: z.string().max(50),
+    output: Output.object({
+      schema: z.object({
+        summary: z.string().max(50),
+      }),
     }),
     messages: [
       {
@@ -27,7 +29,7 @@ export const get = () => {
     ],
   })
 
-  return result
+  return result as any
 }
 
 function getGitDiff() {
@@ -145,4 +147,17 @@ const chat = async () => {
   console.log(t)
 }
 
-chat()
+const getUsageSummary = async () => {
+  const response = await fetch('https://cursor.com/api/usage-summary', {
+    headers: {
+      Cookie:
+        'IndrX2ZuSmZramJSX0NIYUZoRzRzUGZ0cENIVHpHNXk0VE0ya2ZiUkVzQU14X2Fub255bW91c1VzZXJJZCI%3D=IjA4OWJjYzUxLTA1NGItNDAxMy04YzE5LWM1YTgyOWMzNWZmZiI=; htjs_anonymous_id=4db895ba-e7b8-40a4-acd6-3f16d75062a0; ph_phc_TXdpocbGVeZVm5VJmAsHTMrCofBQu3e0kN8HGMNGTVW_posthog=%7B%22distinct_id%22%3A%220196b94c-328c-7986-b6fa-ea8e2e7b919c%22%2C%22%24sesid%22%3A%5B1758797385804%2C%220199807e-4fdc-7ea1-98b8-3b771bdd9b40%22%2C1758797385692%5D%7D; htjs_sesh={%22id%22:1758797389639%2C%22expiresAt%22:1758799189639%2C%22timeout%22:1800000%2C%22sessionStart%22:true%2C%22autoTrack%22:true}; WorkosCursorSessionToken=user_01JTSV5YSQK7856VAXAMKA16AN%3A%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnb29nbGUtb2F1dGgyfHVzZXJfMDFKVFNWNVlTUUs3ODU2VkFYQU1LQTE2QU4iLCJ0aW1lIjoiMTc2Mzg2ODUwNCIsInJhbmRvbW5lc3MiOiIxNGMxZTYzYy0yZTAyLTRhMzkiLCJleHAiOjE3NjkwNTI1MDQsImlzcyI6Imh0dHBzOi8vYXV0aGVudGljYXRpb24uY3Vyc29yLnNoIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBvZmZsaW5lX2FjY2VzcyIsImF1ZCI6Imh0dHBzOi8vY3Vyc29yLmNvbSIsInR5cGUiOiJ3ZWIifQ.9aIO6ABOu3Aaz86oFtfcafJSDW9wbHlmmjo0xdKq0io; generaltranslation.locale-routing-enabled=true; generaltranslation.referrer-locale=cn; muxData==undefined&mux_viewer_id=6b59ec2e-7d67-464a-9c34-43d1fccdf846&msn=0.8767201413627559&sid=fcdff277-0408-498a-83c3-e3a601f2c410&sst=1765264245776&sex=1765265745820; __stripe_mid=7ad1b12f-e499-43ca-94fc-93b741f3a62066e72a; statsig_stable_id=904a492a-88a7-46f4-8341-43dfdede1bd5; _ca_device_id=ca_e554ec3d-ed90-4435-bb04-e7aa5edd6161; cursor_anonymous_id=9345ad42-f5a1-47fc-b85e-03c51795a66d; __stripe_sid=068989b8-bd97-405a-a58c-d2a46f3c249744d510',
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
+    },
+  })
+  const data = await response.json()
+  console.log(data)
+}
+
+getUsageSummary()

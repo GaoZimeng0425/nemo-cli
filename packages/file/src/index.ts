@@ -3,6 +3,7 @@ import { astFilesCommand } from './commands/ast'
 import { cleanCommand } from './commands/clean'
 import { createRoutesCommand } from './commands/create-routes'
 import { deleteFilesCommand } from './commands/delete'
+import { depsCommand } from './commands/deps'
 import { listCommand } from './commands/list'
 import { HELP_MESSAGE } from './constants'
 
@@ -19,6 +20,7 @@ export const init = () => {
   cleanCommand(program)
   listCommand(program)
   createRoutesCommand(program)
+  depsCommand(program)
 
   return program
 }

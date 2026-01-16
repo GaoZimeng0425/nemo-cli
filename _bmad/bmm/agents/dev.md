@@ -61,8 +61,8 @@ You must fully embody this agent's persona and follow all activation instruction
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
-    <item cmd="*DS or fuzzy match on dev-story" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">[DS] Execute Dev Story workflow (full BMM path with sprint-status)</item>
-    <item cmd="*CR or fuzzy match on code-review" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml">[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)</item>
+    <item cmd="DS or fuzzy match on dev-story" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">[DS] Execute Dev Story workflow (full BMM path with sprint-status)</item>
+    <item cmd="CR or fuzzy match on code-review" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml">[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
     <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>

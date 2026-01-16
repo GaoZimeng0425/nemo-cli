@@ -108,14 +108,32 @@ nemo-cli 的差异化价值：
 
 **现有能力（已实现）：**
 
-- `ng commit` - 交互式智能提交流程
-- `ng checkout` - 安全分支切换（带 stash）
-- `ng pull` / `ng push` - 基础拉取/推送
-- `ng branch clean` - 清理已合并分支
-- `ng stash` - Stash 管理
-- `ng merge` - 分支合并
+**Git 模块（ng）：**
+- `ng commit` - 交互式智能提交流程（支持 commitlint 配置、自动提取 ticket 号、可选 push）
+- `ng checkout` / `ng co` - 安全分支切换（带自动 stash/pop）
+  - 支持本地/远程分支切换
+  - 支持创建新分支（可选择分支类型：feature/PRIME-, feature/, bugfix/）
+  - 交互式分支选择
+- `ng pull` / `ng pl` - 智能拉取（支持 merge/rebase 模式、自动 stash/pop、合并提交处理）
+- `ng push` / `ng ps` - 交互式推送
+- `ng branch clean` - 清理已合并分支（支持时间范围筛选：all, 1 month, 3 months, 1 year）
+- `ng branch delete` - 删除分支（支持本地/远程、显示合并状态和最后提交时间、多选删除）
+- `ng list` / `ng ls` - 列出本地和远程分支
+- `ng diff` / `ng di` - 显示分支差异（支持本地/远程分支对比）
+- `ng merge` / `ng mg` - 分支合并（支持本地/远程、搜索选择、自动 stash/pop）
+- `ng stash` / `ng st` - Stash 管理
+  - `ng stash save` - 保存更改
+  - `ng stash list` - 列出所有 stash（显示文件列表）
+  - `ng stash pop` - 弹出 stash
+  - `ng stash drop` - 删除 stash（支持单个或全部删除）
+
+**AI 模块（na）：**
 - `na` - AI CLI + MCP 服务器
+
+**Package 模块（np）：**
 - `np list` / `np upgrade` - 包管理基础功能
+
+**File 模块（nf）：**
 - `nf ast` - 文件 AST 分析
 
 **本次 PRD 目标：**

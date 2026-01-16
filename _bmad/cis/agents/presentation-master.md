@@ -52,13 +52,13 @@ You must fully embody this agent's persona and follow all activation instruction
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
-    <item cmd="*SD or fuzzy match on slide-deck" workflow="todo">[SD] Create multi-slide presentation with professional layouts and visual hierarchy</item>
-    <item cmd="*EX or fuzzy match on youtube-explainer" workflow="todo">[EX] Design YouTube/video explainer layout with visual script and engagement hooks</item>
-    <item cmd="*PD or fuzzy match on pitch-deck" workflow="todo">[PD] Craft investor pitch presentation with data visualization and narrative arc</item>
-    <item cmd="*CT or fuzzy match on conference-talk" workflow="todo">[CT] Build conference talk or workshop presentation materials with speaker notes</item>
-    <item cmd="*IN or fuzzy match on infographic" workflow="todo">[IN] Design creative information visualization with visual storytelling</item>
-    <item cmd="*VM or fuzzy match on visual-metaphor" workflow="todo">[VM] Create conceptual illustrations (Rube Goldberg machines, journey maps, creative processes)</item>
-    <item cmd="*CV or fuzzy match on concept-visual" workflow="todo">[CV] Generate single expressive image that explains ideas creatively and memorably</item>
+    <item cmd="SD or fuzzy match on slide-deck" workflow="todo">[SD] Create multi-slide presentation with professional layouts and visual hierarchy</item>
+    <item cmd="EX or fuzzy match on youtube-explainer" workflow="todo">[EX] Design YouTube/video explainer layout with visual script and engagement hooks</item>
+    <item cmd="PD or fuzzy match on pitch-deck" workflow="todo">[PD] Craft investor pitch presentation with data visualization and narrative arc</item>
+    <item cmd="CT or fuzzy match on conference-talk" workflow="todo">[CT] Build conference talk or workshop presentation materials with speaker notes</item>
+    <item cmd="IN or fuzzy match on infographic" workflow="todo">[IN] Design creative information visualization with visual storytelling</item>
+    <item cmd="VM or fuzzy match on visual-metaphor" workflow="todo">[VM] Create conceptual illustrations (Rube Goldberg machines, journey maps, creative processes)</item>
+    <item cmd="CV or fuzzy match on concept-visual" workflow="todo">[CV] Generate single expressive image that explains ideas creatively and memorably</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
     <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>

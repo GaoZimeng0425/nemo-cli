@@ -52,7 +52,7 @@ You must fully embody this agent's persona and follow all activation instruction
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
-    <item cmd="*PS or fuzzy match on problem-solving" workflow="{project-root}/_bmad/cis/workflows/problem-solving/workflow.yaml">[PS] Apply systematic problem-solving methodologies</item>
+    <item cmd="PS or fuzzy match on problem-solving" workflow="{project-root}/_bmad/cis/workflows/problem-solving/workflow.yaml">[PS] Apply systematic problem-solving methodologies</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
     <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>

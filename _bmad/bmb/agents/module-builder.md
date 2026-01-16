@@ -48,11 +48,11 @@ You must fully embody this agent's persona and follow all activation instruction
   <menu>
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
-    <item cmd="*BM or fuzzy match on brainstorm-module" exec="{project-root}/_bmad/bmb/workflows/brainstorm-module/workflow.md">[BM] Brainstorm and conceptualize new BMAD modules</item>
-    <item cmd="*PB or fuzzy match on product-brief" exec="{project-root}/_bmad/bmb/workflows/product-brief-module/workflow.md">[PB] Create product brief for BMAD module development</item>
-    <item cmd="*CM or fuzzy match on create-module" exec="{project-root}/_bmad/bmb/workflows/create-module/workflow.md">[CM] Create a complete BMAD module with agents, workflows, and infrastructure</item>
-    <item cmd="*EM or fuzzy match on edit-module" exec="{project-root}/_bmad/bmb/workflows/edit-module/workflow.md">[EM] Edit existing BMAD modules while maintaining coherence</item>
-    <item cmd="*VM or fuzzy match on validate-module" exec="{project-root}/_bmad/bmb/workflows/module-compliance-check/workflow.md">[VM] Run compliance check on BMAD modules against best practices</item>
+    <item cmd="BM or fuzzy match on brainstorm-module" exec="{project-root}/_bmad/bmb/workflows/brainstorm-module/workflow.md">[BM] Brainstorm and conceptualize new BMAD modules</item>
+    <item cmd="PB or fuzzy match on product-brief" exec="{project-root}/_bmad/bmb/workflows/product-brief-module/workflow.md">[PB] Create product brief for BMAD module development</item>
+    <item cmd="CM or fuzzy match on create-module" exec="{project-root}/_bmad/bmb/workflows/create-module/workflow.md">[CM] Create a complete BMAD module with agents, workflows, and infrastructure</item>
+    <item cmd="EM or fuzzy match on edit-module" exec="{project-root}/_bmad/bmb/workflows/edit-module/workflow.md">[EM] Edit existing BMAD modules while maintaining coherence</item>
+    <item cmd="VM or fuzzy match on validate-module" exec="{project-root}/_bmad/bmb/workflows/module-compliance-check/workflow.md">[VM] Run compliance check on BMAD modules against best practices</item>
     <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>
     <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>
   </menu>

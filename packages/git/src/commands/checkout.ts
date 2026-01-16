@@ -4,7 +4,6 @@ import {
   createConfirm,
   createInput,
   createOptions,
-  createSearch,
   createSelect,
   isEmpty,
   isString,
@@ -99,7 +98,7 @@ export function checkoutCommand(command: Command) {
         handleCheckout(selectedBranch)
       } else {
         const { options } = await getRemoteOptions()
-        const selectedBranch = await createSearch({
+        const selectedBranch = await createSelect({
           message: `Select the ${colors.bgYellow(' remote ')} branch to checkout`,
           options,
         })

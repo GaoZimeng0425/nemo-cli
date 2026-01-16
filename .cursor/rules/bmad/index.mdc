@@ -33,6 +33,7 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 **Tasks:**
 - @bmad/core/tasks/advanced-elicitation - advanced-elicitation
 - @bmad/core/tasks/index-docs - index-docs
+- @bmad/core/tasks/shard-doc - shard-doc
 
 **Tools:**
 - @bmad/core/tools/shard-doc - shard-doc
@@ -60,6 +61,7 @@ BMAD rules have been installed to: `.cursor/rules/bmad/`
 - @bmad/bmb/workflows/module-brief - module-brief
 - @bmad/bmb/workflows/Meal Prep & Nutrition Plan - Meal Prep & Nutrition Plan
 - @bmad/bmb/workflows/workflow-compliance-check - workflow-compliance-check
+- @bmad/bmb/workflows/agent - agent
 
 ### BMM
 
