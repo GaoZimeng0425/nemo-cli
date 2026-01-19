@@ -144,6 +144,7 @@ const runChecks = async (isDryRun: boolean): Promise<void> => {
   } else {
     log.show(`On branch: ${branch}`, { type: 'success' })
   }
+  const spinner = createSpinner('npm whoami')
 
   // Check npm login
   const [npmErr, npmResult] = await xASync('npm', ['whoami'], { quiet: true })
@@ -156,6 +157,7 @@ const runChecks = async (isDryRun: boolean): Promise<void> => {
   } else {
     log.success(`Logged in to npm as: ${npmResult.stdout.trim()}`)
   }
+  spinner.message('git fetch origin')
 
   // Check remote sync
   await xASync('git', ['fetch', 'origin'], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
@@ -171,6 +173,7 @@ const runChecks = async (isDryRun: boolean): Promise<void> => {
   } else {
     log.warn('Could not check remote sync status')
   }
+  spinner.stop()
 }
 
 // ============== Build ==============
