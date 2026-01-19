@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/git",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "git flow handle",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "https://github.com/GaoZimeng0425/nemo-cli#readme",

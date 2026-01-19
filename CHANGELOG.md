@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.1-beta.3] - 2026-01-19
+
+### Bug Fixes
+- fix: feature/release fix npm work flow
+
 ## [0.0.1-beta.2] - 2026-01-19
 
 ### Bug Fixes
