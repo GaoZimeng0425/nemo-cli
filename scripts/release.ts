@@ -273,7 +273,8 @@ const generateChangelog = async (newVersion: string): Promise<string> => {
   return changelog
 }
 
-const changelogPattern = /# Changelog\n\n(?:All notable changes[^\n]*\n\n)?/
+// biome-ignore lint/complexity/useRegexLiterals: ignore, qoder is always make error in literal regex
+const changelogPattern = new RegExp('# Changelog\n\n(?:All notable changes[^\n]*\n\n)?')
 const updateChangelog = async (newVersion: string): Promise<void> => {
   log.show('Updating CHANGELOG.md...', { type: 'step' })
 
@@ -365,7 +366,7 @@ const publishPackages = async (
     const args = ['publish', '--access', 'public', '--tag', tag]
     if (otp) args.push('--otp', otp)
 
-    const [pubErr] = await xASync('npm', args, { nodeOptions: { cwd: dir } })
+    const [pubErr] = await xASync('pnpm', args, { nodeOptions: { cwd: dir } })
     if (pubErr) {
       log.error(`Failed to publish ${name}`)
       const proceed = await createConfirm({ message: 'Continue with remaining packages?' })
