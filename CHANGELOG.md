@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-01-19
+
+### Bug Fixes
+- fix: main fix npm release workspace error
+
 ## [0.1.1] - 2026-01-19
 
 ### Bug Fixes
