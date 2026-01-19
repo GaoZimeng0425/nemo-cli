@@ -29,7 +29,7 @@ const customLevels = {
 }
 const DEFAULT_OPTIONS = {
   heading: '@nemo-cli',
-  level: 'error',
+  level: 'verbose',
 }
 
 winston.addColors(customLevels.colors)
