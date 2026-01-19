@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-01-19
+
+### Bug Fixes
+- fix: main fix hono security error
+
+### Other Changes
+- chore: main remove unused dependencies
+- chore: main remove secret key
+
 ## [0.1.0] - 2026-01-19
 
 ### Bug Fixes
