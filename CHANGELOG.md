@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.1-beta.2] - 2026-01-19
+
+### Bug Fixes
+- fix(git): feature/release fix release tag error
+
 ## [0.0.1-beta.1] - 2026-01-19
 
 ## [0.0.1-beta.0] - 2026-01-19
