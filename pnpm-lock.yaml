@@ -26,9 +26,6 @@ importers:
 
   .:
     dependencies:
-      '@clack/prompts':
-        specifier: latest
-        version: 0.11.0
       '@slack/bolt':
         specifier: ^4.6.0
         version: 4.6.0(@types/express@5.0.3)
@@ -69,6 +66,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^20.3.1
         version: 20.3.1
+      '@nemo-cli/shared':
+        specifier: workspace:*
+        version: link:packages/shared
       '@semantic-release/changelog':
         specifier: ^6.0.3
         version: 6.0.3(semantic-release@25.0.2(typescript@5.9.3))
@@ -85,8 +85,8 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       knip:
-        specifier: ^5.81.0
-        version: 5.81.0(@types/node@25.0.9)(typescript@5.9.3)
+        specifier: ^5.82.0
+        version: 5.82.0(@types/node@25.0.9)(typescript@5.9.3)
       lint-staged:
         specifier: ^16.2.7
         version: 16.2.7
@@ -124,8 +124,8 @@ importers:
         specifier: 3.0.12
         version: 3.0.12(zod@4.3.5)
       '@ai-sdk/react':
-        specifier: 3.0.40
-        version: 3.0.40(react@19.2.3)(zod@4.3.5)
+        specifier: 3.0.41
+        version: 3.0.41(react@19.2.3)(zod@4.3.5)
       '@nemo-cli/git':
         specifier: workspace:*
         version: link:../git
@@ -139,14 +139,14 @@ importers:
         specifier: workspace:*
         version: link:../ui
       ai:
-        specifier: 6.0.38
-        version: 6.0.38(zod@4.3.5)
+        specifier: 6.0.39
+        version: 6.0.39(zod@4.3.5)
       confluence.js:
         specifier: ^2.1.0
         version: 2.1.0
       fastmcp:
-        specifier: ^3.26.9
-        version: 3.26.9(arktype@2.1.29)(hono@4.11.1)
+        specifier: ^3.27.0
+        version: 3.27.0(arktype@2.1.29)(hono@4.11.1)
 
   packages/file:
     dependencies:
@@ -412,8 +412,8 @@ packages:
     resolution: {integrity: sha512-5KXyBOSEX+l67elrEa+wqo/LSsSTtrPj9Uoh3zMbe/ceQX4ucHI3b9nUEfNkGF3Ry1svv90widAt+aiKdIJasQ==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@3.0.40':
-    resolution: {integrity: sha512-I/GUogzjduEtp7g3ZNvxjVCmR5KFRKzfjKM6X/aShQcKFYiAmzmUZexvQ9jX5TJxhuQwk65xJmtmU2iYcWRjRw==}
+  '@ai-sdk/react@3.0.41':
+    resolution: {integrity: sha512-mTyfkM+WVUIlaqIpOPSgHlKL1sRQ9df+hdhs7EmDi804m/Ouw+Cq++HCJ9GFAnpnLizcO8huBoTNIrgdjewjzQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
@@ -662,14 +662,8 @@ packages:
   '@borewit/text-codec@0.2.1':
     resolution: {integrity: sha512-k7vvKPbf7J2fZ5klGRD9AeKfUvojuZIQ3BT5u7Jfv+puwXkUBUT5PVyMDfJZpy30CBDXGMgw7fguK/lpOMBvgw==}
 
-  '@clack/core@0.5.0':
-    resolution: {integrity: sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow==}
-
   '@clack/core@1.0.0-alpha.7':
     resolution: {integrity: sha512-3vdh6Ar09D14rVxJZIm3VQJkU+ZOKKT5I5cC0cOVazy70CNyYYjiwRj9unwalhESndgxx6bGc/m6Hhs4EKF5XQ==}
-
-  '@clack/prompts@0.11.0':
-    resolution: {integrity: sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw==}
 
   '@clack/prompts@1.0.0-alpha.9':
     resolution: {integrity: sha512-sKs0UjiHFWvry4SiRfBi5Qnj0C/6AYx8aKkFPZQSuUZXgAram25ZDmhQmP7vj1aFyLpfHWtLQjWvOvcat0TOLg==}
@@ -2581,8 +2575,8 @@ packages:
     resolution: {integrity: sha512-gOsf2YwSlleG6IjRYG2A7k0HmBMEo6qVNk9Bp/EaLgAJT5ngH6PXbqa4ItvnEwCm/velL5jAnQgsHsWnjhGmvw==}
     engines: {node: '>=18'}
 
-  ai@6.0.38:
-    resolution: {integrity: sha512-X8AaZFrdsPO1RNCAQLsaWfmE/SL9zgsiIZN3XqEHs3jIZ7ycR5aQZRg5XpNtbLWJxKXzK2b1ZXLx13AFOjksSg==}
+  ai@6.0.39:
+    resolution: {integrity: sha512-hF05gF4H+IxuilA8kNANVVHQXduTJsJaH74jmlmy8mcQt3NZgPYe2zZNyGBV4DPDYTUDt1h31hbLgQqJTn5LGA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -3576,8 +3570,8 @@ packages:
     resolution: {integrity: sha512-pfX9uG9Ki0yekDHx2SiuRIyFdyAr1kMIMitPvb0YBo8SUfKvia7w7FIyd/l6av85pFYRhZscS75MwMnbvY+hcQ==}
     hasBin: true
 
-  fastmcp@3.26.9:
-    resolution: {integrity: sha512-LhyIYD5bygy1yOe0PNmYvPUL8qtuml4x19GZCLdjFL4gs720WfdAnjHMcrRddNaM5ICMH/VLCmagnM8d0ogzPg==}
+  fastmcp@3.27.0:
+    resolution: {integrity: sha512-jbGc5eFuqWjl4OMNdEmdGBeUddZjXwF7nyxZxWZ7X9xAahHC/PavqAy9opJm4vjEKteuao282WVfmbr54uUW+Q==}
     hasBin: true
     peerDependencies:
       jose: ^5.0.0
@@ -4280,8 +4274,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  knip@5.81.0:
-    resolution: {integrity: sha512-EM9YdNg6zU2DWMJuc9zD8kPUpj0wvPspa63Qe9DPGygzL956uYThfoUQk5aNpPmMr9hs/k+Xm7FLuWFKERFkrQ==}
+  knip@5.82.0:
+    resolution: {integrity: sha512-LNOR/TcauMdJLGZ9jdniIUpt0yy8aG/v8g31UJlb6qBvMNFY31w02hnwS8KMHEGy/X+pfxqsOLMFdm0NAJ3wWg==}
     engines: {node: '>=18.18.0'}
     hasBin: true
     peerDependencies:
@@ -6350,10 +6344,10 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@3.0.40(react@19.2.3)(zod@4.3.5)':
+  '@ai-sdk/react@3.0.41(react@19.2.3)(zod@4.3.5)':
     dependencies:
       '@ai-sdk/provider-utils': 4.0.8(zod@4.3.5)
-      ai: 6.0.38(zod@4.3.5)
+      ai: 6.0.39(zod@4.3.5)
       react: 19.2.3
       swr: 2.3.8(react@19.2.3)
       throttleit: 2.1.0
@@ -6867,19 +6861,8 @@ snapshots:
 
   '@borewit/text-codec@0.2.1': {}
 
-  '@clack/core@0.5.0':
-    dependencies:
-      picocolors: 1.1.1
-      sisteransi: 1.0.5
-
   '@clack/core@1.0.0-alpha.7':
     dependencies:
-      picocolors: 1.1.1
-      sisteransi: 1.0.5
-
-  '@clack/prompts@0.11.0':
-    dependencies:
-      '@clack/core': 0.5.0
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
@@ -8752,7 +8735,7 @@ snapshots:
       clean-stack: 5.3.0
       indent-string: 5.0.0
 
-  ai@6.0.38(zod@4.3.5):
+  ai@6.0.39(zod@4.3.5):
     dependencies:
       '@ai-sdk/gateway': 3.0.16(zod@4.3.5)
       '@ai-sdk/provider': 3.0.4
@@ -9866,7 +9849,7 @@ snapshots:
     dependencies:
       strnum: 2.1.2
 
-  fastmcp@3.26.9(arktype@2.1.29)(hono@4.11.1):
+  fastmcp@3.27.0(arktype@2.1.29)(hono@4.11.1):
     dependencies:
       '@modelcontextprotocol/sdk': 1.25.2(hono@4.11.1)(zod@4.3.5)
       '@standard-schema/spec': 1.1.0
@@ -10567,7 +10550,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  knip@5.81.0(@types/node@25.0.9)(typescript@5.9.3):
+  knip@5.82.0(@types/node@25.0.9)(typescript@5.9.3):
     dependencies:
       '@nodelib/fs.walk': 1.2.8
       '@types/node': 25.0.9

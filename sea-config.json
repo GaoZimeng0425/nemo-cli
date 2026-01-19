@@ -1,5 +1,0 @@
-{
-  "main": "packages/git/dist/index.js",
-  "output": "my-app-bundle.blob",
-  "disableExperimentalSEAWarning": true
-}

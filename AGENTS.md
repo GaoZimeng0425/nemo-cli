@@ -127,3 +127,138 @@ Usage notes:
 <!-- SKILLS_TABLE_END -->
 
 </skills_system>
+
+## Build Commands
+
+### Development
+```bash
+pnpm dev              # Start development in parallel across all packages
+pnpm dev:email        # Start email service development
+pnpm dev:slack        # Start Slack bot development
+```
+
+### Building
+```bash
+pnpm build            # Build all packages in parallel
+pnpm build-dts        # Build declaration files for all packages
+```
+
+### Testing
+```bash
+vitest                # Run all tests
+vitest run            # Run tests once
+vitest run <file>     # Run single test file
+pnpm coverage         # Generate coverage report
+```
+
+### Code Quality
+```bash
+pnpm format           # Format code with Biome
+pnpm check            # Run Biome check (lint + format) across all packages
+pnpm compile          # TypeScript type checking (no emit)
+```
+
+### Package Management
+```bash
+pnpm knip             # Detect unused files and dependencies
+pnpm release          # Create new release
+pnpm release:dry      # Dry run release
+```
+
+## Code Style Guidelines
+
+### Formatting & Linting
+- **Tool**: Biome (replaces ESLint/Prettier)
+- **Indentation**: 2 spaces
+- **Line width**: 120 characters
+- **Semicolons**: As needed (Biome preference)
+- **Quotes**: Single quotes for strings, double for JSX
+- **Trailing commas**: ES5 compatible
+
+### Import Organization
+Imports are auto-organized by Biome with this priority:
+1. Bun/Node.js built-ins
+2. External npm packages (excluding @nemo-cli/*)
+3. React
+4. Package protocols, URLs
+5. External packages (excluding @nemo-cli/*)
+6. Blank line separator
+7. Internal @nemo-cli/* packages
+8. Aliases and path imports
+
+### TypeScript Configuration
+- **Strict mode**: Enabled
+- **Module system**: ES modules (`"type": "module"`)
+- **Target**: Current Node.js LTS
+- **Declaration files**: Generated for all packages
+- **Path aliases**: Configured for monorepo structure
+
+### Error Handling
+- Use centralized `handleError` utility from `@nemo-cli/shared`
+- Error messages should be user-friendly via `ErrorMessage` component
+- Async operations use `xASync` wrapper for consistent error handling
+- Log errors with appropriate context using `log.error`
+
+### Naming Conventions
+- **Files**: kebab-case for directories, camelCase for files
+- **Functions/Variables**: camelCase
+- **Constants**: UPPER_SNAKE_CASE
+- **Types/Interfaces**: PascalCase
+- **Packages**: kebab-case with @nemo-cli scope
+
+### Package Structure
+- Monorepo with pnpm workspaces
+- Each package has its own package.json and TypeScript config
+- Shared utilities in `@nemo-cli/shared`
+- UI components in `@nemo-cli/ui`
+- Domain-specific packages: git, file, ai, mail, package
+
+### Commit Message Convention
+Follows conventional commits with these types:
+- `feat`: New features
+- `fix`: Bug fixes  
+- `docs`: Documentation
+- `style`: Code style changes
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Testing
+- `build`: Build system
+- `ci`: CI/CD
+- `chore`: Maintenance
+- `revert`: Revert changes
+- `wip`: Work in progress
+- `release`: Release
+
+**Scopes**: git, shared, ai, ui, packages, mail
+
+### React Component Rules (from .cursor/rules)
+- Use function components only (no class components)
+- Style with TailwindCSS
+- State management with zustand
+- PropTypes type definitions required
+- Code splitting with dynamic imports
+
+### Testing
+- **Framework**: Vitest
+- **Test location**: `packages/*/__tests__/**/*.{test,spec}.{js,ts}`
+- **Coverage**: Run with `pnpm coverage`
+- **Single test**: `vitest run path/to/test.test.ts`
+
+### Development Workflow
+1. Run `pnpm dev` for parallel development
+2. Use `pnpm check` before committing
+3. Follow commit message convention (enforced by commitlint)
+4. Use `pnpm knip` to detect unused dependencies
+5. Build with `pnpm build` before release
+
+### Environment Configuration
+- Use `.env.example` as template
+- Environment variables loaded via dotenv
+- Config loading with `unconfig` utility
+- Support for multiple config formats
+
+### Performance Considerations
+- Use `es-toolkit` for optimized utility functions
+- Lazy load heavy dependencies
+- Prefer async/await over Promise chains
+- Use appropriate data structures (Maps, Sets)

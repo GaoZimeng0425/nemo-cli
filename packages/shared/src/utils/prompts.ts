@@ -9,6 +9,7 @@ import {
   multiselect,
   type NoteOptions,
   note,
+  type Option,
   type PromptGroup,
   type SelectOptions,
   type SpinnerOptions,
@@ -32,8 +33,8 @@ export type PromptOptions<T extends string | number | boolean | symbol = string>
   value: T
 }
 
-export const createOptions = <const T extends string | number>(options: T[]): PromptOptions[] =>
-  options.map((option) => ({ label: option.toString(), value: option.toString() }))
+export const createOptions = <const T extends string | number>(options: readonly T[]): Option<T>[] =>
+  options.map((option) => ({ label: option.toString(), value: option }) as Option<T>)
 
 const createPrompt = <T extends AnyFunction>(fn: T) => {
   return async (options: Parameters<T>[0]): Promise<Awaited<ReturnType<T>>> => {
