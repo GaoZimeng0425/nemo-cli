@@ -1,5 +1,5 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createOptions, createSelect, exit, log, xASync } from '@nemo-cli/shared'
+import { colors, createCheckbox, createOptions, exit, log, xASync } from '@nemo-cli/shared'
 import { HELP_MESSAGE } from '../constants/stash'
 import { handleGitStash, handleGitStashCheck } from '../utils'
 
@@ -10,14 +10,16 @@ enum StashCommand {
   DROP = 'drop',
 }
 
-const handleCheck = (callback: (stashes: string[]) => Promise<void>) => async () => {
-  const stashes = await handleGitStashCheck()
-  if (stashes.length === 0) {
-    log.show('No stash found.', { type: 'error' })
-    return
+const handleCheck =
+  <T extends (stashes: string[]) => unknown>(callback: T) =>
+  async () => {
+    const stashes = await handleGitStashCheck()
+    if (stashes.length === 0) {
+      log.show('No stash found.', { type: 'error' })
+      return
+    }
+    return callback(stashes)
   }
-  return callback(stashes)
-}
 
 /**
  * 获取 stash 中的文件列表
@@ -40,23 +42,25 @@ const extractStashRef = (stashEntry: string): string => {
 }
 
 const handlePop = handleCheck(async (stashes: string[]) => {
-  const selectedStash = await createSelect({
+  const selectedStashes = await createCheckbox({
     message: 'Select the stash to pop',
     options: stashes.map((stash) => ({ label: stash, value: stash })),
   })
-  const stashRef = extractStashRef(selectedStash)
-  const [error] = await xASync('git', ['stash', 'pop', stashRef])
-  if (error) {
-    log.show('Failed to pop stash.', { type: 'error' })
-  } else {
-    log.show('Successfully popped changes.', { type: 'success' })
+  for await (const stash of selectedStashes) {
+    const stashRef = extractStashRef(stash)
+    const [error] = await xASync('git', ['stash', 'pop', stashRef])
+    if (error) {
+      log.show('Failed to pop stash.', { type: 'error' })
+    } else {
+      log.show('Successfully popped changes.', { type: 'success' })
+    }
   }
 })
 
 const handleList = handleCheck(async (stashes: string[]) => {
   log.show(`\n${colors.bold(`📦 Found ${stashes.length} stash(es)`)}\n`)
 
-  for (const stash of stashes) {
+  for await (const stash of stashes) {
     const stashRef = extractStashRef(stash)
     const files = await getStashFiles(stashRef)
 
@@ -75,38 +79,37 @@ const handleList = handleCheck(async (stashes: string[]) => {
   }
 })
 
-const ALL_STASH = 'all'
 const handleDrop = handleCheck(async (stashes: string[]) => {
-  const options = stashes.length > 1 ? [ALL_STASH, ...stashes] : stashes
-  const selectedStash = await createSelect({
+  const selectedStashes = await createCheckbox({
     message: 'Select the stash to clear',
-    options: createOptions(options),
-    initialValue: ALL_STASH,
+    options: createOptions(stashes),
   })
 
-  if (selectedStash === ALL_STASH) {
-    const [error] = await xASync('git', ['stash', 'clear'])
-    if (error) {
-      log.show('Failed to clear all stashes.', { type: 'error' })
-    } else {
-      log.show('Successfully cleared all stashes.', { type: 'success' })
+  for await (const stash of selectedStashes) {
+    const stashRef = extractStashRef(stash)
+    if (!stashRef) {
+      log.show('Invalid stash name.', { type: 'error' })
+      exit(0)
     }
-    return
-  }
 
-  const stashRef = extractStashRef(selectedStash)
-  if (!stashRef) {
-    log.show('Invalid stash name.', { type: 'error' })
-    exit(0)
-  }
-
-  const [error] = await xASync('git', ['stash', StashCommand.DROP, stashRef])
-  if (error) {
-    log.show('Failed to drop stash.', { type: 'error' })
-  } else {
-    log.show(`Successfully dropped stash: ${stashRef}`, { type: 'success' })
+    const [error] = await xASync('git', ['stash', StashCommand.DROP, stashRef])
+    if (error) {
+      log.show('Failed to drop stash.', { type: 'error' })
+    } else {
+      log.show(`Successfully dropped stash: ${stashRef}`, { type: 'success' })
+    }
   }
 })
+
+const handleClear = handleCheck(async () => {
+  const [error] = await xASync('git', ['stash', 'clear'])
+  if (error) {
+    log.show('Failed to clear stashes.', { type: 'error' })
+  } else {
+    log.show('Successfully cleared stashes.', { type: 'success' })
+  }
+})
+
 export const stashCommand = (command: Command) => {
   // 创建主 stash 命令
   const stashCmd = command
@@ -146,11 +149,18 @@ export const stashCommand = (command: Command) => {
   // 子命令：删除 stash
   stashCmd
     .command('drop')
-    .alias('clear')
     .alias('d')
     .description('Drop/clear stashes')
     .action(async () => {
       await handleDrop()
+    })
+
+  stashCmd
+    .command('clear')
+    .alias('c')
+    .description('clear stashes')
+    .action(async () => {
+      await handleClear()
     })
 
   return stashCmd
