@@ -320,21 +320,27 @@ const pushToRemote = async (isDryRun: boolean): Promise<void> => {
 }
 
 // ============== Publish ==============
-const publishPackages = async (packages: ReturnType<typeof getPackages>, isDryRun: boolean): Promise<void> => {
+const publishPackages = async (
+  packages: ReturnType<typeof getPackages>,
+  newVersion: string,
+  isDryRun: boolean
+): Promise<void> => {
   log.show('Publishing packages to npm...', { type: 'step' })
 
   // Determine publish order based on dependencies
   const publishOrder = getPublishOrder(packages)
+  const isPrerelease = newVersion.includes('-')
+  const tag = isPrerelease ? 'beta' : 'latest'
 
   for (const { name, dir } of publishOrder) {
     log.info(`Publishing ${name}...`)
 
     if (isDryRun) {
-      log.info(`[DRY RUN] Would publish ${name}`)
+      log.info(`[DRY RUN] Would publish ${name} with tag: ${tag}`)
       continue
     }
 
-    const [pubErr] = await xASync('npm', ['publish', '--access', 'public'], { nodeOptions: { cwd: dir } })
+    const [pubErr] = await xASync('npm', ['publish', '--access', 'public', '--tag', tag], { nodeOptions: { cwd: dir } })
     if (pubErr) {
       log.error(`Failed to publish ${name}`)
       const proceed = await createConfirm({ message: 'Continue with remaining packages?' })
@@ -446,7 +452,7 @@ const main = async (): Promise<void> => {
   await pushToRemote(isDryRun)
 
   // Publish to npm
-  await publishPackages(packages, isDryRun)
+  await publishPackages(packages, newVersion, isDryRun)
 
   // Done!
   console.log(`\n${colors.green(`✨ Release v${newVersion} completed successfully!`)}\n`)
