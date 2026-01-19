@@ -13,7 +13,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
-import { colors, createConfirm, createSelect, log, readJSON, writeJSON, xASync } from '@nemo-cli/shared'
+import { colors, createConfirm, createInput, createSelect, log, readJSON, writeJSON, xASync } from '@nemo-cli/shared'
 
 // ============== Configuration ==============
 const ROOT_DIR = resolve(import.meta.dirname, '..')
@@ -327,10 +327,18 @@ const publishPackages = async (
 ): Promise<void> => {
   log.show('Publishing packages to npm...', { type: 'step' })
 
-  // Determine publish order based on dependencies
   const publishOrder = getPublishOrder(packages)
   const isPrerelease = newVersion.includes('-')
   const tag = isPrerelease ? 'beta' : 'latest'
+
+  // 询问 OTP（如果账户启用了 2FA）
+  let otp: string | undefined
+  if (!isDryRun) {
+    const needOtp = await createConfirm({ message: 'Does your npm account require OTP (2FA enabled)?' })
+    if (needOtp) {
+      otp = await createInput({ message: 'Enter OTP code:' })
+    }
+  }
 
   for (const { name, dir } of publishOrder) {
     log.info(`Publishing ${name}...`)
@@ -340,7 +348,10 @@ const publishPackages = async (
       continue
     }
 
-    const [pubErr] = await xASync('npm', ['publish', '--access', 'public', '--tag', tag], { nodeOptions: { cwd: dir } })
+    const args = ['publish', '--access', 'public', '--tag', tag]
+    if (otp) args.push('--otp', otp)
+
+    const [pubErr] = await xASync('npm', args, { nodeOptions: { cwd: dir } })
     if (pubErr) {
       log.error(`Failed to publish ${name}`)
       const proceed = await createConfirm({ message: 'Continue with remaining packages?' })
