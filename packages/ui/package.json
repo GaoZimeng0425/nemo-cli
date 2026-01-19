@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/ui",
-  "version": "0.0.1-beta.7",
+  "version": "0.1.0",
   "description": "React TUI Components",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",

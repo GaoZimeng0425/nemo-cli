@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] - 2026-01-19
+
+### Bug Fixes
+- fix: feature/release remove unuse code
+
 ## [0.0.1-beta.7] - 2026-01-19
 
 ## [0.0.1-beta.6] - 2026-01-19
