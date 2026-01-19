@@ -125,9 +125,9 @@ export const translateChat = async ({ message }: { message: string }) => {
 const chat = async () => {
   const deepseek = createDeepSeek({
     baseURL: 'https://www.sophnet.com/api/open-apis/v1/',
-    apiKey: 'wb1pJyqXUaxKoD1AR8tkEY_kWw4f-na9UMHedUSMY0YaxUVGMyI9Bq3MuBIYaxBk1qGFO2h-AUWejUC8bo4A',
+    apiKey: '',
     headers: {
-      Authorization: 'Bearer wb1pJyqXUaxKoD1AR8tkEY_kWw4f-na9UMHedUSMY0YaxUVGMyI9Bq3MuBIYaxBk1qGFO2h-AUWejUC8bo4A',
+      Authorization: 'Bearer',
       'Content-Type': 'application/json',
     },
   })
