@@ -13,7 +13,17 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
-import { colors, createConfirm, createInput, createSelect, log, readJSON, writeJSON, xASync } from '@nemo-cli/shared'
+import {
+  colors,
+  createConfirm,
+  createInput,
+  createSelect,
+  createSpinner,
+  log,
+  readJSON,
+  writeJSON,
+  xASync,
+} from '@nemo-cli/shared'
 
 // ============== Configuration ==============
 const ROOT_DIR = resolve(import.meta.dirname, '..')
@@ -340,8 +350,9 @@ const publishPackages = async (
     }
   }
 
-  for (const { name, dir } of publishOrder) {
-    log.info(`Publishing ${name}...`)
+  const spinner = createSpinner('Publishing packages to npm...')
+  for await (const { name, dir } of publishOrder) {
+    spinner.message(`Publishing ${name}...`)
 
     if (isDryRun) {
       log.info(`[DRY RUN] Would publish ${name} with tag: ${tag}`)
@@ -360,6 +371,7 @@ const publishPackages = async (
       log.success(`Published ${name}`)
     }
   }
+  spinner.stop()
 }
 
 const getPublishOrder = (packages: ReturnType<typeof getPackages>): ReturnType<typeof getPackages> => {
