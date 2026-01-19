@@ -15,3 +15,4 @@ onlyBuiltDependencies:
 
 overrides:
   '@nemo-cli/package': link:packages/package
+  'hono': '>=4.11.4'
