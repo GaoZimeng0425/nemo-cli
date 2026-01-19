@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/package",
-  "version": "0.0.1",
+  "version": "0.0.1-beta.0",
   "description": "pnpm workspace handle",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "https://github.com/GaoZimeng0425/nemo-cli#readme",

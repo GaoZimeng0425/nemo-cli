@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/mail",
-  "version": "0.0.1",
+  "version": "0.0.1-beta.0",
   "description": "Mail CLI",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",
