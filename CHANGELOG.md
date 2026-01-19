@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.1-beta.6] - 2026-01-19
+
 ## [0.0.1-beta.5] - 2026-01-19
 
 ### Other Changes

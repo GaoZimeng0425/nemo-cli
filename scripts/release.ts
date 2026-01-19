@@ -122,12 +122,12 @@ const runChecks = async (isDryRun: boolean): Promise<void> => {
   })
   const gitStatus = statusResult?.stdout.trim() ?? ''
   if (gitStatus && !isDryRun) {
-    log.error('Working directory is not clean. Please commit or stash changes first.')
-    log.show(gitStatus, { colors: colors.gray })
+    log.show('Working directory is not clean. Please commit or stash changes first.', { type: 'warn' })
+    log.show(gitStatus, { type: 'warn' })
     const proceed = await createConfirm({ message: 'Continue anyway?' })
     if (!proceed) process.exit(1)
   } else {
-    log.success('Git working directory is clean')
+    log.show('Git working directory is clean', { type: 'success' })
   }
 
   // Check current branch
@@ -137,11 +137,12 @@ const runChecks = async (isDryRun: boolean): Promise<void> => {
   })
   const branch = branchResult?.stdout.trim() ?? ''
   if (branch !== 'main' && branch !== 'master' && !isDryRun) {
-    log.warn(`Current branch is '${branch}', not main/master`)
-    const proceed = await createConfirm({ message: 'Continue on this branch?' })
+    const proceed = await createConfirm({
+      message: `Current branch is '${branch}', not main/master. Continue on this branch?`,
+    })
     if (!proceed) process.exit(1)
   } else {
-    log.success(`On branch: ${branch}`)
+    log.show(`On branch: ${branch}`, { type: 'success' })
   }
 
   // Check npm login
@@ -163,8 +164,7 @@ const runChecks = async (isDryRun: boolean): Promise<void> => {
   const localHead = localResult?.stdout.trim()
   const remoteHead = remoteResult?.stdout.trim()
   if (localHead && remoteHead && localHead !== remoteHead && !isDryRun) {
-    log.warn('Local branch is not synced with remote')
-    const proceed = await createConfirm({ message: 'Continue anyway?' })
+    const proceed = await createConfirm({ message: 'Local branch is not synced with remote, Continue anyway?' })
     if (!proceed) process.exit(1)
   } else if (localHead && remoteHead) {
     log.success('Local branch is synced with remote')
@@ -192,7 +192,7 @@ const updatePackageVersions = (packages: ReturnType<typeof getPackages>, newVers
   const rootPkg = readPackageJson(ROOT_DIR)
   rootPkg.version = newVersion
   writePackageJson(ROOT_DIR, rootPkg)
-  log.success('Updated root package.json')
+  log.show('Updated root package.json', { type: 'success' })
 
   // Update all packages
   for (const { name, dir, pkg } of packages) {
@@ -209,7 +209,7 @@ const updatePackageVersions = (packages: ReturnType<typeof getPackages>, newVers
     }
 
     writePackageJson(dir, pkg)
-    log.success(`Updated ${name}`)
+    log.show(`Updated ${name}`, { type: 'success' })
   }
 }
 
@@ -292,7 +292,7 @@ const updateChangelog = async (newVersion: string): Promise<void> => {
     writeFileSync(changelogPath, header + newChanges + existingChangelog)
   }
 
-  log.success('Updated CHANGELOG.md')
+  log.show('Updated CHANGELOG.md', { type: 'success' })
 }
 
 // ============== Git Operations ==============
@@ -312,7 +312,7 @@ const createGitCommitAndTag = async (version: string, isDryRun: boolean): Promis
     quiet: true,
   })
 
-  log.success(`Created commit and tag v${version}`)
+  log.show(`Created commit and tag v${version}`, { type: 'success' })
 }
 
 const pushToRemote = async (isDryRun: boolean): Promise<void> => {
@@ -326,7 +326,7 @@ const pushToRemote = async (isDryRun: boolean): Promise<void> => {
   await xASync('git', ['push'], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
   await xASync('git', ['push', '--tags'], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
 
-  log.success('Pushed to remote')
+  log.show('Pushed to remote', { type: 'success' })
 }
 
 // ============== Publish ==============
@@ -368,7 +368,7 @@ const publishPackages = async (
       const proceed = await createConfirm({ message: 'Continue with remaining packages?' })
       if (!proceed) process.exit(1)
     } else {
-      log.success(`Published ${name}`)
+      log.show(`Published ${name}`, { type: 'success' })
     }
   }
   spinner.stop()
