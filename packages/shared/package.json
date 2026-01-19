@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/shared",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "cli tools",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "",
@@ -29,7 +29,6 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "prepublish": "npm run build",
-    "prepack": "rolldown",
     "check": "biome check --write"
   },
   "dependencies": {
