@@ -48,7 +48,7 @@
     "jiti": "^2.6.1",
     "match-sorter": "^8.2.0",
     "open": "^11.0.0",
-    "ora": "^9.0.0",
+    "ora": "^9.1.0",
     "p-limit": "^7.2.0",
     "package-manager-detector": "^1.6.0",
     "superjson": "^2.2.6",

@@ -36,7 +36,7 @@
   "dependencies": {
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "@react-email/components": "^1.0.4",
+    "@react-email/components": "^1.0.6",
     "nodemailer": "^7.0.12",
     "react": "catalog:",
     "react-dom": "catalog:"

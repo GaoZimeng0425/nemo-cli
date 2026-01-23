@@ -2,17 +2,14 @@ packages:
   - packages/*
 
 catalog:
-  '@types/react': ^19.2.8
+  '@types/react': ^19.2.9
   '@types/react-dom': ^19.2.3
   react: ^19.2.3
   react-dom: ^19.2.3
 
 onlyBuiltDependencies:
-  - core-js
   - esbuild
   - sharp
-  - unrs-resolver
 
 overrides:
-  '@nemo-cli/package': link:packages/package
-  'hono': '>=4.11.4'
+  hono: '>=4.11.4'
