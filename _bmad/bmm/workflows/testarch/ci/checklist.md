@@ -143,7 +143,6 @@ Note: CI setup is typically a one-time task per repo and can be run any time aft
 
 ### Status File Integration
 
-- [ ] `bmm-workflow-status.md` exists
 - [ ] CI setup logged in Quality & Testing Progress section
 - [ ] Status updated with completion timestamp
 - [ ] Platform and configuration noted

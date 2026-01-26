@@ -292,7 +292,6 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
 4. **Load supporting artifacts**:
    - `test-design.md` → Risk priorities, DoD checklist
    - `story-*.md` or `Epics.md` → Requirements context
-   - `bmm-workflow-status.md` → Workflow completion status (if `check_all_workflows_complete: true`)
 
 5. **Validate evidence freshness** (if `validate_evidence_freshness: true`):
    - Check timestamps of test-design, traceability, NFR assessments
@@ -398,8 +397,8 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
 
 ## Decision Criteria
 
-| Criterion         | Threshold | Actual   | Status  |
-| ----------------- | --------- | -------- | ------- |
+| Criterion         | Threshold | Actual   | Status |
+| ----------------- | --------- | -------- | ------ |
 | P0 Coverage       | ≥100%     | 100%     | ✅ PASS |
 | P1 Coverage       | ≥90%      | 88%      | ⚠️ FAIL |
 | Overall Coverage  | ≥80%      | 92%      | ✅ PASS |
@@ -506,22 +505,7 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
 
 **Actions:**
 
-1. **Update workflow status** (if `append_to_history: true`):
-   - Append gate decision to `bmm-workflow-status.md` under "Gate History" section
-   - Format:
-
-     ```markdown
-     ## Gate History
-
-     ### Story 1.3 - User Login (2025-01-15)
-
-     - **Decision**: CONCERNS
-     - **Reason**: P1 coverage 88% (below 90%)
-     - **Document**: [gate-decision-story-1.3.md](_bmad/output/gate-decision-story-1.3.md)
-     - **Action**: Deploy with follow-up story for AC-5
-     ```
-
-2. **Generate stakeholder notification** (if `notify_stakeholders: true`):
+1. **Generate stakeholder notification** (if `notify_stakeholders: true`):
    - Create concise summary message for team communication
    - Include: Decision, key metrics, action items
    - Format for Slack/email/chat:
@@ -541,7 +525,7 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
    Full Report: _bmad/output/gate-decision-story-1.3.md
    ```
 
-3. **Request sign-off** (if `require_sign_off: true`):
+2. **Request sign-off** (if `require_sign_off: true`):
    - Prompt for named approver (tech lead, QA lead, PM)
    - Document approver name and timestamp in gate decision
    - Block until sign-off received (interactive prompt)
@@ -836,8 +820,8 @@ Use selective testing principles from `selective-testing.md`:
 
 ## Coverage Summary
 
-| Priority  | Total Criteria | FULL Coverage | Coverage % | Status  |
-| --------- | -------------- | ------------- | ---------- | ------- |
+| Priority  | Total Criteria | FULL Coverage | Coverage % | Status |
+| --------- | -------------- | ------------- | ---------- | ------ |
 | P0        | 3              | 3             | 100%       | ✅ PASS |
 | P1        | 5              | 4             | 80%        | ⚠️ WARN |
 | P2        | 4              | 3             | 75%        | ✅ PASS |
@@ -968,7 +952,6 @@ Before completing this workflow, verify:
 - ✅ Decision rules applied consistently (PASS/CONCERNS/FAIL/WAIVED)
 - ✅ Gate decision document created with evidence
 - ✅ Waiver documented if decision is WAIVED (approver, justification, mitigation)
-- ✅ Workflow status updated (bmm-workflow-status.md)
 - ✅ Stakeholders notified (if enabled)
 
 ---

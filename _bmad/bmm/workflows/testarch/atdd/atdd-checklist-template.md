@@ -257,7 +257,6 @@ test('should do something', async ({ {fixtureName} }) => {
 
 - Check off tasks as you complete them
 - Share progress in daily standup
-- Mark story as IN PROGRESS in `bmm-workflow-status.md`
 
 ---
 

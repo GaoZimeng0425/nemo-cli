@@ -201,7 +201,6 @@ Before starting the workflow:
 
 ### Status File Integration
 
-- [ ] `bmm-workflow-status.md` exists
 - [ ] Framework initialization logged in Quality & Testing Progress section
 - [ ] Status file updated with completion timestamp
 - [ ] Status file shows framework: Playwright or Cypress

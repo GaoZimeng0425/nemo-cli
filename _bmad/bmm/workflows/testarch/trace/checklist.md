@@ -375,12 +375,6 @@ Knowledge fragments referenced:
 
 ### Step 5: Status Updates and Notifications
 
-**Status File Updated:**
-
-- [ ] Gate decision appended to bmm-workflow-status.md (if append_to_history: true)
-- [ ] Format correct: `[DATE] Gate Decision: DECISION - Target {ID} - {rationale}`
-- [ ] Status file committed or staged for commit
-
 **Gate YAML Created:**
 
 - [ ] Gate YAML snippet generated with decision and criteria
@@ -479,13 +473,6 @@ Knowledge fragments referenced:
 ---
 
 ## Phase 2 Integration Points
-
-### BMad Workflow Status
-
-- [ ] Gate decision added to `bmm-workflow-status.md`
-- [ ] Format matches existing gate history entries
-- [ ] Timestamp is accurate
-- [ ] Decision summary is concise (<80 chars)
 
 ### CI/CD Pipeline
 

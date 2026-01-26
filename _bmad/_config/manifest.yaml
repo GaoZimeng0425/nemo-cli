@@ -1,12 +1,23 @@
 installation:
-  version: 6.0.0-alpha.23
-  installDate: 2026-01-26T10:28:04.916Z
-  lastUpdated: 2026-01-26T10:28:04.916Z
+  version: 6.0.0-Beta.1
+  installDate: 2026-01-26T10:39:12.858Z
+  lastUpdated: 2026-01-26T10:39:12.858Z
 modules:
-  - core
-  - bmm
+  - name: core
+    version: 6.0.0-Beta.1
+    installDate: 2026-01-26T10:39:12.858Z
+    lastUpdated: 2026-01-26T10:39:12.858Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmm
+    version: 6.0.0-Beta.1
+    installDate: 2026-01-26T10:39:12.739Z
+    lastUpdated: 2026-01-26T10:39:12.858Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
 ides:
   - cursor
-  - antigravity
   - opencode
-  - trae
+  - antigravity
