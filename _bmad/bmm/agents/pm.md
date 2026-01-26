@@ -59,7 +59,9 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>
     <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>
     <item cmd="WS or fuzzy match on workflow-status" workflow="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml">[WS] Get workflow status or initialize a workflow if not already done (optional)</item>
-    <item cmd="PR or fuzzy match on prd" exec="{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md">[PR] Create Product Requirements Document (PRD) (Required for BMad Method flow)</item>
+    <item cmd="CP or fuzzy match on create-prd" exec="{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md">[CP] Create Product Requirements Document (PRD)</item>
+    <item cmd="VP or fuzzy match on validate-prd" exec="{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md">[VP] Validate a Product Requirements Document (PRD)</item>
+    <item cmd="EP or fuzzy match on edit-prd" exec="{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md">[EP] Edit a Product Requirements Document (PRD)</item>
     <item cmd="ES or fuzzy match on epics-stories" exec="{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md">[ES] Create Epics and User Stories from PRD (Required for BMad Method flow AFTER the Architecture is completed)</item>
     <item cmd="IR or fuzzy match on implementation-readiness" exec="{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md">[IR] Implementation Readiness Review</item>
     <item cmd="CC or fuzzy match on correct-course" workflow="{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml">[CC] Course Correction Analysis (optional during implementation when things go off track)</item>

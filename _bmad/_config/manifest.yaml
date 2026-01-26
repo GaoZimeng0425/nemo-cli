@@ -1,15 +1,12 @@
 installation:
-  version: 6.0.0-alpha.22
-  installDate: 2026-01-09T11:03:53.641Z
-  lastUpdated: 2026-01-09T11:03:53.641Z
+  version: 6.0.0-alpha.23
+  installDate: 2026-01-26T10:28:04.916Z
+  lastUpdated: 2026-01-26T10:28:04.916Z
 modules:
   - core
-  - bmb
   - bmm
-  - cis
 ides:
   - cursor
-  - gemini
-  - trae
   - antigravity
-  - windsurf
+  - opencode
+  - trae

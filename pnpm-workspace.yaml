@@ -10,6 +10,7 @@ catalog:
 onlyBuiltDependencies:
   - esbuild
   - sharp
+  - tldjs
 
 overrides:
   hono: '>=4.11.4'

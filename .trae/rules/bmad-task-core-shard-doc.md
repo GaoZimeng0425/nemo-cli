@@ -6,7 +6,7 @@ This rule defines the Shard Document task workflow.
 
 When this task is triggered, execute the following workflow:
 
-<tool id="_bmad/core/tasks/shard-doc" name="Shard Document"
+<task id="_bmad/core/tasks/shard-doc" name="Shard Document"
   description="Splits large markdown documents into smaller, organized files based on level 2 (default) sections" webskip="true"
   standalone="true">
   <objective>Split large markdown documents into smaller, organized files based on level 2 sections using @kayvan/markdown-tree-parser tool</objective>
@@ -114,7 +114,7 @@ When this task is triggered, execute the following workflow:
   <halt-conditions critical="true">
     <i>HALT if npx command fails or produces no output files</i>
   </halt-conditions>
-</tool>
+</task>
 
 ## Usage
 
