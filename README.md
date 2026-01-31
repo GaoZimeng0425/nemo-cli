@@ -82,6 +82,7 @@ ng merge      # or: ng mg
 
 # Stash operations
 ng stash
+ng stash history  # Persistent history with metadata
 
 # View diff
 ng diff

@@ -1,25 +1,38 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createConfirm, createSearch, createSelect, createSpinner, isEmpty, xASync } from '@nemo-cli/shared'
-
+import {
+  colors,
+  createConfirm,
+  createSearch,
+  createSelect,
+  createSpinner,
+  isEmpty,
+  log,
+  xASync,
+} from '@nemo-cli/shared'
 import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
 
 const handleMerge = async (branch: string) => {
   const spinner = createSpinner(`Merging branch ${branch}...`)
   const args = ['merge', branch]
 
-  const stashName = await handleGitStash()
+  const stashResult = await handleGitStash(branch, 'merge')
 
-  // 使用 stdio: 'inherit' 来支持交互式合并确认
-  const [error] = await xASync('git', args, {
-    nodeOptions: {
-      stdio: 'inherit',
-    },
-  })
-  if (error) return
+  try {
+    // 使用 stdio: 'inherit' 来支持交互式合并确认
+    const [error] = await xASync('git', args, {
+      nodeOptions: {
+        stdio: 'inherit',
+      },
+    })
 
-  spinner.stop(`Successfully merged branch ${branch}.`)
-
-  stashName && handleGitPop(stashName)
+    if (error) {
+      log.show(`Failed to merge branch ${branch}.`, { type: 'error' })
+    } else {
+      spinner.stop(`Successfully merged branch ${branch}.`)
+    }
+  } finally {
+    stashResult && handleGitPop(stashResult)
+  }
 }
 
 export function mergeCommand(command: Command) {

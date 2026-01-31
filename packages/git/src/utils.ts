@@ -14,6 +14,8 @@ import {
   x,
   xASync,
 } from '@nemo-cli/shared'
+import type { StashMetadata } from './utils/stash-index'
+import { addStashMetadataWithDetails, updateStashStatus } from './utils/stash-index'
 
 const remotePrefix = /^origin\//
 
@@ -270,19 +272,80 @@ export const _handleGitPull = async (branch: string, _stash = false) => {
   }
 }
 
-const createStashName = () => `NEMO-CLI-STASH:${Date.now()}`
-export const handleGitStash = async (name: string = createStashName()): Promise<null | string> => {
-  const [error, result] = await xASync('git', ['stash', 'save', name])
-  if (error) {
-    log.show(`Failed to stash changes. ${name}`, { type: 'error' })
+export interface StashResult {
+  metadata: StashMetadata
+  stashName: string
+}
+
+export const handleGitStash = async (
+  branch?: string,
+  operation?: 'pull' | 'checkout' | 'merge' | 'manual'
+): Promise<StashResult | null> => {
+  const [unstagedError, unstagedResult] = await xASync('git', ['diff', '--name-only'])
+  const unstagedFiles = unstagedError ? [] : unstagedResult.stdout.split('\n').filter(Boolean)
+
+  const [stagedError, stagedResult] = await xASync('git', ['diff', '--cached', '--name-only'])
+  const stagedFiles = stagedError ? [] : stagedResult.stdout.split('\n').filter(Boolean)
+
+  const [untrackedError, untrackedResult] = await xASync('git', ['ls-files', '--others', '--exclude-standard'])
+  const untrackedFiles = untrackedError ? [] : untrackedResult.stdout.split('\n').filter(Boolean)
+
+  const files = [...new Set([...unstagedFiles, ...stagedFiles, ...untrackedFiles])]
+
+  if (files.length === 0) {
+    log.show('No file changes to stash.')
     return null
   }
-  if (result?.stdout.includes(name)) {
-    log.show(`Successfully stashed changes. ${name}`, { type: 'success' })
-    return name
+
+  const [, commitResult] = await xASync('git', ['rev-parse', 'HEAD'])
+  const commitHash = commitResult?.stdout.trim() || ''
+
+  const currentBranch = await getCurrentBranch()
+
+  const now = new Date()
+  const formattedTime = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)
+  const finalOperation = operation || 'manual'
+  const stashName = `${finalOperation}:${currentBranch}@${formattedTime}`
+
+  const timestamp = Date.now()
+  const encodedBranch = currentBranch.replace(/[/]/g, '_')
+  const internalId = `${timestamp}_${finalOperation}_${encodedBranch}`
+
+  const [error, result] = await xASync('git', ['stash', 'save', '-u', stashName])
+  if (error) {
+    log.show(`Failed to stash changes. ${stashName}`, { type: 'error' })
+    return null
   }
-  log.show('No file changes.')
-  return null
+
+  if (!result?.stdout.includes(stashName)) {
+    log.show('No file changes to stash.')
+    return null
+  }
+
+  const stashRefMatch = result.stdout.match(/stash@\{(\d+)\}/)
+  const stashRef = stashRefMatch ? stashRefMatch[0] : 'stash@{0}'
+
+  const metadata: StashMetadata = {
+    stashRef,
+    timestamp: now.toISOString(),
+    createdAt: now.toISOString(),
+    message: stashName,
+    internalId,
+    operation: finalOperation,
+    currentBranch,
+    targetBranch: branch,
+    files,
+    status: 'active',
+    commitHash,
+  }
+
+  await addStashMetadataWithDetails(currentBranch, metadata)
+
+  log.show(`Successfully stashed changes. ${stashName}`, { type: 'success' })
+  return {
+    metadata,
+    stashName,
+  }
 }
 
 export const handleGitStashCheck = async (): Promise<string[]> => {
@@ -291,7 +354,33 @@ export const handleGitStashCheck = async (): Promise<string[]> => {
   return result.stdout.split('\n').filter((line) => line.trim())
 }
 
-export const handleGitPop = async (branch: string) => {
+export const handleGitPop = async (stashOrResult: string | StashResult): Promise<void> => {
+  // Handle StashResult input (precise lookup)
+  if (typeof stashOrResult !== 'string') {
+    const { metadata, stashName } = stashOrResult
+
+    // Try to pop using stashRef
+    const [error, result] = await xASync('git', ['stash', 'pop', metadata.stashRef])
+
+    if (error) {
+      // Pop failed
+      log.show(`Failed to pop stash: ${error.message}`, { type: 'error' })
+      if (metadata.internalId && metadata.currentBranch) {
+        await updateStashStatus(metadata.currentBranch, metadata.internalId, 'popped', error.message)
+      }
+      return
+    }
+
+    // Pop succeeded
+    createNote({ message: result.stdout, title: 'Successfully popped changes.' })
+    if (metadata.internalId && metadata.currentBranch) {
+      await updateStashStatus(metadata.currentBranch, metadata.internalId, 'popped')
+    }
+    return
+  }
+
+  // Handle string input (backward compatibility - fuzzy match)
+  const branch = stashOrResult
   const stashes = await handleGitStashCheck()
   const stashName = stashes.find((stash) => stash.includes(branch))
   if (!stashName) {

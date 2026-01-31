@@ -1,5 +1,5 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 
 import { log } from '@nemo-cli/shared'
 import { getGitRoot } from '../utils'
@@ -16,6 +16,23 @@ export interface StashMetadata {
   createdAt: string
   /** Stash 消息 */
   message: string
+  // New optional fields (backward compatible)
+  /** 内部唯一标识符 */
+  internalId?: string
+  /** 触发 stash 的操作类型 */
+  operation?: 'pull' | 'checkout' | 'merge' | 'manual'
+  /** 创建 stash 时的当前分支 */
+  currentBranch?: string
+  /** 目标分支 (checkout/merge 操作) */
+  targetBranch?: string
+  /** stash 包含的文件列表 */
+  files?: string[]
+  /** stash 状态 */
+  status?: 'active' | 'popped' | 'dropped' | 'not_found'
+  /** 错误信息 */
+  error?: string
+  /** stash 对应的 commit hash */
+  commitHash?: string
 }
 
 /**
@@ -116,14 +133,10 @@ export async function writeStashIndex(index: StashIndex): Promise<void> {
   }
 
   try {
-    // 确保 .git 目录存在
-    const gitDir = join(await getGitRoot()!, '.git')
-    await mkdir(gitDir, { recursive: true })
+    const dirPath = dirname(indexPath)
+    await mkdir(dirPath, { recursive: true })
 
-    // 将索引对象序列化为 JSON（格式化，2 空格缩进）
     const content = JSON.stringify(index, null, 2)
-
-    // 写入文件
     await writeFile(indexPath, content, 'utf-8')
   } catch (error) {
     const err = error as NodeJS.ErrnoException
@@ -184,4 +197,126 @@ export async function removeStashMetadata(branchName: string, stashRef: string):
 
   // 写入文件
   await writeStashIndex(index)
+}
+
+export async function addStashMetadataWithDetails(branchName: string, metadata: StashMetadata): Promise<void> {
+  const index = await readStashIndex()
+
+  if (!index[branchName]) {
+    index[branchName] = []
+  }
+  index[branchName].push(metadata)
+
+  const indexPath = await getStashIndexPath()
+  if (!indexPath) {
+    throw new Error('Not in a Git repository')
+  }
+
+  const tmpPath = `${indexPath}.tmp.${Date.now()}`
+  const dirPath = dirname(indexPath)
+  await mkdir(dirPath, { recursive: true })
+  await writeFile(tmpPath, JSON.stringify(index, null, 2), 'utf-8')
+
+  try {
+    await rename(tmpPath, indexPath)
+  } catch (renameError) {
+    const err = renameError as NodeJS.ErrnoException
+    if (err.code === 'EACCES' || err.code === 'EBUSY' || err.code === 'ENOENT') {
+      for (let i = 0; i < 3; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        try {
+          await rename(tmpPath, indexPath)
+          return
+        } catch {
+          if (i === 2) {
+            throw new Error(`Failed to write stash index after 3 retries: ${err.message}`)
+          }
+        }
+      }
+    } else {
+      throw err
+    }
+  }
+}
+
+export async function updateStashStatus(
+  branchName: string,
+  internalId: string,
+  status: 'popped' | 'dropped' | 'not_found',
+  error?: string
+): Promise<void> {
+  const index = await readStashIndex()
+
+  if (!index[branchName]) {
+    return
+  }
+
+  const stash = index[branchName].find((s) => s.internalId === internalId)
+  if (!stash) {
+    return
+  }
+
+  stash.status = status
+  if (error) {
+    stash.error = error
+  }
+
+  await writeStashIndex(index)
+}
+
+export async function cleanOldStashes(days = 30): Promise<number> {
+  const index = await readStashIndex()
+  const cutoffDate = Date.now() - days * 24 * 60 * 60 * 1000
+  let count = 0
+
+  for (const [branchName, stashes] of Object.entries(index)) {
+    const before = stashes.length
+    index[branchName] = stashes.filter((stash) => {
+      if (stash.status === 'active') {
+        return true
+      }
+      const stashDate = new Date(stash.timestamp).getTime()
+      return stashDate >= cutoffDate
+    })
+    count += before - index[branchName].length
+
+    if (index[branchName].length === 0) {
+      delete index[branchName]
+    }
+  }
+
+  await writeStashIndex(index)
+  return count
+}
+
+export async function getAllStashes(
+  filterStatus?: 'active' | 'popped' | 'dropped' | 'not_found'
+): Promise<StashMetadata[]> {
+  const index = await readStashIndex()
+  const allStashes: StashMetadata[] = []
+
+  for (const stashes of Object.values(index)) {
+    allStashes.push(...stashes)
+  }
+
+  if (filterStatus) {
+    return allStashes.filter((s) => s.status === filterStatus)
+  }
+
+  return allStashes
+}
+
+export async function findStashByInternalId(
+  internalId: string
+): Promise<{ branchName: string; metadata: StashMetadata } | null> {
+  const index = await readStashIndex()
+
+  for (const [branchName, stashes] of Object.entries(index)) {
+    const found = stashes.find((s) => s.internalId === internalId)
+    if (found) {
+      return { branchName, metadata: found }
+    }
+  }
+
+  return null
 }

@@ -2,6 +2,7 @@ import type { Command } from '@nemo-cli/shared'
 import { colors, createCheckbox, createOptions, exit, log, xASync } from '@nemo-cli/shared'
 import { HELP_MESSAGE } from '../constants/stash'
 import { handleGitStash, handleGitStashCheck } from '../utils'
+import { cleanOldStashes, getAllStashes } from '../utils/stash-index'
 
 enum StashCommand {
   POP = 'pop',
@@ -110,6 +111,62 @@ const handleClear = handleCheck(async () => {
   }
 })
 
+const handleHistory = async (options: { all?: boolean; active?: boolean; clean?: string }) => {
+  // Clean mode
+  if (options.clean) {
+    const days = Number.parseInt(options.clean, 10) || 30
+    const count = await cleanOldStashes(days)
+    log.show(`Cleaned ${count} old stash records (${days} days)`, { type: 'success' })
+    return
+  }
+
+  // Fetch stashes
+  const stashes = await getAllStashes(options.active ? 'active' : undefined)
+  const displayList = options.all ? stashes : stashes.slice(0, 10)
+
+  // Sort by timestamp (newest first)
+  displayList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+
+  if (displayList.length === 0) {
+    log.show('No stash records found.', { type: 'info' })
+    return
+  }
+
+  log.show(`\n${colors.bold(`📚 Stash History (${displayList.length} records)`)}\n`)
+
+  for (const stash of displayList) {
+    const statusEmoji = stash.status === 'active' ? '📦' : '✅'
+    const statusColor = stash.status === 'active' ? colors.yellow : colors.green
+
+    log.show(colors.cyan(`━━━ ${statusEmoji} ${stash.message} ━━━`))
+    log.show(colors.dim(`    Operation: ${stash.operation || 'unknown'}`))
+    log.show(colors.dim(`    Status: ${statusColor(stash.status || 'unknown')}`))
+    log.show(colors.dim(`    Branch: ${stash.currentBranch || 'unknown'}`))
+    log.show(colors.dim(`    Time: ${new Date(stash.timestamp).toLocaleString()}`))
+
+    if (stash.files && stash.files.length > 0) {
+      log.show(colors.dim(`    Files (${stash.files.length}):`))
+      // Show first 5 files
+      const filesToShow = stash.files.slice(0, 5)
+      for (const file of filesToShow) {
+        log.show(colors.yellow(`      • ${file}`))
+      }
+      if (stash.files.length > 5) {
+        log.show(colors.dim(`      ... and ${stash.files.length - 5} more`))
+      }
+    }
+
+    if (stash.error) {
+      log.show(colors.red(`    Error: ${stash.error}`))
+    }
+    log.show('') // Empty line separator
+  }
+
+  if (!options.all && stashes.length > 10) {
+    log.show(colors.dim(`\nShowing 10 of ${stashes.length} records. Use --all to see all.\n`))
+  }
+}
+
 export const stashCommand = (command: Command) => {
   // 创建主 stash 命令
   const stashCmd = command
@@ -161,6 +218,19 @@ export const stashCommand = (command: Command) => {
     .description('clear stashes')
     .action(async () => {
       await handleClear()
+    })
+
+  // 子命令：查看 stash 历史
+  stashCmd
+    .command('history')
+    .alias('his')
+    .alias('h')
+    .description('View stash history from persistent index')
+    .option('--all', 'Show all records (no limit)')
+    .option('--active', 'Show only active records')
+    .option('--clean [days]', 'Clean old records (default: 30 days)')
+    .action(async (options: { all?: boolean; active?: boolean; clean?: string }) => {
+      await handleHistory(options)
     })
 
   return stashCmd

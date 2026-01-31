@@ -40,10 +40,10 @@ export function pullCommand(command: Command) {
         useRebase = pullMode === 'rebase'
       }
 
-      const stashName = await handleGitStash()
+      const stashResult = await handleGitStash(selectedBranch, 'pull')
 
       await handleGitPull(selectedBranch, { rebase: useRebase })
 
-      stashName && handleGitPop(stashName)
+      stashResult && handleGitPop(stashResult)
     })
 }

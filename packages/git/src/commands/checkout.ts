@@ -28,7 +28,7 @@ const handleCheckout = async (
     args.push(`origin/${branch}`)
   }
 
-  const stashName = await handleGitStash(branch)
+  const stashResult = await handleGitStash(branch, 'checkout')
 
   const process = x('git', args)
 
@@ -44,7 +44,7 @@ const handleCheckout = async (
     log.show(`Successfully checked out branch ${branch}.`, { type: 'success' })
   }
 
-  stashName && handleGitPop(stashName)
+  stashResult && handleGitPop(stashResult)
 }
 
 export function checkoutCommand(command: Command) {
