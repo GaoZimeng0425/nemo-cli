@@ -3,6 +3,8 @@ import { createHelpExample } from '@nemo-cli/shared'
 export const HELP_MESSAGE = {
   main: createHelpExample(
     'ng stash',
+    'ng blame [file]',
+    'ng blame [file] [line]',
     'ng stash save "work in progress"',
     'ng stash ls',
     'ng stash pop',

@@ -1,6 +1,6 @@
 import { createCommand, exit, readPackage } from '@nemo-cli/shared'
 import { ErrorMessage } from '@nemo-cli/ui'
-
+import { blameCommand } from './commands/blame'
 import { branchCommand } from './commands/branch'
 import { checkoutCommand } from './commands/checkout'
 import { commitCommand } from './commands/commit'
@@ -29,6 +29,7 @@ export const init = () => {
   diffCommand(command)
   mergeCommand(command)
   stashCommand(command)
+  blameCommand(command)
   commitCommand(command)
 
   return command
