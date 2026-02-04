@@ -17,6 +17,11 @@ const handleMerge = async (branch: string) => {
 
   const stashResult = await handleGitStash(undefined, { branch, operation: 'merge' })
 
+  if (!stashResult) {
+    spinner.stop('Cannot proceed with merge: failed to stash changes.')
+    return
+  }
+
   try {
     // 使用 stdio: 'inherit' 来支持交互式合并确认
     const [error] = await xASync('git', args, {
@@ -26,12 +31,20 @@ const handleMerge = async (branch: string) => {
     })
 
     if (error) {
-      log.show(`Failed to merge branch ${branch}.`, { type: 'error' })
-    } else {
-      spinner.stop(`Successfully merged branch ${branch}.`)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      throw new Error(`Failed to merge branch ${branch}: ${errorMessage}`)
     }
+
+    spinner.stop(colors.green(`Successfully merged branch ${colors.bgGreen(branch)}.`))
+  } catch (error) {
+    spinner.stop()
+    log.show(`Failed to merge branch ${branch}.`, { type: 'error' })
+    log.error(error)
+    throw error
   } finally {
-    stashResult && handleGitPop(stashResult)
+    if (stashResult) {
+      await handleGitPop(stashResult)
+    }
   }
 }
 
@@ -48,7 +61,7 @@ export function mergeCommand(command: Command) {
       let isLocal = params.local
 
       if (branch) {
-        handleMerge(branch)
+        await handleMerge(branch)
         return
       }
 
@@ -69,7 +82,7 @@ export function mergeCommand(command: Command) {
           message: 'Select the branch to merge',
           options,
         })
-        handleMerge(selectedBranch)
+        await handleMerge(selectedBranch)
       } else {
         const { options } = await getRemoteOptions()
         const selectedBranch = await createSearch({
@@ -81,7 +94,7 @@ export function mergeCommand(command: Command) {
           message: `Do you want to merge ${colors.bgRed(selectedBranch)}?`,
         })
 
-        if (check) handleMerge(selectedBranch)
+        if (check) await handleMerge(selectedBranch)
       }
     })
 }
