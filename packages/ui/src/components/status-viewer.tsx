@@ -109,7 +109,9 @@ export const StatusViewer: FC<StatusViewerProps> = ({ files, onExit }) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [focusPanel, setFocusPanel] = useState<FocusPanel>('files')
   const [diffScrollTop, setDiffScrollTop] = useState(0)
-  const { exit, stdin } = useApp()
+  const app = useApp()
+  const { exit } = app
+  const stdin = (app as { stdin?: { setRawMode: (mode: boolean) => void } }).stdin
 
   // 设置 stdin 为 raw mode
   useEffect(() => {
@@ -122,7 +124,7 @@ export const StatusViewer: FC<StatusViewerProps> = ({ files, onExit }) => {
   }, [stdin])
 
   // 计算可见行数（终端高度 - 顶部信息行 - 底部提示行 - 边框）
-  const { stdout } = useApp()
+  const stdout = (app as { stdout?: { rows: number } }).stdout
   const terminalHeight = stdout?.rows || 24
   const visibleLines = Math.max(10, terminalHeight - 6) // 保留 6 行给边框和提示信息
 
@@ -175,6 +177,13 @@ export const StatusViewer: FC<StatusViewerProps> = ({ files, onExit }) => {
   }
 
   const selectedFile = files[selectedIndex]
+  if (!selectedFile) {
+    return (
+      <Box flexDirection="column" paddingX={1} paddingY={1}>
+        <Text color="red">Error: No file selected</Text>
+      </Box>
+    )
+  }
   const visibleFiles = getVisibleFiles()
 
   return (

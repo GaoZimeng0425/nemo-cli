@@ -85,9 +85,9 @@ const parseStashEntry = (stashEntry: string): StashInfo => {
 
   if (match) {
     return {
-      ref: match[1],
-      branch: match[2],
-      message: match[3],
+      ref: match[1] || stashEntry,
+      branch: match[2] || 'unknown',
+      message: match[3] || stashEntry,
     }
   }
 
