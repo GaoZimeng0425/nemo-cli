@@ -21,6 +21,15 @@ export { getBranchStashes } from './utils/stash-index'
 
 const remotePrefix = /^origin\//
 
+export const getRemotes = async (): Promise<{ remotes: string[] }> => {
+  const [error, result] = await xASync('git', ['remote'])
+  if (error) {
+    throw new Error(`Failed to get remote repositories: ${error instanceof Error ? error.message : String(error)}`)
+  }
+  const remotes = result.stdout.split('\n').filter((line) => line.trim())
+  return { remotes }
+}
+
 // creatordate committerdate authordate
 export const getRemoteBranches = async (): Promise<{ branches: string[] }> => {
   const originBranches = await x('git', ['branch', '-r', '--sort=-committerdate'])
@@ -74,6 +83,23 @@ export const getLocalOptions = async () => {
   return {
     options,
     currentBranch,
+  } as const
+}
+
+export const getRemoteOptionsForRemotes = async () => {
+  const { remotes } = await getRemotes()
+  // Validate and filter out empty/whitespace-only remote names
+  const validRemotes = remotes.filter((remote) => remote.trim().length > 0)
+  // Remove duplicates while preserving order
+  const uniqueRemotes = Array.from(new Set(validRemotes))
+
+  const options = uniqueRemotes.map((remote) => ({
+    label: remote,
+    value: remote,
+  }))
+  return {
+    options,
+    remotes: uniqueRemotes,
   } as const
 }
 
