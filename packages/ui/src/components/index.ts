@@ -1,4 +1,5 @@
 export { BigText } from './big-text'
+export { HistViewer, renderHistViewer } from './hist-viewer'
 export { renderList } from './list'
 export { ErrorMessage, Message } from './message'
 export { ProcessMessage } from './process-message'

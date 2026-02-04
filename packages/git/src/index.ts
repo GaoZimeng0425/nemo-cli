@@ -5,6 +5,7 @@ import { branchCommand } from './commands/branch'
 import { checkoutCommand } from './commands/checkout'
 import { commitCommand } from './commands/commit'
 import { diffCommand } from './commands/diff'
+import { histCommand } from './commands/hist'
 import { listCommand } from './commands/list'
 import { mergeCommand } from './commands/merge'
 import { pullCommand } from './commands/pull'
@@ -33,6 +34,7 @@ export const init = () => {
   blameCommand(command)
   commitCommand(command)
   statusCommand(command)
+  histCommand(command)
 
   return command
 }
