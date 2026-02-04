@@ -41,7 +41,8 @@ packages/git/
 │       ├── merge.ts       # 合并命令
 │       ├── pull.ts        # 拉取命令
 │       ├── push.ts        # 推送命令
-│       └── stash.ts       # 暂存命令
+│       ├── stash.ts       # 暂存命令
+│       └── status.ts      # 状态查看命令 (NEW)
 ├── dist/                  # 构建输出
 ├── package.json
 ├── tsconfig.build.json
@@ -96,7 +97,9 @@ ng checkout / ng co        # 切换分支（自动 stash）
 ng co -b           # 创建新分支
 ng branch delete   # 删除分支
 ng branch clean    # 清理已合并分支
-ng stash           # 暂存管理
+ng stash           # Stash 管理
+ng stash list      # 查看 stash 列表（美观 UI）
+ng status / ng s   # 交互式状态查看器（两栏布局）
 ng diff            # 查看差异
 ng merge           # 合并分支
 ```
@@ -135,8 +138,20 @@ ng merge           # 合并分支
 - 保存/列表/弹出/删除 stash
 - 支持清除全部 stash
 - 自动生成时间戳命名
+- **使用 Ink 组件的美观列表显示** (NEW)
+- 显示每个 stash 的分支、消息、文件数量和文件列表
+- 高亮显示最新的 stash
 
-### 5. 智能合并处理
+### 5. 交互式状态查看器 (`ng status`) (NEW)
+
+- **两栏布局**：左侧文件列表，右侧 diff 内容
+- **键盘导航**：支持 Vim 风格 hjkl 键位
+- **面板切换**：← → 在文件列表和 diff 面板间切换
+- **滚动查看**：↑ ↓ 滚动查看长 diff 内容
+- **语法高亮**：绿(+)红(-)彩色显示 diff
+- **终端自适应**：根据终端窗口高度动态调整
+
+### 6. 智能合并处理
 
 - Pull 时自动检测合并提交
 - 支持自定义合并提交信息
@@ -170,10 +185,12 @@ ng merge           # 合并分支
 | `ng list` | `ng ls` | 列出分支 | `-l`, `-r`, `-a` |
 | `ng diff` | `ng di` | 查看差异 | `-l`, `-r` |
 | `ng merge` | `ng mg` | 合并分支 | `-l`, `-r`, `-b <branch>` |
+| `ng stash` | `ng st` | Stash 管理 | `save`, `list`, `pop`, `drop`, `clear` |
 | `ng stash save` | `ng st s` | 保存 stash | `[message]` |
-| `ng stash list` | `ng st ls` | 列出 stash | - |
+| `ng stash list` | `ng st ls` | 列出 stash (Ink UI) | - |
 | `ng stash pop` | `ng st p` | 弹出 stash | - |
 | `ng stash drop` | `ng st d` | 删除 stash | - |
+| `ng status` | `ng s` | 交互式状态查看器 | - |
 
 ---
 

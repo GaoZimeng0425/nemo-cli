@@ -29,6 +29,8 @@ packages/ui/
 │   │   ├── list.tsx           # 列表组件
 │   │   ├── message.tsx        # 消息组件
 │   │   ├── process-message.tsx    # 进度消息
+│   │   ├── stash-list.tsx     # Stash 列表组件 (NEW)
+│   │   ├── status-viewer.tsx  # 交互式状态查看器 (NEW)
 │   │   └── provider/
 │   │       └── index.tsx      # Context Provider
 │   └── hooks/
@@ -84,6 +86,75 @@ import { renderList } from '@nemo-cli/ui'
 const items = ['Item 1', 'Item 2', 'Item 3']
 renderList(items)
 ```
+
+### StashList
+
+显示 Git Stash 列表（基于 Ink 的卡片式 UI）：
+
+```tsx
+import { StashList, renderStashList } from '@nemo-cli/ui'
+import type { StashItem } from '@nemo-cli/ui'
+
+const stashes: StashItem[] = [
+  {
+    ref: 'stash@{0}',
+    branch: 'main',
+    message: 'WIP: feature implementation',
+    files: ['src/index.ts', 'src/utils.ts'],
+    fileCount: 2
+  }
+]
+
+// 方式1: 组件方式
+<StashList stashes={stashes} />
+
+// 方式2: 直接渲染
+renderStashList(stashes)
+```
+
+**特性：**
+- 📦 卡片式布局，每个 stash 独立显示
+- 🎨 彩色边框（最新的绿色，旧的灰色）
+- 📄 显示文件数量和文件列表（最多5个）
+- 🔤 高亮显示最新的 stash
+
+### StatusViewer
+
+交互式 Git 状态查看器（两栏布局）：
+
+```tsx
+import { StatusViewer, renderStatusViewer } from '@nemo-cli/ui'
+import type { StatusFile } from '@nemo-cli/ui'
+
+const files: StatusFile[] = [
+  {
+    path: 'src/index.ts',
+    status: 'M',  // M=Modified, A=Added, D=Deleted
+    staged: false
+  }
+]
+
+// 方式1: 组件方式
+<StatusViewer files={files} onExit={() => {}} />
+
+// 方式2: 直接渲染
+renderStatusViewer(files)
+```
+
+**特性：**
+- 📱 两栏布局：左侧文件列表，右侧 diff 内容
+- ⌨️ Vim 风格键位：hjkl 上下左右导航
+- 🎯 面板切换：← → 切换焦点面板
+- 📜 滚动查看：↑ ↓ 滚动长 diff 内容
+- 🌈 语法高亮：绿(+)红(-)青(@@)黄(diff)彩色显示
+- 📐 终端自适应：根据终端窗口高度动态调整
+
+**键盘操作：**
+- `h/←` - 切换到文件列表面板
+- `l/→` - 切换到 diff 面板
+- `k/↑` - 向上移动/滚动
+- `j/↓` - 向下移动/滚动
+- `Enter/q` - 退出
 
 ---
 

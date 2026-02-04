@@ -210,11 +210,14 @@ nemo-cli 采用 Monorepo 架构，包含以下核心包：
 - `List`：列表显示
 - `ProcessMessage`：进度消息
 - `Provider`：Context 提供者
+- `StashList`：Stash 列表组件（NEW）
+- `StatusViewer`：交互式状态查看器（NEW）
 
 **架构特点：**
 
 - React Ink：基于 Ink 构建
 - 组件化：可复用的终端 UI 组件
+- 交互式：支持键盘导航和面板切换
 
 ---
 
@@ -234,7 +237,8 @@ nemo-cli/
 │   │   │   │   ├── merge.ts         # 合并
 │   │   │   │   ├── pull.ts          # 拉取（需增强：安全模式）
 │   │   │   │   ├── push.ts          # 推送（需增强：安全模式）
-│   │   │   │   └── stash.ts         # 暂存管理（需增强：分支级管理）
+│   │   │   │   ├── stash.ts         # 暂存管理（需增强：分支级管理）
+│   │   │   │   └── status.ts        # 状态查看器 (NEW)
 │   │   │   ├── services/            # 新增：服务层
 │   │   │   │   ├── stash-manager.ts # 分支级 Stash 管理服务
 │   │   │   │   ├── pull-service.ts  # Pull 安全模式服务
@@ -304,7 +308,9 @@ nemo-cli/
 │   │   │   │   ├── big-text.tsx     # 大字体文本
 │   │   │   │   ├── message.tsx      # 消息提示
 │   │   │   │   ├── list.tsx         # 列表显示
-│   │   │   │   └── process-message.tsx # 进度消息
+│   │   │   │   ├── process-message.tsx # 进度消息
+│   │   │   │   ├── stash-list.tsx   # Stash 列表组件 (NEW)
+│   │   │   │   └── status-viewer.tsx # 交互式状态查看器 (NEW)
 │   │   │   └── ...
 │   │   └── ...
 │   │
