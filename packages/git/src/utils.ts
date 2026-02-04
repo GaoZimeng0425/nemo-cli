@@ -257,8 +257,11 @@ export type StashResult = {
 }
 
 export const handleGitStash = async (
-  branch?: string,
-  operation?: 'pull' | 'checkout' | 'merge' | 'manual'
+  message?: string,
+  options?: {
+    branch?: string
+    operation?: 'pull' | 'checkout' | 'merge' | 'manual'
+  }
 ): Promise<StashResult | null> => {
   const [unstagedError, unstagedResult] = await xASync('git', ['diff', '--name-only'])
   const unstagedFiles = unstagedError ? [] : unstagedResult.stdout.split('\n').filter(Boolean)
@@ -280,15 +283,21 @@ export const handleGitStash = async (
   const commitHash = commitResult?.stdout.trim() || ''
 
   const currentBranch = await getCurrentBranch()
+  const { branch = undefined, operation = 'manual' } = options || {}
 
+  // Generate stash name
   const now = new Date()
-  const formattedTime = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)
-  const finalOperation = operation || 'manual'
-  const stashName = `${finalOperation}:${currentBranch}@${formattedTime}`
+  let stashName: string
+  if (message && message.trim()) {
+    stashName = message.trim()
+  } else {
+    const formattedTime = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)
+    stashName = `${operation}:${currentBranch}@${formattedTime}`
+  }
 
   const timestamp = Date.now()
   const encodedBranch = currentBranch.replace(/[/]/g, '_')
-  const internalId = `${timestamp}_${finalOperation}_${encodedBranch}`
+  const internalId = `${timestamp}_${operation}_${encodedBranch}`
 
   const [error, result] = await xASync('git', ['stash', 'save', '-u', stashName])
   if (error) {
@@ -310,7 +319,7 @@ export const handleGitStash = async (
     createdAt: now.toISOString(),
     message: stashName,
     internalId,
-    operation: finalOperation,
+    operation,
     currentBranch,
     targetBranch: branch,
     files,

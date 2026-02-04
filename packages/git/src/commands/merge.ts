@@ -15,7 +15,7 @@ const handleMerge = async (branch: string) => {
   const spinner = createSpinner(`Merging branch ${branch}...`)
   const args = ['merge', branch]
 
-  const stashResult = await handleGitStash(branch, 'merge')
+  const stashResult = await handleGitStash(undefined, { branch, operation: 'merge' })
 
   try {
     // 使用 stdio: 'inherit' 来支持交互式合并确认

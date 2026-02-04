@@ -68,7 +68,7 @@ const handleCheckout = async (
 
   // 如果目标分支和当前分支不同，才执行 stash
   const shouldStash = branch !== currentBranchName
-  const stashResult = shouldStash ? await handleGitStash(branch, 'checkout') : null
+  const stashResult = shouldStash ? await handleGitStash(undefined, { branch, operation: 'checkout' }) : null
 
   const process = x('git', args)
   log.show(stashResult?.stashName, { type: 'info' })

@@ -1,5 +1,14 @@
 import type { Command } from '@nemo-cli/shared'
-import { colors, createCheckbox, createOptions, exit, log, xASync } from '@nemo-cli/shared'
+import {
+  colors,
+  createCheckbox,
+  createInput,
+  createOptions,
+  exit,
+  getCurrentBranch,
+  log,
+  xASync,
+} from '@nemo-cli/shared'
 import { HELP_MESSAGE } from '../constants/stash'
 import { handleGitStash, handleGitStashCheck } from '../utils'
 import { cleanOldStashes, getAllStashes } from '../utils/stash-index'
@@ -175,13 +184,46 @@ export const stashCommand = (command: Command) => {
     .description('Git stash management')
     .addHelpText('after', HELP_MESSAGE.main)
 
+  // 直接执行 stash（自动命名，不提示用户）
+  stashCmd.action(async () => {
+    const result = await handleGitStash(undefined, { operation: 'manual' })
+    if (!result) {
+      log.show('No changes to stash.', { type: 'info' })
+    }
+  })
+
   // 子命令：保存 stash
   stashCmd
     .command('save [message]')
     .alias('s')
     .description('Save current changes to stash')
-    .action(async (message: string) => {
-      await handleGitStash(message)
+    .action(async (message?: string) => {
+      if (message) {
+        // 如果提供了 message 参数，直接使用
+        const result = await handleGitStash(message, { operation: 'manual' })
+        if (!result) {
+          log.show('No changes to stash.', { type: 'info' })
+        }
+      } else {
+        // 如果没有提供 message，提示用户输入（带默认值）
+        try {
+          const userMessage = await createInput({
+            message: 'Enter stash message (press Enter to use default)',
+            validate: (value) => {
+              if (!value?.trim()) return 'Message cannot be empty'
+              return undefined
+            },
+          })
+
+          const result = await handleGitStash(userMessage, { operation: 'manual' })
+          if (!result) {
+            log.show('No changes to stash.', { type: 'info' })
+          }
+        } catch (error) {
+          // User cancelled the prompt
+          log.show('Stash cancelled.', { type: 'info' })
+        }
+      }
     })
 
   // 子命令：列出 stash
