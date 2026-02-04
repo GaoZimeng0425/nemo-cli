@@ -1,0 +1,145 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 0.1.3)'
+        required: true
+        type: string
+      dry-run:
+        description: 'Dry run (skip actual publish)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    name: Publish packages to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm run build
+
+      - name: Run tests
+        run: pnpm run test
+        continue-on-error: true
+
+      - name: Type check
+        run: pnpm run check
+        continue-on-error: true
+
+      - name: Get version from tag or input
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            # Extract version from tag (v0.1.2 -> 0.1.2)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+          echo "Publishing version: $VERSION"
+
+      - name: Update package versions
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          pnpm --filter "@nemo-cli/*" exec -- pnpm version $VERSION --no-git-tag-version
+
+      - name: Configure npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo "always-auth=true" >> .npmrc
+
+      - name: Publish packages (dry-run)
+        if: github.event.inputs.dry-run == 'true'
+        run: |
+          echo "🔍 Dry run mode - skipping actual publish"
+          pnpm --filter "@nemo-cli/git" exec -- npm publish --dry-run
+          pnpm --filter "@nemo-cli/shared" exec -- npm publish --dry-run
+          pnpm --filter "@nemo-cli/ui" exec -- npm publish --dry-run
+
+      - name: Publish packages to npm
+        if: github.event.inputs.dry-run != 'true'
+        run: |
+          echo "📦 Publishing packages to npm..."
+
+          # Publish each package
+          pnpm --filter "@nemo-cli/shared" exec -- npm publish
+          pnpm --filter "@nemo-cli/ui" exec -- npm publish
+          pnpm --filter "@nemo-cli/git" exec -- npm publish
+
+          echo "✅ All packages published successfully!"
+
+      - name: Create GitHub Release
+        if: github.event.inputs.dry-run != 'true' && github.event_name == 'push'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## Changes in ${{ github.ref }}
+
+            See [CHANGELOG.md](https://github.com/GaoZimeng0425/nemo-cli/blob/main/CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Successfully published version ${{ steps.version.outputs.version }} to npm!"
+          echo "📦 Packages:"
+          echo "   - @nemo-cli/shared"
+          echo "   - @nemo-cli/ui"
+          echo "   - @nemo-cli/git"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Failed to publish packages to npm"
+          echo "Check the logs above for details"

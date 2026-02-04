@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-02-04
+
+### Features
+- feat(git): add interactive git configuration manager
+- feat(git): implement ng hist with ink-based viewer
+- feat(git): add interactive status viewer and enhance stash list with ink UI
+- feat(git): enhance ng stash workflow with intelligent naming
+- feat(git): add multiple remote repository selection for push command
+- feat(git): feature/dependency update checkout stash handle
+- feat(git): add interactive commit navigator for ng blame
+- feat(git): feature/dependency update stash handle
+- feat: feature/dependency update bmad beta version
+- feat: feature/dependency update bmad
+
+### Other Changes
+- docs: add git config manager implementation record
+- docs: update documentation for interactive UI features
+- docs: feature/dependency upgrade bmad
+- build: feature/dependency upgrade dependencies
+- chore: feature/dependency update dependencies
+- docs: main update README.md
+- chore(mail): main add build script
+
 ## [0.1.2] - 2026-01-19
 
 ### Bug Fixes

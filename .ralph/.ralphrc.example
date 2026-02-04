@@ -1,0 +1,242 @@
+# .ralphrc 配置示例
+
+# 这个文件展示如何配置 Ralph AI 代理以自动使用 MCP 和 Skills
+# 将此内容复制到项目根目录的 .ralphrc 文件中（如果需要）
+
+# Ralph AI 配置
+ralph:
+  # 工作模式
+  mode: "autonomous"  # autonomous | interactive | supervised
+
+  # 技能自动调用配置
+  skills:
+    # 自动启用的技能
+    auto_enable:
+      - "brainstorming"          # 创意工作前自动调用
+      - "tdd"                    # 测试驱动开发
+      - "systematic-debugging"   # 系统化调试
+      - "code-review"            # 代码审查
+      - "security-review"        # 安全审查
+      - "verification-before-completion"  # 完成前验证
+
+    # 技能优先级（数字越小优先级越高）
+    priorities:
+      brainstorming: 1
+      plan: 2
+      tdd: 3
+      systematic-debugging: 4
+      code-review: 5
+      security-review: 6
+      verification-before-completion: 7
+
+    # 技能触发规则
+    triggers:
+      # 新功能实现前
+      - condition: "implementing_new_feature"
+        skills: ["brainstorming", "plan"]
+        mandatory: true
+
+      # 编写代码前
+      - condition: "writing_code"
+        skills: ["tdd"]
+        mandatory: true
+
+      # 遇到错误时
+      - condition: "encountering_error"
+        skills: ["systematic-debugging"]
+        mandatory: true
+
+      # 处理敏感数据时
+      - condition: "handling_sensitive_data"
+        skills: ["security-review"]
+        mandatory: true
+
+      # 完成工作前
+      - condition: "before_completion"
+        skills: ["code-review", "verification-before-completion"]
+        mandatory: true
+
+  # MCP 服务器配置
+  mcp:
+    # 自动启动的 MCP 服务器
+    auto_start:
+      - name: "@nemo-cli/ai"
+        command: "pnpm run --filter=@nemo-cli/ai dev"
+        env_file: ".env"
+        tools:
+          - "confluence"    # 文档查询
+          - "mail"          # 邮件发送
+          - "slack"         # Slack 消息
+          - "swagger"       # API 解析
+
+    # MCP 工具使用规则
+    usage_rules:
+      # 查询文档时优先使用 Confluence
+      - condition: "querying_documentation"
+        tool: "confluence"
+        priority: "high"
+
+      # 发送通知时使用 Mail/Slack
+      - condition: "sending_notification"
+        tools: ["mail", "slack"]
+        priority: "medium"
+
+      # 解析 API 时使用 Swagger
+      - condition: "parsing_api_spec"
+        tool: "swagger"
+        priority: "high"
+
+  # 开发工作流配置
+  workflow:
+    # 标准开发流程
+    standard:
+      1:
+        action: "read_documentation"
+        files:
+          - ".ralph/PROMPT.md"
+          - ".ralph/fix_plan.md"
+          - "_bmad-output/prd.md"
+
+      2:
+        action: "invoke_skill"
+        skill: "brainstorming"
+        condition: "new_feature"
+
+      3:
+        action: "invoke_skill"
+        skill: "plan"
+        condition: "complex_task"
+
+      4:
+        action: "search_codebase"
+        check_existing: true
+
+      5:
+        action: "invoke_skill"
+        skill: "tdd"
+        mandatory: true
+
+      6:
+        action: "implement"
+        with_tests: true
+
+      7:
+        action: "invoke_skill"
+        skill: "code-review"
+        mandatory: true
+
+      8:
+        action: "invoke_skill"
+        skill: "security-review"
+        condition: "sensitive_operation"
+
+      9:
+        action: "invoke_skill"
+        skill: "verification-before-completion"
+        mandatory: true
+
+      10:
+        action: "update_documentation"
+        files:
+          - ".ralph/fix_plan.md"
+
+    # 调试工作流
+    debugging:
+      1:
+        action: "invoke_skill"
+        skill: "systematic-debugging"
+        mandatory: true
+
+      2:
+        action: "analyze_error"
+        with_context: true
+
+      3:
+        action: "invoke_skill"
+        skill: "tdd"
+        for_reproduction: true
+
+      4:
+        action: "implement_fix"
+        minimal: true
+
+      5:
+        action: "verify"
+        with_tests: true
+
+  # 代码质量配置
+  code_quality:
+    # 测试覆盖率要求
+    test_coverage:
+      minimum: 80
+      enforced: true
+
+    # 代码复杂度限制
+    complexity:
+      cyclomatic_max: 10
+      enforced: true
+
+    # 强制代码审查
+    code_review:
+      mandatory: true
+      after_implementation: true
+
+    # 强制安全审查
+    security_review:
+      mandatory: true
+      triggers:
+        - "authentication"
+        - "input_handling"
+        - "api_endpoints"
+        - "sensitive_data"
+
+  # 日志配置
+  logging:
+    # 操作日志
+    operations:
+      enabled: true
+      location: "~/.nemoclirc/git/operation-history.json"
+      retention: 100
+
+    # 调试日志
+    debug:
+      enabled: true
+      level: "verbose"
+
+  # 性能配置
+  performance:
+    targets:
+      branch_switch: 500  # ms
+      cold_start: 200     # ms
+      warm_start: 100     # ms
+      stash_retrieval: 100 # ms
+
+    enforced: true
+
+# 环境变量
+env:
+  # AI 服务
+  OPENAI_API_KEY: "${OPENAI_API_KEY}"
+  DEEPSEEK_API_KEY: "${DEEPSEEK_API_KEY}"
+  GOOGLE_API_KEY: "${GOOGLE_API_KEY}"
+
+  # Confluence
+  CONFLUENCE_URL: "${CONFLUENCE_URL}"
+  CONFLUENCE_EMAIL: "${CONFLUENCE_EMAIL}"
+  CONFLUENCE_TOKEN: "${CONFLUENCE_TOKEN}"
+
+  # Gmail
+  GOOGLE_APP_PASSWORD: "${GOOGLE_APP_PASSWORD}"
+
+  # Slack
+  SLACK_BOT_TOKEN: "${SLACK_BOT_TOKEN}"
+  SLACK_SIGNING_SECRET: "${SLACK_SIGNING_SECRET}"
+
+# 重要提示
+hints:
+  - "Always invoke brainstorming skill before implementing new features"
+  - "Always use TDD skill when writing new code"
+  - "Always use code-review skill after writing code"
+  - "Always use security-review skill for sensitive operations"
+  - "Always use verification-before-completion skill before claiming completion"
+  - "Read mcp-and-skills-guide.md for complete MCP and Skills documentation"
