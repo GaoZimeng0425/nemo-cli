@@ -77,7 +77,7 @@ export const log = {
     logger.warn('current winston level', logger.level)
   },
   show(
-    message: string,
+    message = '',
     options?: {
       symbol?: string
       colors?: ColorInstance

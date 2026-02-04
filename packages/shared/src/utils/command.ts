@@ -127,28 +127,26 @@ export const zx = (
 //   return await Promise.all(promises)
 // }
 
-export const checkCommand = async (_command: string) => {
-  try {
-    const a = await $`command -v git >/dev/null 2>&1`
-    console.log('🚀 : checkCommand :  a:', a)
-    const b = await tinyexec('command', ['-v', 'git', '>/dev/null', '2>&1'])
-    console.log('🚀 : checkCommand :  b:', b)
-    const [error, result] = await xASync('command', ['-v', _command, '>/dev/null', '2>&1'])
-    console.log('🚀 : checkCommand : result:', result)
-    if (error) return false
-    return !!result.stdout
-  } catch (error) {
-    console.log(error)
-    return false
-  }
-}
 export const xASync = async (
   command: string,
   args?: string[],
   options?: Partial<Options> & { quiet?: boolean }
 ): Promise<[Error, null] | [null, Output]> => {
   try {
-    const result = await tinyexec(command, args, options)
+    const result = await tinyexec(
+      command,
+      args,
+      merge(
+        {
+          nodeOptions: {
+            cwd: process.cwd(),
+            FORCE_COLOR: '1',
+          },
+          throwOnError: true,
+        },
+        options ?? {}
+      )
+    )
     if (result.exitCode) {
       !options?.quiet &&
         log.show(`Failed to execute command ${command}. Command exited with code ${result.exitCode}.`, {

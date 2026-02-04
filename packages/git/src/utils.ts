@@ -17,6 +17,8 @@ import {
 import type { StashMetadata } from './utils/stash-index'
 import { addStashMetadataWithDetails, updateStashStatus } from './utils/stash-index'
 
+export { getBranchStashes } from './utils/stash-index'
+
 const remotePrefix = /^origin\//
 
 // creatordate committerdate authordate
@@ -222,57 +224,8 @@ export const handleGitPull = async (branch: string, options: PullOptions = {}) =
     return
   }
 }
-export const _handleGitPull = async (branch: string, _stash = false) => {
-  const spinner = createSpinner('Pulling from remote')
-  try {
-    // 使用 stdio: 'inherit' 来支持交互式操作
-    const process = spawn('git', ['pull', 'origin', branch], {
-      stdio: ['inherit', 'pipe', 'pipe'],
-      shell: true,
-    })
 
-    let stdout = ''
-    let stderr = ''
-
-    process.stdout?.on('data', (data) => {
-      const output = data.toString()
-      stdout += output
-      log.show(output)
-      spinner.message(output)
-    })
-
-    process.stderr?.on('data', (data) => {
-      const output = data.toString()
-      stderr += output
-      log.show(output, { type: 'warn' })
-    })
-
-    const exitCode = await new Promise<number>((resolve) => {
-      process.on('close', (code) => {
-        resolve(code || 0)
-      })
-    })
-
-    if (exitCode) {
-      log.show(`Failed to pull from remote. Command exited with code ${exitCode}.`, { type: 'error' })
-      spinner.stop('Pull failed')
-      throw new Error(stderr)
-    }
-
-    if (stdout.includes('Merge branch') || stdout.includes('Merge made by')) {
-      // 检查是否有合并提交信息需要处理
-      await handleMergeCommit()
-    }
-
-    spinner.stop(colors.green(`Successfully pulled from remote: ${colors.bgGreen(branch)}`))
-  } catch (error) {
-    spinner.stop('Pull failed')
-    log.error(error)
-    throw error
-  }
-}
-
-export interface StashResult {
+export type StashResult = {
   metadata: StashMetadata
   stashName: string
 }
@@ -357,7 +310,7 @@ export const handleGitStashCheck = async (): Promise<string[]> => {
 export const handleGitPop = async (stashOrResult: string | StashResult): Promise<void> => {
   // Handle StashResult input (precise lookup)
   if (typeof stashOrResult !== 'string') {
-    const { metadata, stashName } = stashOrResult
+    const { metadata } = stashOrResult
 
     // Try to pop using stashRef
     const [error, result] = await xASync('git', ['stash', 'pop', metadata.stashRef])
@@ -440,7 +393,7 @@ export const checkGitRepository = async () => {
     if (error) return false
     const output = result.stdout.trim()
     return output === 'true'
-  } catch (err) {
+  } catch (_err) {
     return false
   }
 }
