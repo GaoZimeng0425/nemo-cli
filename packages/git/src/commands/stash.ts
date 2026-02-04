@@ -9,6 +9,8 @@ import {
   log,
   xASync,
 } from '@nemo-cli/shared'
+import type { StashItem } from '@nemo-cli/ui'
+import { renderStashList } from '@nemo-cli/ui'
 import { HELP_MESSAGE } from '../constants/stash'
 import { handleGitStash, handleGitStashCheck } from '../utils'
 import { cleanOldStashes, getAllStashes } from '../utils/stash-index'
@@ -67,26 +69,56 @@ const handlePop = handleCheck(async (stashes: string[]) => {
   }
 })
 
-const handleList = handleCheck(async (stashes: string[]) => {
-  log.show(`\n${colors.bold(`📦 Found ${stashes.length} stash(es)`)}\n`)
+/**
+ * 解析 stash 条目获取详细信息
+ * @param stashEntry - 完整的 stash 条目，如 "stash@{0}: On main: message"
+ */
+interface StashInfo {
+  ref: string // stash@{0}
+  branch: string // main
+  message: string // checkout:main@2026-02-04T10-24-57
+}
 
-  for await (const stash of stashes) {
-    const stashRef = extractStashRef(stash)
-    const files = await getStashFiles(stashRef)
+const parseStashEntry = (stashEntry: string): StashInfo => {
+  // 匹配格式: stash@{0}: On main: message
+  const match = stashEntry.match(/^(stash@\{\d+\}):\s+On\s+(\S+):\s+(.+)$/)
 
-    // 显示 stash 标题
-    log.show(colors.cyan(`━━━ ${stash} ━━━`))
-
-    if (files.length > 0) {
-      log.show(colors.dim(`    ${files.length} file(s) changed:`))
-      for (const file of files) {
-        log.show(colors.yellow(`      • ${file}`))
-      }
-    } else {
-      log.show(colors.dim('    (no files)'))
+  if (match) {
+    return {
+      ref: match[1],
+      branch: match[2],
+      message: match[3],
     }
-    log.show('') // 空行分隔
   }
+
+  // 兼容旧格式或其他格式
+  const refMatch = stashEntry.match(/^(stash@\{\d+\})/)
+  return {
+    ref: refMatch?.[1] ?? stashEntry.split(':')[0] ?? stashEntry,
+    branch: 'unknown',
+    message: stashEntry,
+  }
+}
+
+const handleList = handleCheck(async (stashes: string[]) => {
+  // 转换为 ink 组件需要的格式
+  const stashItems: StashItem[] = await Promise.all(
+    stashes.map(async (stash) => {
+      const stashInfo = parseStashEntry(stash)
+      const files = await getStashFiles(stashInfo.ref)
+
+      return {
+        ref: stashInfo.ref,
+        branch: stashInfo.branch,
+        message: stashInfo.message,
+        files,
+        fileCount: files.length,
+      }
+    })
+  )
+
+  // 使用 ink 组件渲染
+  await renderStashList(stashItems)
 })
 
 const handleDrop = handleCheck(async (stashes: string[]) => {

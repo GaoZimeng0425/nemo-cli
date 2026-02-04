@@ -10,6 +10,7 @@ import { mergeCommand } from './commands/merge'
 import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
 import { stashCommand } from './commands/stash'
+import { statusCommand } from './commands/status'
 import { HELP_MESSAGE } from './constants'
 import { checkGitRepository } from './utils'
 
@@ -31,6 +32,7 @@ export const init = () => {
   stashCommand(command)
   blameCommand(command)
   commitCommand(command)
+  statusCommand(command)
 
   return command
 }
