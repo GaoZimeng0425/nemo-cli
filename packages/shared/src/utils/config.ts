@@ -23,7 +23,15 @@ export const loadEnv = (importMeta: { url: string }, ...paths: string[]) => {
     dotenvConfig({ path: providedPath, quiet: true })
     return
   }
-  throw new Error(`Environment file not found at ${providedPath}`)
+
+  // Try .env.example as fallback (optional, don't throw if missing)
+  const examplePath = providedPath + '.example'
+  if (existsSync(examplePath)) {
+    dotenvConfig({ path: examplePath, quiet: true })
+    return
+  }
+
+  // If neither exists, silently continue (build can proceed without .env)
 }
 
 export const createStore = (name: string, options: StoreOptions): Configstore => {
