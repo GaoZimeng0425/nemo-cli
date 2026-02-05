@@ -217,9 +217,24 @@ export class Parser {
   }
 
   isExternalModule(modulePath: string): boolean {
-    return modulePath.startsWith('.') || modulePath.startsWith('/')
-      ? false
-      : !modulePath.includes('/')
+    // Local paths start with . or /
+    if (modulePath.startsWith('.') || modulePath.startsWith('/')) {
+      return false
+    }
+
+    // Scoped packages like @scope/name are external modules
+    if (modulePath.startsWith('@')) {
+      return true
+    }
+
+    // Simple package names without / are external
+    if (!modulePath.includes('/')) {
+      return true
+    }
+
+    // Paths with / could be either local paths or package subpaths
+    // For safety, treat them as local paths to resolve
+    return false
   }
 
   clearCache(): void {
