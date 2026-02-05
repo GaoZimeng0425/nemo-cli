@@ -88,14 +88,13 @@ function formatTree(node: ComponentTreeNode, route: string, routeType: string): 
   lines.push(`Route: ${route} (${routeType})`)
 
   // Format tree recursively
-  const formatNode = (n: ComponentTreeNode, depth: number, prefix: string = '') => {
+  const formatNode = (n: ComponentTreeNode, depth: number, isLast: boolean, prefix: string = '') => {
     const shortName = n.id.split('/').pop() || n.id
-    const isLast = depth === 0
 
     if (depth === 0) {
       lines.push(`📄 ${shortName}`)
     } else {
-      const connector = prefix.endsWith('└── ') ? '└── ' : '├── '
+      const connector = isLast ? '└── ' : '├── '
       lines.push(`${prefix}${connector}${shortName}`)
     }
 
@@ -104,12 +103,13 @@ function formatTree(node: ComponentTreeNode, route: string, routeType: string): 
       const child = n.children[i]
       if (!child) continue
       const childIsLast = i === n.children.length - 1
-      const newPrefix = depth === 0 ? '' : prefix + (prefix.endsWith('└── ') ? '    ' : '│   ')
-      formatNode(child, depth + 1, newPrefix)
+      // Build new prefix based on whether this node is the last child
+      const newPrefix = depth === 0 ? '' : prefix + (isLast ? '    ' : '│   ')
+      formatNode(child, depth + 1, childIsLast, newPrefix)
     }
   }
 
-  formatNode(node, 0)
+  formatNode(node, 0, true)
 
   return lines.join('\n')
 }
