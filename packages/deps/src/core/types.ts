@@ -201,7 +201,7 @@ export interface ComponentTreeNode {
   /** Child dependencies (recursive structure, empty array for leaf nodes) */
   children: ComponentTreeNode[]
   /** Extension field for future use */
-  _extensions?: Record<string, any>
+  _extensions?: Record<string, unknown>
 }
 
 /**
@@ -235,7 +235,7 @@ export interface PageDependencyOutput {
   /** Statistics about this page */
   stats: PageStats
   /** Extension field for future use */
-  _extensions?: Record<string, any>
+  _extensions?: Record<string, unknown>
 }
 
 /**
