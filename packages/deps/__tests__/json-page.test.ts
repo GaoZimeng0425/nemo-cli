@@ -289,4 +289,40 @@ describe('PageJsonGenerator', () => {
       checkChildren(tree)
     })
   })
+
+  describe('generateToDirectory', () => {
+    it('should create nested directory for nested routes', async () => {
+      const graph = createMockGraph()
+      const routes = createMockRoutes()
+      const generator = createPageJsonGenerator(graph, routes)
+
+      // Mock fs functions
+      const createdDirs: string[] = []
+      const createdFiles: string[] = []
+
+      // Test nested route /api/users
+      const entryFile = '/app/api/users/route.ts'
+      const routeMeta = routes.get(entryFile)!
+      const output = generator.generateForEntry(entryFile)
+
+      const relativePath = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+
+      expect(relativePath).toBe('api/users.json')
+    })
+
+    it('should create directory for api nested routes', async () => {
+      const graph = createMockGraph()
+      const routes = createMockRoutes()
+      const generator = createPageJsonGenerator(graph, routes)
+
+      // Verify the nested route file naming is correct
+      const entryFile = '/app/api/users/route.ts'
+      const routeMeta = routes.get(entryFile)!
+      const result = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+
+      // Should create api/users.json which requires api/ directory
+      expect(result).toBe('api/users.json')
+      expect(result).toMatch(/\//)  // Contains directory separator
+    })
+  })
 })

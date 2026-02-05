@@ -416,14 +416,14 @@ test_patterns: ['Vitest框架', '无现有测试文件', '需新建测试目录'
 
 ### Acceptance Criteria
 
-- [ ] **AC-01**: Given 已执行 `ndeps analyze <project> --output ./deps-output`, when 检查输出目录, then 应为每个入口生成独立的 JSON 文件
+- [ ] **AC-01**: Given 已执行 `nd analyze <project> --output ./deps-output`, when 检查输出目录, then 应为每个入口生成独立的 JSON 文件
 - [ ] **AC-02**: Given 根路径页面, when 生成 JSON, then 文件名为 `_.json`
 - [ ] **AC-03**: Given 嵌套路由 `/api/users`, when 生成 JSON, then 文件路径为 `api/users.json`（保持层级）
 - [ ] **AC-04**: Given layout 文件, when 生成 JSON, then 文件名包含 `.layout` 后缀
 - [ ] **AC-05**: Given 生成的 JSON 文件, when 读取并解析, then 包含 `route`, `routeType`, `entryFile`, `tree`, `stats` 字段
 - [ ] **AC-06**: Given `tree` 字段, when 检查其结构, then 所有节点都有 `children` 数组（叶子节点为空数组）
-- [ ] **AC-07**: Given 执行 `ndeps page /dashboard --from ./deps-output`, when 命令完成, then 输出该页面的组件树（tree 格式）
-- [ ] **AC-08**: Given 执行 `ndeps page /dashboard --from ./deps-output --format json`, when 命令完成, then 输出 JSON 格式的组件树
+- [ ] **AC-07**: Given 执行 `nd page /dashboard --from ./deps-output`, when 命令完成, then 输出该页面的组件树（tree 格式）
+- [ ] **AC-08**: Given 执行 `nd page /dashboard --from ./deps-output --format json`, when 命令完成, then 输出 JSON 格式的组件树
 - [ ] **AC-09**: Given 输入 JSON 文件不存在, when 执行 page 命令, then 显示清晰错误信息并退出
 - [ ] **AC-10**: Given 组件有循环依赖, when 生成组件树, then 正确处理避免无限递归
 - [ ] **AC-11**: Given `stats` 字段, when 检查其内容, then `totalComponents` 和 `maxDepth` 计算正确
@@ -465,15 +465,15 @@ test_patterns: ['Vitest框架', '无现有测试文件', '需新建测试目录'
 cd packages/deps && pnpm build
 
 # 2. 分析测试项目
-ndeps analyze ./test-project --output ./test-output
+nd analyze ./test-project --output ./test-output
 
 # 3. 验证输出结构
 ls -la ./test-output/
 cat ./test-output/dashboard.json | jq .
 
 # 4. 测试 page 命令
-ndeps page /dashboard --from ./test-output
-ndeps page /dashboard --from ./test-output --format json
+nd page /dashboard --from ./test-output
+nd page /dashboard --from ./test-output --format json
 ```
 
 **测试数据准备：**

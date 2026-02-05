@@ -197,8 +197,6 @@ async function processFile(
     const resolved = parser.resolveModule(dep.module, filePath)
 
     if (resolved) {
-      const node = graphBuilder.addNode(resolved, dep.moduleSystem, 'component', dep.dynamic)
-
       if (!graphBuilder.getNode(resolved)) {
         graphBuilder.addNode(resolved, dep.moduleSystem, 'component', dep.dynamic)
       }

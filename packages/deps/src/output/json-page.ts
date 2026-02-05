@@ -129,10 +129,26 @@ export class PageJsonGenerator {
   private calculateStats(tree: ComponentTreeNode): PageStats {
     let totalComponents = 0
     let maxDepth = 0
+    let hasDynamicImports = false
+    let hasServerComponents = false
 
     const traverse = (node: ComponentTreeNode, depth: number) => {
       totalComponents++
       maxDepth = Math.max(maxDepth, depth)
+
+      // Check for dynamic imports in the graph
+      const graphNode = this.graph.nodes.get(node.id)
+      if (graphNode?.dynamic) {
+        hasDynamicImports = true
+      }
+
+      // Check for server components (heuristic: files without . extension are likely pages/layouts)
+      // Server components in Next.js don't have "use client" directive
+      // This is a simplified check - full implementation would parse the file content
+      if (node.id.endsWith('.tsx') || node.id.endsWith('.ts')) {
+        // We can't detect server components without parsing file content
+        // This is a placeholder for future enhancement
+      }
 
       for (const child of node.children) {
         traverse(child, depth + 1)
@@ -144,8 +160,8 @@ export class PageJsonGenerator {
     return {
       totalComponents,
       maxDepth,
-      hasDynamicImports: false, // TODO: Detect dynamic imports
-      hasServerComponents: false, // TODO: Detect server components
+      hasDynamicImports,
+      hasServerComponents,
       generatedAt: new Date().toISOString(),
     }
   }

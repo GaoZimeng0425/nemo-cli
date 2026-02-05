@@ -17,6 +17,14 @@ export function pageCommand() {
 }
 
 async function handlePageCommand(route: string, options: PageCliOptions): Promise<void> {
+  // Validate format option
+  const validFormats = ['tree', 'json']
+  if (options.format && !validFormats.includes(options.format)) {
+    console.error(`Error: Invalid format "${options.format}". Valid formats are: ${validFormats.join(', ')}`)
+    exit(1)
+    return
+  }
+
   // 1. Determine input path
   const inputPath = resolvePath(options.from)
 
@@ -62,7 +70,16 @@ async function handlePageCommand(route: string, options: PageCliOptions): Promis
       console.error(`Error: File not found: "${jsonPath}"`)
     } else {
       console.error(`Error: Failed to parse JSON file: "${jsonPath}"`)
-      console.error(`Details: ${(error as Error).message}`)
+      // Try to provide more specific error information
+      if (error instanceof SyntaxError) {
+        console.error(`Details: ${error.message}`)
+        if (error.stack) {
+          const lines = error.stack.split('\n').slice(0, 3)
+          console.error(`Location: ${lines.join('\n')}`)
+        }
+      } else {
+        console.error(`Details: ${(error as Error).message}`)
+      }
     }
     exit(1)
     return
