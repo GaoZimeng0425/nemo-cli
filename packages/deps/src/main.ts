@@ -4,7 +4,7 @@ import { analyzeCommand, pageCommand } from './cli/index.js'
 const pkg = readPackage(import.meta, '..')
 
 export const init = () => {
-  const command = createCommand('ndeps')
+  const command = createCommand('nd')
     .version(pkg.version)
     .description(`${pkg.name} - Analyze dependencies of Next.js App Router projects`)
 
