@@ -1,5 +1,5 @@
 import { createCommand, readPackage } from '@nemo-cli/shared'
-import { analyzeCommand } from './cli/index.js'
+import { analyzeCommand, pageCommand } from './cli/index.js'
 
 const pkg = readPackage(import.meta, '..')
 
@@ -9,6 +9,7 @@ export const init = () => {
     .description(`${pkg.name} - Analyze dependencies of Next.js App Router projects`)
 
   command.addCommand(analyzeCommand())
+  command.addCommand(pageCommand())
 
   return command
 }
