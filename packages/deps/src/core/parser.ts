@@ -160,7 +160,7 @@ export class Parser {
               moduleSystem: 'es6' as const,
               dynamic: false,
               type: 're-export',
-              line: node.loc?.start.line?.line ?? 0,
+              line: node.loc?.start.line ?? 0,
               column: node.loc?.start.column ?? 0,
             })
           }
