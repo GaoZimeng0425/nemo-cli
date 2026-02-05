@@ -1,3 +1,7 @@
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
+import type typescript from 'typescript'
+
 import type {
   ExtractedDependency,
   ModuleSystem,
@@ -29,7 +33,7 @@ export class Parser {
     const content = await readFile(filePath, 'utf-8')
 
     if (filePath.endsWith('.ts') || filePath.endsWith('.tsx')) {
-      const dependencies = this.parseTypeScript(content, filePath)
+      const dependencies = await this.parseTypeScript(content, filePath)
       this.cache.set(filePath, Promise.resolve(dependencies))
       return dependencies
     }
@@ -39,7 +43,7 @@ export class Parser {
       filePath.endsWith('.jsx') ||
       filePath.endsWith('.mjs')
     ) {
-      const dependencies = this.parseJavaScript(content)
+      const dependencies = await this.parseJavaScript(content)
       this.cache.set(filePath, Promise.resolve(dependencies))
       return dependencies
     }
@@ -48,9 +52,9 @@ export class Parser {
     return []
   }
 
-  private parseTypeScript(content: string, filePath: string): ExtractedDependency[] {
+  private async parseTypeScript(content: string, filePath: string): Promise<ExtractedDependency[]> {
     const dependencies: ExtractedDependency[] = []
-    const ts = (await import('typescript')).default
+    const ts = (await import('typescript')).default as typeof typescript
     const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true)
 
     const visit = (node: ts.Node): void => {
@@ -109,21 +113,22 @@ export class Parser {
           column: sourceFile.getLineAndCharacterOfPosition(node.getStart()).character + 1,
         })
       }
-      return ts.forEachChild(node, visit)
+      ts.forEachChild(node, visit)
     }
 
     visit(sourceFile)
     return dependencies
   }
 
-  private parseJavaScript(content: string): ExtractedDependency[] {
+  private async parseJavaScript(content: string): Promise<ExtractedDependency[]> {
     const dependencies: ExtractedDependency[] = []
 
     try {
-      const { default: acornParser } = await import('acorn')
-      const ast = acornParser.parse(content, ACORN_OPTIONS)
+      const acorn = await import('acorn')
+      const acornWalk = await import('acorn-walk')
+      const ast = acorn.parse(content, ACORN_OPTIONS)
 
-      walkSimple(ast, {
+      acornWalk.simple(ast, {
         ImportDeclaration: (node: any) => {
           if (node.source?.value) {
             dependencies.push({
@@ -208,7 +213,6 @@ export class Parser {
       return null
     }
 
-  const { resolve } = await import('node:path')
     return resolve(resolve(fromFile, '..'), modulePath)
   }
 
