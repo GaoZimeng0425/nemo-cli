@@ -122,7 +122,8 @@ export class NextJsRouteScanner {
           const stats = await stat(fullPath)
 
           if (stats.isDirectory()) {
-            if (!entry.startsWith('_') && !this.isRouteGroup(entry)) {
+            if (!entry.startsWith('_')) {
+              // Include route groups - they should be traversed to find pages
               await collectRouteFiles(fullPath, new Set(visited))
             }
           } else if (stats.isFile() && entry.startsWith('page.')) {
