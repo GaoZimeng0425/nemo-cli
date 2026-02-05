@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import type typescript from 'typescript'
@@ -213,7 +214,24 @@ export class Parser {
       return null
     }
 
-    return resolve(resolve(fromFile, '..'), modulePath)
+    const resolvedPath = resolve(resolve(fromFile, '..'), modulePath)
+
+    // If the path already has an extension and file exists, return it
+    if (existsSync(resolvedPath)) {
+      return resolvedPath
+    }
+
+    // Try adding supported extensions
+    for (const ext of this.options.extensions) {
+      const pathWithExt = resolvedPath + ext
+      if (existsSync(pathWithExt)) {
+        return pathWithExt
+      }
+    }
+
+    // If no file found, return the original resolved path
+    // (parseFile will handle the error)
+    return resolvedPath
   }
 
   isExternalModule(modulePath: string): boolean {
