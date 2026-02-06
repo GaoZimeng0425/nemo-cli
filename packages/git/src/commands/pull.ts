@@ -1,4 +1,4 @@
-import { type Command, createSelect, log } from '@nemo-cli/shared'
+import { type Command, createSelect, createSpinner, log, safeAwait, xASync } from '@nemo-cli/shared'
 import {
   getRemoteBranchOptions,
   getRemoteRepositoryOptions,
@@ -16,14 +16,12 @@ export function pullCommand(command: Command) {
     .option('-m, --merge', 'Use merge mode (default)')
     .action(async (options: { rebase?: boolean; merge?: boolean }) => {
       // Get available remotes
-      let repositories: string[]
-      try {
-        const result = await getRemoteRepositoryOptions()
-        repositories = result.remotes
-      } catch (error) {
-        log.error(`Failed to get remote repositories: ${error instanceof Error ? error.message : String(error)}`)
+      const [error, result] = await safeAwait(getRemoteRepositoryOptions())
+      if (error) {
+        log.error(`Failed to get remote repositories: ${error.message}`)
         return
       }
+      const repositories = result.remotes
 
       if (repositories.length === 0) {
         log.error('No remote repositories found. Aborting pull operation.')
@@ -32,18 +30,36 @@ export function pullCommand(command: Command) {
       }
 
       // Select remote if multiple remotes exist
-      let selectedRepository = repositories[0]
-      if (repositories.length > 1) {
-        selectedRepository = await createSelect({
-          message: 'Select remote repository',
-          options: repositories.map((repo) => ({ label: repo, value: repo })),
-          initialValue: repositories[0],
-        })
-        if (!selectedRepository) {
-          log.error('No remote selected. Aborting pull operation.')
-          return
-        }
+      const selectedRepository =
+        repositories.length > 1
+          ? (
+              await safeAwait(
+                createSelect({
+                  message: 'Select remote repository',
+                  options: result.options,
+                  initialValue: repositories[0],
+                })
+              )
+            )[1]
+          : repositories[0]
+
+      if (!selectedRepository) {
+        log.error('No remote selected. Aborting pull operation.')
+        return
       }
+
+      // Fetch latest remote branches to ensure we have the most up-to-date list
+      const spinner = createSpinner('Fetching latest remote branches...')
+      const [fetchError] = await xASync('git', ['fetch', selectedRepository, '--prune'], {
+        timeout: 30000,
+      })
+      if (fetchError) {
+        spinner.stop('Failed to fetch latest remote branches')
+        log.error(`Failed to fetch from ${selectedRepository}: ${fetchError.message}`)
+        log.show('Please check your network connection and try again.', { type: 'info' })
+        return
+      }
+      spinner.stop('Successfully fetched latest remote branches')
 
       const { options: branchOptions, currentBranch } = await getRemoteBranchOptions()
       if (!branchOptions.length) {

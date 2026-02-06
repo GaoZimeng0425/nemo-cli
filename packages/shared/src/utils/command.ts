@@ -130,29 +130,32 @@ export const zx = (
 export const xASync = async (
   command: string,
   args?: string[],
-  options?: Partial<Options> & { quiet?: boolean }
+  options?: Partial<Options> & { quiet?: boolean; timeout?: number }
 ): Promise<[Error, null] | [null, Output]> => {
   try {
-    const result = await tinyexec(
-      command,
-      args,
-      merge(
-        {
-          nodeOptions: {
-            cwd: process.cwd(),
-            FORCE_COLOR: '1',
-          },
-          throwOnError: true,
-        },
-        options ?? {}
-      )
+    const { timeout, quiet, ...execOptions } = options ?? {}
+    const mergedOptions = merge(
+      { nodeOptions: { cwd: process.cwd(), FORCE_COLOR: '1' }, throwOnError: true },
+      execOptions
     )
+
+    const execPromise = tinyexec(command, args, mergedOptions)
+    const result = timeout
+      ? await Promise.race([
+          execPromise,
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error(`Command timeout after ${timeout}ms`)), timeout)
+          ),
+        ])
+      : await execPromise
+
     if (result.exitCode) {
-      !options?.quiet &&
+      if (!quiet) {
         log.show(`Failed to execute command ${command}. Command exited with code ${result.exitCode}.`, {
           type: 'error',
         })
-      !options?.quiet && log.show(result.stderr, { type: 'error' })
+        log.show(result.stderr, { type: 'error' })
+      }
       return [new Error(result.stderr), null]
     }
 
