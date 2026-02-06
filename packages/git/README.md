@@ -192,21 +192,21 @@ ng branch clean
 
 ---
 
-### List Branches (`ng list` / `ng ls`)
+### List Branches (`ng branch list` / `ng branch ls`)
 
 List branches with current branch indicator.
 
 ```bash
 # List all branches (default)
-ng list
+ng branch list
 
 # Local branches only
-ng list -l
-ng list --local
+ng branch list -l
+ng branch list --local
 
 # Remote branches only
-ng list -r
-ng list --remote
+ng branch list -r
+ng branch list --remote
 ```
 
 **Features:**
@@ -694,7 +694,7 @@ ng hist -n 20
 | Push | `git push` | `ng push` (interactive) |
 | Checkout | `git checkout` | `ng checkout` (auto stash + interactive) |
 | Branch delete | `git branch -D` | `ng branch delete` (merge status check) |
-| List branches | `git branch` | `ng list` (enhanced display) |
+| List branches | `git branch` | `ng branch list` (enhanced display) |
 | Merge | `git merge` | `ng merge` (auto stash + searchable) |
 | Stash | `git stash` | `ng stash` (enhanced management) |
 | Blame | `git blame` (line-by-line) | `ng blame` (full commit history with diff) |

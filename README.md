@@ -73,9 +73,9 @@ ng branch delete -r   # delete remote branches
 ng branch clean       # clean merged branches
 
 # List branches
-ng list       # or: ng ls
-ng ls -l      # local only
-ng ls -r      # remote only
+ng branch list       # or: ng branch ls
+ng branch ls -l      # local only
+ng branch ls -r      # remote only
 
 # Merge branches
 ng merge      # or: ng mg

@@ -9,4 +9,5 @@ export const HELP_MESSAGE = {
     'ng branch delete <command> [option]'
   ),
   branchClean: createHelpExample('ng branch clean --version', 'ng branch clean --help'),
+  branchList: createHelpExample('ng branch list --version', 'ng branch list --help', 'ng branch list [option]'),
 }

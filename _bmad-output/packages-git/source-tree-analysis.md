@@ -268,12 +268,12 @@ const handleDiff = async (branch, { isLocal }) => {
 
 ---
 
-### src/commands/list.ts
+### src/commands/branch.ts (list 子命令)
 
 **实现命令**：
 
-- `ng list [-l] [-r] [-a]`
-- `ng ls` (别名)
+- `ng branch list [-l] [-r] [-a]`
+- `ng branch ls` (别名)
 
 **输出格式**：
 

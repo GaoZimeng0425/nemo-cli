@@ -23,6 +23,17 @@ import {
 const formatTime = (time: number) => new Date(time * 1000).toLocaleString()
 const formatBranch = (branch: string) => (branch.startsWith('origin/') ? branch.slice(7) : branch)
 
+const displayBranches = (branches: string[], currentBranch: string, label: string, color: keyof typeof colors) => {
+  log.show(`${label} ${branches.length} branches`, { colors: (colors as any)[color] })
+  for (const branch of branches) {
+    if (branch === currentBranch) {
+      log.show(`${branch}  (current)`, { type: 'info' })
+    } else {
+      log.show(branch, { type: 'step' })
+    }
+  }
+}
+
 const handleDelete = async (branch: BranchInfo, { isRemote }: { isRemote: boolean }) => {
   if (!branch.isMerged) {
     const confirm = await createConfirm({
@@ -162,5 +173,47 @@ export function branchCommand(command: Command) {
         )
       )
       Message({ text: 'Successfully deleted branches' })
+    })
+
+  subCommand
+    .command('list')
+    .alias('ls')
+    .description('List git branches')
+    .addHelpText('after', HELP_MESSAGE.branchList)
+    .option('-l, --local', 'List local branches')
+    .option('-r, --remote', 'List remote branches')
+    .option('-a, --all', 'List all branches', true)
+    .action(async (options: { local?: boolean; remote?: boolean; all?: boolean }) => {
+      if (options.all) {
+        const { branches: localBranches, currentBranch } = await getLocalBranches()
+        const { branches: remoteBranches } = await getRemoteBranches()
+        if (!localBranches.length && !remoteBranches.length) {
+          log.error('No branches found. Please check your git repository.')
+          return
+        }
+
+        displayBranches(localBranches, currentBranch, 'Local', 'bgGreen')
+        displayBranches(remoteBranches, currentBranch, 'Remote', 'bgYellow')
+      } else if (options.local) {
+        const { branches } = await getLocalBranches()
+        if (!branches || branches.length === 0) {
+          log.error('No local branches found. Please check your git repository.')
+          return
+        }
+        log.info(`Found ${branches.length} local branches:`)
+        for (const branch of branches) {
+          log.info(branch)
+        }
+      } else {
+        const { branches } = await getRemoteBranches()
+        if (!branches || branches.length === 0) {
+          log.error('No remote branches found. Please check your git repository.')
+          return
+        }
+        log.info(`Found ${branches.length} remote branches:`)
+        for (const branch of branches) {
+          log.info(branch)
+        }
+      }
     })
 }

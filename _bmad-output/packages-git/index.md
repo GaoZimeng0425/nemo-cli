@@ -182,7 +182,7 @@ ng merge           # 合并分支
 | `ng checkout` | `ng co` | 切换分支 | `-l`, `-r`, `-b [name]` |
 | `ng branch delete` | - | 删除分支 | `-r` (远程) |
 | `ng branch clean` | - | 清理已合并分支 | - |
-| `ng list` | `ng ls` | 列出分支 | `-l`, `-r`, `-a` |
+| `ng branch list` | `ng branch ls` | 列出分支 | `-l`, `-r`, `-a` |
 | `ng diff` | `ng di` | 查看差异 | `-l`, `-r` |
 | `ng merge` | `ng mg` | 合并分支 | `-l`, `-r`, `-b <branch>` |
 | `ng stash` | `ng st` | Stash 管理 | `save`, `list`, `pop`, `drop`, `clear` |

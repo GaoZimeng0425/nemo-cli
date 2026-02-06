@@ -243,8 +243,8 @@ ng branch clean
 ### 用法
 
 ```bash
-ng list [options]
-ng ls [options]    # 别名
+ng branch list [options]
+ng branch ls [options]    # 别名
 ```
 
 ### 选项
@@ -259,26 +259,26 @@ ng ls [options]    # 别名
 
 ```bash
 # 列出所有分支
-ng ls
-ng ls -a
+ng branch list
+ng branch ls -a
 
 # 仅本地分支
-ng ls -l
+ng branch ls -l
 
 # 仅远程分支
-ng ls -r
+ng branch ls -r
 ```
 
 ### 输出格式
 
 ```
-🔖 Local 5 branches
+Local 5 branches
    main  (current)
    feature/login
    feature/dashboard
    bugfix/header
 
-🔖 Remote 10 branches
+Remote 10 branches
    main
    develop
    feature/api

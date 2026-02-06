@@ -7,7 +7,6 @@ import { commitCommand } from './commands/commit'
 import { configCommand } from './commands/config'
 import { diffCommand } from './commands/diff'
 import { histCommand } from './commands/hist'
-import { listCommand } from './commands/list'
 import { mergeCommand } from './commands/merge'
 import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
@@ -25,7 +24,6 @@ export const init = () => {
     .addHelpText('after', HELP_MESSAGE.main)
 
   pullCommand(command)
-  listCommand(command)
   pushCommand(command)
   checkoutCommand(command)
   branchCommand(command)
