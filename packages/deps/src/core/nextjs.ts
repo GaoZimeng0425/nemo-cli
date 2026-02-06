@@ -71,7 +71,7 @@ export class NextJsRouteScanner {
       'route.js',
       'route.jsx',
     ]
-    return routeFiles.some((file) => name === file || name.startsWith(file.split('.')[0]))
+    return routeFiles.some((file) => name === file || name.startsWith(file.split('.')[0] || ''))
   }
 
   private createRouteMetadata(filePath: string, routePath: string, fileName: string): NextJsRouteMetadata {

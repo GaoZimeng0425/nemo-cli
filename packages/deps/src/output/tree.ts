@@ -36,10 +36,56 @@ export class TreeGenerator {
     }
 
     if (this.analysis.cycles.length > 0) {
-      lines.push('\nCycles detected:')
-      for (const cycle of this.analysis.cycles) {
-        lines.push(`  ${cycle.join(' -> ')}`)
+      lines.push('\n' + '='.repeat(80))
+      lines.push(`⚠️  检测到 ${this.analysis.cycles.length} 个循环依赖`)
+      lines.push('='.repeat(80))
+
+      this.analysis.cycles.forEach((cycle, index) => {
+        if (index >= 5) {
+          // 只显示前5个循环，避免输出过长
+          return
+        }
+
+        lines.push(`\n🔴 循环 #${index + 1}`)
+        lines.push('─'.repeat(80))
+
+        cycle.forEach((filePath, i) => {
+          const fileName = filePath.split('/').pop()
+          const isLast = i === cycle.length - 1
+
+          if (i === 0) {
+            lines.push(`  ┌── ${fileName}`)
+          } else if (isLast) {
+            lines.push(`  └── ${fileName} ⬆️`)
+          } else {
+            lines.push(`  ├── ${fileName}`)
+          }
+        })
+
+        const cycleSize = cycle.length
+        let severity = '🟢 低'
+        if (cycleSize >= 2 && cycleSize <= 3) {
+          severity = '🟡 中'
+        } else if (cycleSize > 3) {
+          severity = '🔴 高'
+        }
+
+        lines.push(`  严重程度: ${severity} (涉及 ${cycleSize} 个文件)`)
+      })
+
+      if (this.analysis.cycles.length > 5) {
+        lines.push(`\n... 还有 ${this.analysis.cycles.length - 5} 个循环依赖未显示`)
       }
+
+      lines.push('\n' + '='.repeat(80))
+      lines.push('\n💡 解决方案:\n')
+      lines.push('1. 📦 提取共同依赖到一个新模块')
+      lines.push('2. 🔀 使用依赖注入代替直接导入')
+      lines.push('3. 📤 使用事件系统解耦 (EventEmitter)')
+      lines.push('4. 🎯 重新设计模块职责边界')
+      lines.push('5. 📋 延迟加载 (动态 import)')
+      lines.push('6. 🔁 使用接口/抽象层')
+      lines.push('')
     }
 
     const stats = this.analysis.stats

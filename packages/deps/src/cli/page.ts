@@ -1,8 +1,7 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, stat } from 'node:fs/promises'
 import { resolve as resolvePath } from 'node:path'
-import { stat } from 'node:fs/promises'
 
-import { createCommand, exit } from '@nemo-cli/shared'
+import { createCommand, exit, safeAwait } from '@nemo-cli/shared'
 import type { ComponentTreeNode, PageCliOptions, PageDependencyOutput } from '../core/types.js'
 
 export function pageCommand() {
@@ -28,10 +27,8 @@ async function handlePageCommand(route: string, options: PageCliOptions): Promis
   // 1. Determine input path
   const inputPath = resolvePath(options.from)
 
-  let fileStat
-  try {
-    fileStat = await stat(inputPath)
-  } catch {
+  const [error, fileStat] = await safeAwait(stat(inputPath))
+  if (error) {
     console.error(`Error: Path "${inputPath}" does not exist.`)
     exit(1)
     return
@@ -46,11 +43,10 @@ async function handlePageCommand(route: string, options: PageCliOptions): Promis
     jsonPath = resolvePath(inputPath, `${fileName}.json`)
 
     // Check if file exists
-    try {
-      await stat(jsonPath)
-    } catch {
+    const [error] = await safeAwait(stat(jsonPath))
+    if (error) {
       console.error(`Error: No JSON file found for route "${route}" at "${jsonPath}".`)
-      console.error('\nHint: Run `ndeps analyze <project> --output <dir>` first to generate the JSON files.')
+      console.error('\nHint: Run `nd analyze <project> --output <dir>` first to generate the JSON files.')
       exit(1)
       return
     }
@@ -105,7 +101,7 @@ function formatTree(node: ComponentTreeNode, route: string, routeType: string): 
   lines.push(`Route: ${route} (${routeType})`)
 
   // Format tree recursively
-  const formatNode = (n: ComponentTreeNode, depth: number, isLast: boolean, prefix: string = '') => {
+  const formatNode = (n: ComponentTreeNode, depth: number, isLast: boolean, prefix = '') => {
     const shortName = n.id.split('/').pop() || n.id
 
     if (depth === 0) {

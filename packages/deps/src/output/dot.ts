@@ -62,7 +62,7 @@ export class DotGenerator {
         for (let i = 0; i < cycle.length; i++) {
           const from = cycle[i]
           const to = cycle[(i + 1) % cycle.length]
-          lines.push(`    "${this.escape(from)}" -> "${this.escape(to)}";`)
+          lines.push(`    "${this.escape(from || '')}" -> "${this.escape(to || '')}";`)
         }
       }
     }
@@ -100,7 +100,8 @@ export class DotGenerator {
     return Array.from(new Set(highlighted))
   }
 
-  private formatNodeLabel(id: string, node: any): string {
+  // biome-ignore lint/suspicious/noExplicitAny: ignore
+  private formatNodeLabel(id: string, _node: any): string {
     const maxLength = 30
     const shortName = id.split('/').pop() || id
 
@@ -108,7 +109,7 @@ export class DotGenerator {
       return this.escape(shortName)
     }
 
-    return this.escape(shortName.slice(0, maxLength - 3) + '...')
+    return this.escape(`${shortName.slice(0, maxLength - 3)}...`)
   }
 
   private escape(text: string): string {

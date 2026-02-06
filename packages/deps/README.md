@@ -12,34 +12,37 @@ $ pnpm add @nemo-cli/deps --global
 
 ```bash
 # Analyze a Next.js project
-ndeps analyze <path>
+nd analyze <path>
+
+# Query page component tree
+nd page <route>
 
 # Output as Graphviz DOT
-ndeps analyze <path> --format dot --output deps.dot
+nd analyze <path> --format dot --output deps.dot
 
 # Output as JSON
-ndeps analyze <path> --format json
+nd analyze <path> --format json
 
 # Analyze specific route
-ndeps analyze <path> --route /dashboard
+nd analyze <path> --route /dashboard
 
 # Show only leaf nodes
-ndeps analyze <path> --leaves
+nd analyze <path> --leaves
 
 # Show only orphan nodes
-ndeps analyze <path> --orphans
+nd analyze <path> --orphans
 
 # Highlight cycles in output
-ndeps analyze <path> --cycles
+nd analyze <path> --cycles
 
 # Limit analysis depth
-ndeps analyze <path> --max-depth 3
+nd analyze <path> --max-depth 3
 
 # Follow external dependencies
-ndeps analyze <path> --external
+nd analyze <path> --external
 
 # Verbose output
-ndeps analyze <path> --verbose
+nd analyze <path> --verbose
 ```
 
 ## Features
@@ -68,28 +71,54 @@ Structured JSON output with full graph data, statistics, and route metadata.
 Graphviz DOT format for generating visual dependency graphs:
 
 ```bash
-ndeps analyze . --format dot --output deps.dot
+nd analyze . --format dot --output deps.dot
 dot -Tsvg deps.dot -o deps.svg
 ```
+
+## Commands
+
+### `analyze [options] <path>`
+Analyzes dependencies of a Next.js project.
+
+**Options:**
+- `--format <type>` - Output format: tree, json, or dot (default: tree)
+- `--output <file>` - Output file path
+- `--route <path>` - Analyze specific route only
+- `--leaves` - Show only leaf nodes (no dependencies)
+- `--orphans` - Show only orphan nodes (no importers)
+- `--cycles` - Highlight circular dependencies
+- `--max-depth <number>` - Limit analysis depth
+- `--external` - Follow external dependencies
+- `--verbose` - Enable verbose output
+
+### `page [options] <route>`
+Queries page component tree from generated JSON.
+
+**Options:**
+- `--input <file>` - Input JSON file path (default: deps.json)
+- `--format <type>` - Output format: tree or json (default: tree)
 
 ## Examples
 
 ```bash
 # Basic analysis
-ndeps analyze ./my-nextjs-app
+nd analyze ./my-nextjs-app
 
 # Generate SVG visualization
-ndeps analyze ./my-nextjs-app --format dot --output deps.dot
+nd analyze ./my-nextjs-app --format dot --output deps.dot
 dot -Tsvg deps.dot -o deps.svg
 
 # Analyze specific route
-ndeps analyze ./my-nextjs-app --route /dashboard
+nd analyze ./my-nextjs-app --route /dashboard
 
 # Find circular dependencies
-ndeps analyze ./my-nextjs-app --cycles
+nd analyze ./my-nextjs-app --cycles
 
 # Quick check for leaf nodes
-ndeps analyze ./my-nextjs-app --leaves --format tree
+nd analyze ./my-nextjs-app --leaves --format tree
+
+# Query page component tree
+nd page /dashboard --input deps.json
 ```
 
 ## License
