@@ -43,6 +43,47 @@ ng hist -h
 
 ---
 
+## Command Reference
+
+### Quick Overview
+
+#### Top-Level Commands
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `ng pull` | `ng pl` | Pull git branch with auto stash/pop |
+| `ng push` | `ng ps` | Push current branch to remote |
+| `ng checkout` | `ng co` | Checkout a branch with auto stash/pop |
+| `ng diff` | `ng di` | Show differences between branches or working directory |
+| `ng merge` | `ng mg` | Merge branches with auto stash/pop |
+| `ng stash` | `ng st` | Git stash management (see subcommands below) |
+| `ng blame` | - | View file commit history with interactive navigation |
+| `ng commit` | - | Interactive commit with conventional commits |
+| `ng status` | `ng s` | Show working tree status (interactive viewer) |
+| `ng hist` | `ng history` | Show git history with beautiful graph format |
+| `ng config` | - | Interactive git configuration manager |
+
+#### Branch Subcommands (`ng branch`)
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `ng branch clean` | - | Clean merged branches with time filtering |
+| `ng branch delete` | - | Delete local/remote branches with merge status check |
+| `ng branch list` | `ng branch ls` | List all branches with current indicator |
+
+#### Stash Subcommands (`ng stash`)
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `ng stash save` | `ng stash s` | Save current changes to stash |
+| `ng stash list` | `ng stash ls` | List all stashes |
+| `ng stash pop` | `ng stash p` | Pop the most recent stash |
+| `ng stash drop` | `ng stash d` | Drop/clear stashes |
+| `ng stash clear` | `ng stash c` | Clear all stashes |
+| `ng stash history` | `ng stash his` | View stash history from persistent index |
+
+---
+
 ## Commands
 
 ### Commit (`ng commit`)

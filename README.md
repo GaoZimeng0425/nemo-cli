@@ -43,56 +43,67 @@ npm install -g @nemo-cli/git @nemo-cli/file @nemo-cli/package @nemo-cli/ai
 
 ### Git Operations (`ng`)
 
+#### Top-Level Commands
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `ng pull` | `ng pl` | Pull git branch with auto stash/pop |
+| `ng push` | `ng ps` | Push current branch to remote |
+| `ng checkout` | `ng co` | Checkout a branch with auto stash/pop |
+| `ng diff` | `ng di` | Show differences between branches |
+| `ng merge` | `ng mg` | Merge branches |
+| `ng blame` | - | View file commit history with interactive navigation |
+| `ng commit` | - | Interactive commit with conventional commits |
+| `ng status` | `ng s` | Show working tree status (interactive viewer) |
+| `ng hist` | `ng history` | Show git history with beautiful graph format |
+| `ng config` | - | Interactive git configuration manager |
+
+#### Branch Management (`ng branch`)
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `ng branch clean` | - | Clean merged branches |
+| `ng branch delete` | - | Delete local/remote branches |
+| `ng branch list` | `ng branch ls` | List all branches |
+
+#### Stash Management (`ng stash`)
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `ng stash save` | `ng stash s` | Save current changes to stash |
+| `ng stash list` | `ng stash ls` | List all stashes |
+| `ng stash pop` | `ng stash p` | Pop the most recent stash |
+| `ng stash drop` | `ng stash d` | Drop/clear stashes |
+| `ng stash clear` | `ng stash c` | Clear all stashes |
+| `ng stash history` | `ng stash his` | View stash history from persistent index |
+
+#### Common Usage Examples
+
 ```bash
 # Show help
 ng -h
 ng <command> -h
 
-# Interactive commit with conventional commits
-ng commit
+# Pull with rebase mode
+ng pull -r
 
-# Pull with auto stash/pop
-ng pull       # or: ng pl
-ng pull -r    # rebase mode
+# Create and checkout new branch
+ng co -b feature/my-branch
 
-# Push current branch
-ng push       # or: ng ps
-
-# Checkout branch with auto stash/pop
-ng checkout   # or: ng co
-ng co -l      # local branches
-ng co -r      # remote branches
-
-# Create new branch
-ng co -b                    # interactive
-ng co -b feature/my-branch  # direct
-
-# Branch management
+# Delete branches
 ng branch delete      # delete local branches
 ng branch delete -r   # delete remote branches
-ng branch clean       # clean merged branches
 
 # List branches
-ng branch list       # or: ng branch ls
-ng branch ls -l      # local only
-ng branch ls -r      # remote only
+ng branch list        # all branches
+ng branch ls -l       # local only
+ng branch ls -r       # remote only
 
-# Merge branches
-ng merge      # or: ng mg
-
-# Stash operations
-ng stash
-ng stash history  # Persistent history with metadata
-
-# Interactive commit navigator - browse file history with diffs
+# View file history
 ng blame <file-path>
 
-# Git history viewer - interactive graph display
-ng hist        # or: ng history
+# Git history viewer
 ng hist -n 20  # limit to 20 commits
-
-# View diff
-ng diff
 ```
 
 ### File Operations (`nf`)
