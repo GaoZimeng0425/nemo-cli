@@ -9,11 +9,17 @@ import {
   log,
   xASync,
 } from '@nemo-cli/shared'
-import { getLocalBranchOptions, getRemoteBranchOptions, handleGitPop, handleGitStash } from '../utils'
+import {
+  getLocalBranchOptions,
+  getRemoteBranchOptions,
+  handleGitPop,
+  handleGitStash,
+  handleMergeCommit,
+} from '../utils'
 
 const handleMerge = async (branch: string) => {
   const spinner = createSpinner(`Merging branch ${branch}...`)
-  const args = ['merge', branch]
+  const args = ['merge', '--no-edit', branch]
 
   const stashResult = await handleGitStash(undefined, { branch, operation: 'merge' })
 
@@ -24,18 +30,27 @@ const handleMerge = async (branch: string) => {
 
   try {
     // 使用 stdio: 'inherit' 来支持交互式合并确认
-    const [error] = await xASync('git', args, {
+    const [error, result] = await xASync('git', args, {
       nodeOptions: {
         stdio: 'inherit',
       },
     })
 
     if (error) {
+      spinner.stop()
       const errorMessage = error instanceof Error ? error.message : String(error)
       throw new Error(`Failed to merge branch ${branch}: ${errorMessage}`)
     }
 
-    spinner.stop(colors.green(`Successfully merged branch ${colors.bgGreen(branch)}.`))
+    // 停止 spinner，准备可能的编辑器交互
+    spinner.stop()
+
+    // 检查是否需要处理合并提交
+    if (result.stdout.includes('Merge branch') || result.stdout.includes('Merge made by')) {
+      await handleMergeCommit()
+    }
+
+    log.show(colors.green(`Successfully merged branch ${colors.bgGreen(branch)}.`), { type: 'success' })
   } catch (error) {
     spinner.stop()
     log.show(`Failed to merge branch ${branch}.`, { type: 'error' })

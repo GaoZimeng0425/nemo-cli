@@ -112,7 +112,7 @@ export const getGitDiffFiles = async (branch: string) => {
 /**
  * 处理合并提交信息
  */
-const handleMergeCommit = async () => {
+export const handleMergeCommit = async () => {
   try {
     // 检查是否有待提交的合并
     const [error, result] = await xASync('git', ['status', '--porcelain'])
