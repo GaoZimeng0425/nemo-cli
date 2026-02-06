@@ -189,66 +189,6 @@ const runBuild = async (): Promise<void> => {
   log.success('Build completed successfully')
 }
 
-// ============== Version Bump ==============
-const updatePackageVersions = (
-  allPackages: ReturnType<typeof getPackages>,
-  packages: ReturnType<typeof getPackages>,
-  newVersion: string
-): void => {
-  log.show(`Updating versions to ${newVersion}...`, { type: 'step' })
-
-  // Update root package.json only if releasing all packages
-  if (packages.length === allPackages.length) {
-    const rootPkg = readPackageJson(ROOT_DIR)
-    rootPkg.version = newVersion
-    writePackageJson(ROOT_DIR, rootPkg)
-    log.show('Updated root package.json', { type: 'success' })
-  } else {
-    log.info('Skipped root package.json (partial release)')
-  }
-
-  // Create a set of packages being released for quick lookup
-  const releasingNames = new Set(packages.map((p) => p.name))
-
-  // Update selected packages
-  for (const { name, dir, pkg } of packages) {
-    pkg.version = newVersion
-
-    // Update workspace dependencies to use the new version
-    if (pkg.dependencies) {
-      for (const [dep, version] of Object.entries(pkg.dependencies)) {
-        if (version.startsWith('workspace:') && packages.some((p) => p.name === dep)) {
-          // Keep workspace protocol for development
-          pkg.dependencies[dep] = 'workspace:*'
-        }
-      }
-    }
-
-    writePackageJson(dir, pkg)
-    log.show(`Updated ${name}`, { type: 'success' })
-  }
-
-  // Update dependencies in non-selected packages that reference selected packages
-  const nonSelectedPackages = allPackages.filter((p) => !releasingNames.has(p.name))
-  for (const { name, dir, pkg } of nonSelectedPackages) {
-    let updated = false
-    if (pkg.dependencies) {
-      for (const [dep, version] of Object.entries(pkg.dependencies)) {
-        // If this package depends on a package being released, update the version constraint
-        if (releasingNames.has(dep) && version.startsWith('workspace:')) {
-          pkg.dependencies[dep] = 'workspace:*'
-          updated = true
-        }
-      }
-    }
-
-    if (updated) {
-      writePackageJson(dir, pkg)
-      log.show(`Updated dependencies in ${name}`, { type: 'info' })
-    }
-  }
-}
-
 // ============== Changelog ==============
 const generateChangelog = async (newVersion: string): Promise<string> => {
   const date = new Date().toISOString().split('T')[0]
@@ -367,16 +307,14 @@ const pushToRemote = async (isDryRun: boolean): Promise<void> => {
 }
 
 // ============== Publish ==============
-const publishPackages = async (
-  packages: ReturnType<typeof getPackages>,
-  newVersion: string,
-  isDryRun: boolean
-): Promise<void> => {
+const publishPackages = async (packages: ReturnType<typeof getPackages>, isDryRun: boolean): Promise<void> => {
   log.show('Publishing packages to npm...', { type: 'step' })
 
   const publishOrder = getPublishOrder(packages)
-  const isPrerelease = newVersion.includes('-')
-  const tag = isPrerelease ? 'beta' : 'latest'
+
+  // Check if any package is a prerelease
+  const hasPrerelease = packages.some((p) => p.pkg.version.includes('-'))
+  const tag = hasPrerelease ? 'beta' : 'latest'
 
   // 询问 OTP（如果账户启用了 2FA）
   let otp: string | undefined
@@ -388,11 +326,11 @@ const publishPackages = async (
   }
 
   const spinner = createSpinner('Publishing packages to npm...')
-  for await (const { name, dir } of publishOrder) {
-    spinner.message(`Publishing ${name}...`)
+  for await (const { name, dir, pkg } of publishOrder) {
+    spinner.message(`Publishing ${name} @ v${pkg.version}...`)
 
     if (isDryRun) {
-      log.info(`[DRY RUN] Would publish ${name} with tag: ${tag}`)
+      log.info(`[DRY RUN] Would publish ${name} @ v${pkg.version} with tag: ${tag}`)
       continue
     }
 
@@ -405,7 +343,7 @@ const publishPackages = async (
       const proceed = await createConfirm({ message: 'Continue with remaining packages?' })
       if (!proceed) process.exit(1)
     } else {
-      log.show(`Published ${name}`, { type: 'success' })
+      log.show(`Published ${name} @ v${pkg.version}`, { type: 'success' })
     }
   }
   spinner.stop()
@@ -529,23 +467,6 @@ const main = async (): Promise<void> => {
     process.exit(0)
   }
 
-  // Validate version consistency across selected packages
-  const selectedPackages = packages.filter((p) => selectedPackageNames.includes(p.name))
-  const uniqueVersions = new Set(selectedPackages.map((p) => p.pkg.version))
-  if (uniqueVersions.size > 1) {
-    log.warn('Selected packages have different versions:')
-    for (const pkg of selectedPackages) {
-      console.log(`  ${colors.gray('-')} ${pkg.name}: v${pkg.pkg.version}`)
-    }
-    const proceed = await createConfirm({
-      message: 'Packages have inconsistent versions. Continue using the first version?',
-    })
-    if (!proceed) {
-      log.info('Release cancelled')
-      process.exit(0)
-    }
-  }
-
   // Collect packages with their dependencies
   const packagesToRelease = collectPackagesWithDependencies(packages, selectedPackageNames)
 
@@ -563,10 +484,6 @@ const main = async (): Promise<void> => {
     console.log(`  ${label} ${pkg.name}${suffix}`)
   }
 
-  // Get current version
-  const currentVersion = packagesToRelease[0]?.pkg.version ?? '0.0.0'
-  log.info(`Current version: ${currentVersion}`)
-
   // Determine release type
   let releaseType: ReleaseType
   if (releaseTypeArg) {
@@ -578,13 +495,26 @@ const main = async (): Promise<void> => {
     })
   }
 
-  // Calculate new version
-  const newVersion = bumpVersion(currentVersion, releaseType)
-  log.info(`New version will be: ${newVersion}`)
+  // Calculate new versions for all packages
+  const versionChanges = packagesToRelease.map((pkg) => ({
+    name: pkg.name,
+    current: pkg.pkg.version,
+    next: bumpVersion(pkg.pkg.version, releaseType),
+  }))
+
+  // Display version changes
+  console.log(`\n${colors.cyan('Version changes:')}`)
+  for (const { name, current, next } of versionChanges) {
+    const arrow = current === next ? colors.gray('→') : colors.green('→')
+    console.log(`  ${name}: ${colors.cyan(current)} ${arrow} ${colors.cyan(next)}`)
+  }
+  console.log('')
 
   // Confirm
   if (!isDryRun) {
-    const proceed = await createConfirm({ message: `Proceed with release v${newVersion}?` })
+    const proceed = await createConfirm({
+      message: `Release ${packagesToRelease.length} package${packagesToRelease.length > 1 ? 's' : ''} with ${releaseType} bump?`,
+    })
     if (!proceed) {
       log.info('Release cancelled')
       process.exit(0)
@@ -599,32 +529,115 @@ const main = async (): Promise<void> => {
 
   // Update versions
   if (!isDryRun) {
-    updatePackageVersions(packages, packagesToRelease, newVersion)
+    for (const { name, current, next } of versionChanges) {
+      const pkg = packagesToRelease.find((p) => p.name === name)
+      if (pkg) {
+        pkg.pkg.version = next
+
+        // Update workspace dependencies
+        if (pkg.pkg.dependencies) {
+          for (const [dep, version] of Object.entries(pkg.pkg.dependencies)) {
+            const depChange = versionChanges.find((vc) => vc.name === dep)
+            if (version.startsWith('workspace:') && depChange) {
+              pkg.pkg.dependencies[dep] = 'workspace:*'
+            }
+          }
+        }
+
+        writePackageJson(pkg.dir, pkg.pkg)
+        log.show(`Updated ${name} to v${next}`, { type: 'success' })
+      }
+    }
+
+    // Update root package.json only if releasing all packages
+    if (packagesToRelease.length === packages.length) {
+      const rootPkg = readPackageJson(ROOT_DIR)
+      // Use the first package's version as root version
+      rootPkg.version = versionChanges[0].next
+      writePackageJson(ROOT_DIR, rootPkg)
+      log.show('Updated root package.json', { type: 'success' })
+    }
+
+    // Update dependencies in non-selected packages
+    const releasingNames = new Set(versionChanges.map((vc) => vc.name))
+    const nonSelectedPackages = packages.filter((p) => !releasingNames.has(p.name))
+    for (const { name, dir, pkg } of nonSelectedPackages) {
+      let updated = false
+      if (pkg.dependencies) {
+        for (const [dep, version] of Object.entries(pkg.dependencies)) {
+          // If this package depends on a package being released, update the version constraint
+          if (releasingNames.has(dep) && version.startsWith('workspace:')) {
+            pkg.dependencies[dep] = 'workspace:*'
+            updated = true
+          }
+        }
+      }
+
+      if (updated) {
+        writePackageJson(dir, pkg)
+        log.show(`Updated dependencies in ${name}`, { type: 'info' })
+      }
+    }
   } else {
-    log.info(`[DRY RUN] Would update ${packagesToRelease.length} packages to version ${newVersion}`)
+    log.info(`[DRY RUN] Would update ${packagesToRelease.length} packages`)
   }
 
   // Update changelog
   if (!isDryRun) {
-    await updateChangelog(newVersion)
+    // Use the first package's version for changelog
+    const primaryVersion = versionChanges[0].next
+    await updateChangelog(primaryVersion)
   } else {
     log.info('[DRY RUN] Would update CHANGELOG.md')
   }
 
   // Git commit and tag
-  await createGitCommitAndTag(newVersion, isDryRun)
+  if (!isDryRun) {
+    // Use the first package's version for tag, or create multiple tags
+    const primaryVersion = versionChanges[0].next
+    await createGitCommitAndTag(primaryVersion, isDryRun)
+
+    // Create additional tags for packages with different versions
+    const uniqueVersions = [...new Set(versionChanges.map((vc) => vc.next))]
+    if (uniqueVersions.length > 1) {
+      log.info('Creating additional tags for different versions...')
+      for (const version of uniqueVersions) {
+        if (version !== primaryVersion) {
+          await xASync('git', ['tag', '-a', `v${version}`, '-m', `Release v${version}`], {
+            nodeOptions: { cwd: ROOT_DIR },
+            quiet: true,
+          })
+          log.show(`Created tag v${version}`, { type: 'success' })
+        }
+      }
+    }
+  } else {
+    log.info('[DRY RUN] Would create git tags')
+  }
 
   // Push to remote
   await pushToRemote(isDryRun)
 
   // Publish to npm
-  await publishPackages(packagesToRelease, newVersion, isDryRun)
+  await publishPackages(packagesToRelease, isDryRun)
 
   // Done!
-  console.log(`\n${colors.green(`✨ Release v${newVersion} completed successfully!`)}\n`)
+  const primaryVersion = versionChanges[0].next
+  const releasedVersions = [...new Set(versionChanges.map((vc) => vc.next))]
+  const versionSummary =
+    releasedVersions.length === 1
+      ? `v${primaryVersion}`
+      : `${releasedVersions.length} versions (${releasedVersions.map((v) => `v${v}`).join(', ')})`
+
+  console.log(`\n${colors.green(`✨ Release ${versionSummary} completed successfully!`)}\n`)
 
   if (!isDryRun) {
-    log.info('Next steps:')
+    log.info('Released packages:')
+    for (const { name, next } of versionChanges) {
+      console.log(`  ${colors.green('✓')} ${name} @ v${next}`)
+    }
+
+    log.info('\nNext steps:')
     console.log('  1. Create a GitHub release at https://github.com/GaoZimeng0425/nemo-cli/releases')
     console.log('  2. Announce the release')
   }
