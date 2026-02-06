@@ -1,7 +1,7 @@
 import type { Command } from '@nemo-cli/shared'
 import { colors, createConfirm, createSelect, createSpinner, getCurrentBranch, log, xASync } from '@nemo-cli/shared'
 import { BigText } from '@nemo-cli/ui'
-import { getRemoteOptions, getRemoteOptionsForRemotes } from '../utils'
+import { getRemoteBranchOptions, getRemoteRepositoryOptions } from '../utils'
 
 const handlePush = async (branch: string, remote = 'origin') => {
   const spinner = createSpinner(`Pushing branch ${branch} to ${remote}...`)
@@ -39,42 +39,42 @@ export const pushInteractive = async () => {
   }
 
   // Get available remotes
-  let remotes: string[]
+  let repositories: string[]
   try {
-    const result = await getRemoteOptionsForRemotes()
-    remotes = result.remotes
+    const result = await getRemoteRepositoryOptions()
+    repositories = result.remotes
   } catch (error) {
     log.error(`Failed to get remote repositories: ${error instanceof Error ? error.message : String(error)}`)
     log.show("Hint: Make sure you're in a git repository and have configured remotes.", { type: 'info' })
     return
   }
 
-  if (remotes.length === 0) {
+  if (repositories.length === 0) {
     log.error('No remote repositories found. Aborting push operation.')
     log.show('Hint: Run `git remote add <name> <url>` to add a remote repository.', { type: 'info' })
     return
   }
 
   // Select remote if multiple remotes exist
-  let selectedRemote = remotes[0]
-  if (remotes.length > 1) {
-    selectedRemote = await createSelect({
+  let selectedRepository = repositories[0]
+  if (repositories.length > 1) {
+    selectedRepository = await createSelect({
       message: 'Select remote repository',
-      options: remotes.map((remote) => ({ label: remote, value: remote })),
-      initialValue: remotes[0],
+      options: repositories.map((repo) => ({ label: repo, value: repo })),
+      initialValue: repositories[0],
     })
   }
 
   const check = await createConfirm({
-    message: `Do you want to push ${colors.bgGreen(currentBranch)} to ${selectedRemote}?`,
+    message: `Do you want to push ${colors.bgGreen(currentBranch)} to ${selectedRepository}?`,
   })
 
   if (check) {
-    await handlePush(currentBranch, selectedRemote)
+    await handlePush(currentBranch, selectedRepository)
     return
   }
 
-  const { options } = await getRemoteOptions()
+  const { options } = await getRemoteBranchOptions()
   const selectedBranch = await createSelect({
     message: 'Select the branch to push',
     options,
@@ -82,20 +82,20 @@ export const pushInteractive = async () => {
   })
 
   // Allow remote re-selection if multiple remotes exist
-  let pushRemote = selectedRemote
-  if (remotes.length > 1) {
+  selectedRepository = repositories[0]
+  if (repositories.length > 1) {
     const changeRemote = await createConfirm({
-      message: `Push ${colors.bgGreen(selectedBranch)} to ${selectedRemote}?`,
+      message: `Push ${colors.bgGreen(selectedBranch)} to ${selectedRepository}?`,
     })
 
     if (!changeRemote) {
-      pushRemote = await createSelect({
+      selectedRepository = await createSelect({
         message: 'Select remote repository',
-        options: remotes.map((remote) => ({ label: remote, value: remote })),
-        initialValue: selectedRemote,
+        options: repositories.map((repo) => ({ label: repo, value: repo })),
+        initialValue: selectedRepository,
       })
     }
   }
 
-  await handlePush(selectedBranch, pushRemote)
+  await handlePush(selectedBranch, selectedRepository)
 }
