@@ -15,12 +15,14 @@ import { join, resolve } from 'node:path'
 
 import {
   colors,
+  createCheckbox,
   createConfirm,
   createInput,
   createSelect,
   createSpinner,
   log,
   readJSON,
+  safeAwait,
   writeJSON,
   xASync,
 } from '@nemo-cli/shared'
@@ -188,16 +190,27 @@ const runBuild = async (): Promise<void> => {
 }
 
 // ============== Version Bump ==============
-const updatePackageVersions = (packages: ReturnType<typeof getPackages>, newVersion: string): void => {
+const updatePackageVersions = (
+  allPackages: ReturnType<typeof getPackages>,
+  packages: ReturnType<typeof getPackages>,
+  newVersion: string
+): void => {
   log.show(`Updating versions to ${newVersion}...`, { type: 'step' })
 
-  // Update root package.json
-  const rootPkg = readPackageJson(ROOT_DIR)
-  rootPkg.version = newVersion
-  writePackageJson(ROOT_DIR, rootPkg)
-  log.show('Updated root package.json', { type: 'success' })
+  // Update root package.json only if releasing all packages
+  if (packages.length === allPackages.length) {
+    const rootPkg = readPackageJson(ROOT_DIR)
+    rootPkg.version = newVersion
+    writePackageJson(ROOT_DIR, rootPkg)
+    log.show('Updated root package.json', { type: 'success' })
+  } else {
+    log.info('Skipped root package.json (partial release)')
+  }
 
-  // Update all packages
+  // Create a set of packages being released for quick lookup
+  const releasingNames = new Set(packages.map((p) => p.name))
+
+  // Update selected packages
   for (const { name, dir, pkg } of packages) {
     pkg.version = newVersion
 
@@ -213,6 +226,26 @@ const updatePackageVersions = (packages: ReturnType<typeof getPackages>, newVers
 
     writePackageJson(dir, pkg)
     log.show(`Updated ${name}`, { type: 'success' })
+  }
+
+  // Update dependencies in non-selected packages that reference selected packages
+  const nonSelectedPackages = allPackages.filter((p) => !releasingNames.has(p.name))
+  for (const { name, dir, pkg } of nonSelectedPackages) {
+    let updated = false
+    if (pkg.dependencies) {
+      for (const [dep, version] of Object.entries(pkg.dependencies)) {
+        // If this package depends on a package being released, update the version constraint
+        if (releasingNames.has(dep) && version.startsWith('workspace:')) {
+          pkg.dependencies[dep] = 'workspace:*'
+          updated = true
+        }
+      }
+    }
+
+    if (updated) {
+      writePackageJson(dir, pkg)
+      log.show(`Updated dependencies in ${name}`, { type: 'info' })
+    }
   }
 }
 
@@ -405,6 +438,58 @@ const getPublishOrder = (packages: ReturnType<typeof getPackages>): ReturnType<t
   return sorted
 }
 
+/**
+ * Collect packages with their dependencies
+ * When a package is selected, all its workspace dependencies are automatically included
+ */
+const collectPackagesWithDependencies = (
+  allPackages: ReturnType<typeof getPackages>,
+  selectedNames: string[]
+): ReturnType<typeof getPackages> => {
+  const packageMap = new Map(allPackages.map((p) => [p.name, p]))
+  const toInclude = new Set<string>()
+  const visiting = new Set<string>() // Track current path to detect cycles
+
+  const addDependencies = (packageName: string) => {
+    const pkg = packageMap.get(packageName)
+    if (!pkg) return
+
+    // Cycle detection - if already visiting this package in current path, skip
+    if (visiting.has(packageName)) {
+      log.warn(`检测到循环依赖: ${packageName}`)
+      return
+    }
+
+    // Already processed
+    if (toInclude.has(packageName)) return
+
+    // Add to visiting set
+    visiting.add(packageName)
+
+    // Add this package
+    toInclude.add(packageName)
+
+    // Recursively add workspace dependencies
+    const deps = Object.keys(pkg.pkg.dependencies ?? {})
+    for (const dep of deps) {
+      if (packageMap.has(dep) && !toInclude.has(dep)) {
+        addDependencies(dep)
+      }
+    }
+
+    // Remove from visiting set (backtrack)
+    visiting.delete(packageName)
+  }
+
+  // Start with selected packages
+  for (const name of selectedNames) {
+    addDependencies(name)
+  }
+
+  // Return the filtered packages
+  return allPackages.filter((p) => toInclude.has(p.name))
+}
+
 // ============== Main ==============
 const main = async (): Promise<void> => {
   console.log(`\n${colors.cyan('🚀 nemo-cli Release Script')}\n`)
@@ -419,13 +504,67 @@ const main = async (): Promise<void> => {
 
   // Get packages
   const packages = getPackages()
-  log.info(`Found ${packages.length} publishable packages:`)
-  for (const p of packages) {
-    console.log(`  ${colors.gray('-')} ${p.name} (v${p.pkg.version})`)
+
+  // Select packages to release
+  const [selectError, selectedPackageNames] = await safeAwait(
+    createCheckbox({
+      message: 'Select packages to release (space to select, enter to confirm):',
+      options: packages.map((pkg) => ({
+        label: `${pkg.name} (v${pkg.pkg.version})`,
+        value: pkg.name,
+        checked: true, // Default all selected for backward compatibility
+      })),
+    })
+  )
+
+  if (selectError) {
+    log.error(`Package selection error: ${selectError.message}`)
+    log.info('Try specifying packages via command line args or check environment config')
+    process.exit(1)
+  }
+
+  if (!selectedPackageNames || selectedPackageNames.length === 0) {
+    log.warn('No packages selected')
+    log.info('Please re-run and select packages to release')
+    process.exit(0)
+  }
+
+  // Validate version consistency across selected packages
+  const selectedPackages = packages.filter((p) => selectedPackageNames.includes(p.name))
+  const uniqueVersions = new Set(selectedPackages.map((p) => p.pkg.version))
+  if (uniqueVersions.size > 1) {
+    log.warn('Selected packages have different versions:')
+    for (const pkg of selectedPackages) {
+      console.log(`  ${colors.gray('-')} ${pkg.name}: v${pkg.pkg.version}`)
+    }
+    const proceed = await createConfirm({
+      message: 'Packages have inconsistent versions. Continue using the first version?',
+    })
+    if (!proceed) {
+      log.info('Release cancelled')
+      process.exit(0)
+    }
+  }
+
+  // Collect packages with their dependencies
+  const packagesToRelease = collectPackagesWithDependencies(packages, selectedPackageNames)
+
+  // Show which packages will be released
+  const autoIncluded = packagesToRelease.filter((p) => !selectedPackageNames.includes(p.name))
+  log.info(
+    `Selected ${selectedPackageNames.length} package${selectedPackageNames.length > 1 ? 's' : ''}, ` +
+      `including ${autoIncluded.length} dependenc${autoIncluded.length === 1 ? 'y' : 'ies'}: ` +
+      `total ${packagesToRelease.length} package${packagesToRelease.length > 1 ? 's' : ''}`
+  )
+  for (const pkg of packagesToRelease) {
+    const isSelected = selectedPackageNames.includes(pkg.name)
+    const label = isSelected ? colors.green('✓') : colors.gray('⊕')
+    const suffix = isSelected ? '' : colors.gray(' (auto-included dependency)')
+    console.log(`  ${label} ${pkg.name}${suffix}`)
   }
 
   // Get current version
-  const currentVersion = packages[0]?.pkg.version ?? '0.0.0'
+  const currentVersion = packagesToRelease[0]?.pkg.version ?? '0.0.0'
   log.info(`Current version: ${currentVersion}`)
 
   // Determine release type
@@ -460,9 +599,9 @@ const main = async (): Promise<void> => {
 
   // Update versions
   if (!isDryRun) {
-    updatePackageVersions(packages, newVersion)
+    updatePackageVersions(packages, packagesToRelease, newVersion)
   } else {
-    log.info(`[DRY RUN] Would update all packages to version ${newVersion}`)
+    log.info(`[DRY RUN] Would update ${packagesToRelease.length} packages to version ${newVersion}`)
   }
 
   // Update changelog
@@ -479,7 +618,7 @@ const main = async (): Promise<void> => {
   await pushToRemote(isDryRun)
 
   // Publish to npm
-  await publishPackages(packages, newVersion, isDryRun)
+  await publishPackages(packagesToRelease, newVersion, isDryRun)
 
   // Done!
   console.log(`\n${colors.green(`✨ Release v${newVersion} completed successfully!`)}\n`)

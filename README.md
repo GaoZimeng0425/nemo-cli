@@ -173,6 +173,31 @@ pnpm test
 pnpm check
 ```
 
+### Release
+
+```bash
+# Interactive release with package selection
+pnpm release
+
+# Bump patch version
+pnpm release patch
+
+# Bump minor version
+pnpm release minor
+
+# Bump major version
+pnpm release major
+
+# Dry run (no changes)
+pnpm release --dry-run
+```
+
+**Features:**
+- 📦 **Package Selection** - Choose specific packages to release (default: all)
+- 🔗 **Dependency Auto-Include** - Automatically includes workspace dependencies
+- ✅ **Version Validation** - Warns if selected packages have inconsistent versions
+- 🚀 **Smart Version Bump** - Only updates root version when releasing all packages
+
 ## Packages
 
 | Package | Command | Description |
