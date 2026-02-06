@@ -84,6 +84,13 @@ ng merge      # or: ng mg
 ng stash
 ng stash history  # Persistent history with metadata
 
+# Interactive commit navigator - browse file history with diffs
+ng blame <file-path>
+
+# Git history viewer - interactive graph display
+ng hist        # or: ng history
+ng hist -n 20  # limit to 20 commits
+
 # View diff
 ng diff
 ```
