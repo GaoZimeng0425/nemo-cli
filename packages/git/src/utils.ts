@@ -59,7 +59,7 @@ export const getLocalBranches = async (): Promise<{ branches: string[]; currentB
   }
 }
 
-export const getRemoteOptions = async () => {
+export const getRemoteBranchOptions = async () => {
   const { branches } = await getRemoteBranches()
   const currentBranch = await getCurrentBranch()
   const options = branches.map((branch) => ({
@@ -73,7 +73,7 @@ export const getRemoteOptions = async () => {
   } as const
 }
 
-export const getLocalOptions = async () => {
+export const getLocalBranchOptions = async () => {
   const { branches, currentBranch } = await getLocalBranches()
   const options = branches.map((branch) => ({
     label: branch,
@@ -86,7 +86,7 @@ export const getLocalOptions = async () => {
   } as const
 }
 
-export const getRemoteOptionsForRemotes = async () => {
+export const getRemoteRepositoryOptions = async () => {
   const { remotes } = await getRemotes()
   // Validate and filter out empty/whitespace-only remote names
   const validRemotes = remotes.filter((remote) => remote.trim().length > 0)
@@ -218,16 +218,17 @@ const handleMergeCommit = async () => {
 
 export type PullOptions = {
   rebase?: boolean
+  remote?: string
 }
 
 export const handleGitPull = async (branch: string, options: PullOptions = {}) => {
-  const { rebase = false } = options
+  const { rebase = false, remote = 'origin' } = options
   const modeText = rebase ? 'rebase' : 'merge'
   log.show(`Pulling from remote (${modeText} mode)...`, { type: 'step' })
 
   try {
     // 构建 git pull 命令参数
-    const args = rebase ? ['pull', '--rebase', 'origin', branch] : ['pull', 'origin', branch]
+    const args = rebase ? ['pull', '--rebase', remote, branch] : ['pull', remote, branch]
 
     const [error, result] = await xASync('git', args, {
       nodeOptions: {

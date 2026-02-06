@@ -11,7 +11,7 @@ import {
   log,
   x,
 } from '@nemo-cli/shared'
-import { getBranchStashes, getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
+import { getBranchStashes, getLocalBranchOptions, getRemoteBranchOptions, handleGitPop, handleGitStash } from '../utils'
 import type { StashMetadata } from '../utils/stash-index'
 
 /**
@@ -132,14 +132,14 @@ export function checkoutCommand(command: Command) {
       }
 
       if (isLocal) {
-        const { options } = await getLocalOptions()
+        const { options } = await getLocalBranchOptions()
         const selectedBranch = await createSelect({
           message: `Select the ${colors.bgGreen(' local ')} branch to checkout`,
           options,
         })
         handleCheckout(selectedBranch)
       } else {
-        const { options } = await getRemoteOptions()
+        const { options } = await getRemoteBranchOptions()
         const selectedBranch = await createSelect({
           message: `Select the ${colors.bgYellow(' remote ')} branch to checkout`,
           options,

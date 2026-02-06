@@ -9,7 +9,7 @@ import {
   log,
   xASync,
 } from '@nemo-cli/shared'
-import { getLocalOptions, getRemoteOptions, handleGitPop, handleGitStash } from '../utils'
+import { getLocalBranchOptions, getRemoteBranchOptions, handleGitPop, handleGitStash } from '../utils'
 
 const handleMerge = async (branch: string) => {
   const spinner = createSpinner(`Merging branch ${branch}...`)
@@ -77,14 +77,14 @@ export function mergeCommand(command: Command) {
       }
 
       if (isLocal) {
-        const { options } = await getLocalOptions()
+        const { options } = await getLocalBranchOptions()
         const selectedBranch = await createSearch({
           message: 'Select the branch to merge',
           options,
         })
         await handleMerge(selectedBranch)
       } else {
-        const { options } = await getRemoteOptions()
+        const { options } = await getRemoteBranchOptions()
         const selectedBranch = await createSearch({
           message: 'Select the branch to merge',
           options,
