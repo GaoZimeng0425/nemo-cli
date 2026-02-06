@@ -1,4 +1,5 @@
 import path from 'node:path'
+
 import type { Command } from '@nemo-cli/shared'
 import {
   createCheckbox,
@@ -21,29 +22,35 @@ async function upgradeHandle(packageName: string, dependencies: string[]) {
     `Attempting to upgrade dependencies [${dependencies.join(', ')}] in package [${packageName}] to their latest versions...`
   )
 
-  for (const dep of dependencies) {
-    const depWithVersion = `${dep}@latest`
-    log.info(`Upgrading ${dep} in ${packageName} to @latest... (pnpm add ${depWithVersion} --filter ${packageName})`)
-    try {
-      const commandParts = ['add', depWithVersion, '--filter', packageName]
-      const { stdout, stderr, exitCode } = await x('pnpm', commandParts)
+  try {
+    // Get the appropriate package manager adapter
+    const { getPackageManagerAdapter } = await import('@nemo-cli/shared')
+    const adapter = await getPackageManagerAdapter()
 
-      if (stdout) {
-        log.info(`Output for ${depWithVersion} (stdout):\n${stdout}`)
-      }
-      if (stderr) {
-        // pnpm often uses stderr for progress or warnings, not just errors
-        log.warn(`Output for ${depWithVersion} (stderr):\n${stderr}`)
-      }
+    // Build command arguments using the adapter
+    const commandArgs = adapter.buildUpgradeCommand(dependencies, {
+      workspaces: [packageName],
+      target: 'latest',
+    })
 
-      if (exitCode) {
-        log.error(`Failed to upgrade ${dep} in ${packageName}. Command exited with code ${exitCode}.`)
-      } else {
-        log.success(`Successfully upgraded ${dep} in ${packageName}.`)
-      }
-    } catch (error: unknown) {
-      handleError(error, `An error occurred while upgrading ${dep} in ${packageName}: `)
+    log.info(`Executing command: ${adapter.command} ${commandArgs.join(' ')}`)
+
+    const { stdout, stderr, exitCode } = await x(adapter.command, commandArgs)
+
+    if (stdout) {
+      log.info(`Output (stdout):\n${stdout}`)
     }
+    if (stderr) {
+      log.warn(`Output (stderr):\n${stderr}`)
+    }
+
+    if (exitCode) {
+      log.error(`Failed to upgrade dependencies. Command exited with code ${exitCode}.`)
+    } else {
+      log.success(`Successfully upgraded dependencies in package ${packageName}.`)
+    }
+  } catch (error: unknown) {
+    handleError(error, 'An error occurred while upgrading dependencies: ')
   }
   log.info(`Finished upgrade process for package [${packageName}].`)
 }

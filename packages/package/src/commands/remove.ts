@@ -1,4 +1,5 @@
 import path from 'node:path'
+
 import type { Command } from '@nemo-cli/shared'
 import {
   createCheckbox,
@@ -21,15 +22,22 @@ async function removeHandle(packageName: string, dependencies: string[]) {
   log.info(`Attempting to remove dependencies [${depsString}] from package [${packageName}]...`)
 
   try {
-    const commandParts = ['remove', ...dependencies, '--filter', packageName]
-    log.info(`Executing command: pnpm remove ${depsString} --filter ${packageName}`)
+    // Get the appropriate package manager adapter
+    const { getPackageManagerAdapter } = await import('@nemo-cli/shared')
+    const adapter = await getPackageManagerAdapter()
 
-    const { stdout, stderr, exitCode } = await x('pnpm', commandParts)
+    // Build command arguments using the adapter
+    const commandArgs = adapter.buildRemoveCommand(dependencies, {
+      workspaces: [packageName],
+    })
+
+    log.info(`Executing command: ${adapter.command} ${commandArgs.join(' ')}`)
+
+    const { stdout, stderr, exitCode } = await x(adapter.command, commandArgs)
 
     if (stdout) {
       log.info(`Command output (stdout):\n${stdout}`)
     }
-    // pnpm often uses stderr for progress or warnings, not just errors for `remove`
     if (stderr) {
       log.warn(`Command output (stderr):\n${stderr}`)
     }

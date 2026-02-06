@@ -1,35 +1,51 @@
-import { type Command, createCheckbox, createInput, getWorkspaceNames, isString } from '@nemo-cli/shared'
+import {
+  type Command,
+  createCheckbox,
+  createInput,
+  getPackageManagerAdapter,
+  getWorkspaceNames,
+  isString,
+  x,
+} from '@nemo-cli/shared'
 import { ErrorMessage, Message, ProcessMessage } from '@nemo-cli/ui'
 import { HELP_MESSAGE } from '../constants'
 
 type AddHandleOptions = {
   workspaces: string[]
+  saveDev?: boolean
   saveProd?: boolean
   exact?: boolean
   peer?: boolean
 }
 
 const ROOT_VALUE = 'root'
+
 const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
-  const { saveProd = true, exact = false, peer = false, workspaces } = options
+  const { saveProd = true, saveDev = false, exact = false, peer = false, workspaces } = options
 
-  const flags = [
-    saveProd ? '--save-prod' : '--save-dev',
-    exact ? '--save-exact' : '',
-    peer ? '--save-peer' : '',
-  ].filter(Boolean)
+  // Get the appropriate package manager adapter
+  const adapter = await getPackageManagerAdapter()
+
+  // Build command arguments using the adapter
   const isRootWorkspace = workspaces.find((item) => item === ROOT_VALUE)
+  const workspaceFilters = isRootWorkspace ? [] : workspaces.filter((w) => w !== ROOT_VALUE)
 
-  const filter = isRootWorkspace ? '-w' : workspaces.map((name) => `--filter=${name}`)
+  const adapterOptions = {
+    saveDev: saveDev || !saveProd,
+    exact,
+    savePeer: peer,
+    workspaces: workspaceFilters,
+    root: isRootWorkspace != null,
+  }
 
-  const commandParts = [...flags, 'add', ...filter, ...dependencies]
+  const commandArgs = adapter.buildAddCommand(dependencies, adapterOptions)
 
   const instance = ProcessMessage({
-    command: 'pnpm',
-    commandArgs: commandParts,
+    command: adapter.command,
+    commandArgs,
     onSuccess: () => {
       Message({
-        text: 'Dependencies added successfully',
+        text: `Dependencies added successfully using ${adapter.name}`,
         name: 'summer',
       })
     },
@@ -38,7 +54,6 @@ const addHandle = async (dependencies: string[], options: AddHandleOptions) => {
         text: 'Dependencies added failed',
         name: 'passion',
       })
-      // spinner.stop(`An error occurred while adding dependencies: ${error}`)
     },
   })
   await instance.waitUntilExit()
