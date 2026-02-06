@@ -27,3 +27,6 @@ app1-deps-json
 
 # BMad completed workflow artifacts (archive)
 _bmad-output/implementation-artifacts/completed/
+
+# Git worktrees
+.worktrees/
