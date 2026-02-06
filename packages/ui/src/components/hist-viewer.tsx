@@ -20,7 +20,7 @@ export const HistViewer: FC<HistViewerProps> = ({ maxCount }) => {
   // Get terminal height, fallback to 24
   const terminalHeight = process.stdout.rows || 24
   // Reserve 6 lines for border (2) + hint bar (2) + marginTop (2)
-  const viewHeight = Math.max(10, terminalHeight - 5)
+  const viewHeight = Math.max(10, terminalHeight - 8)
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -138,7 +138,7 @@ export const HistViewer: FC<HistViewerProps> = ({ maxCount }) => {
   const visibleLines = lines.slice(scrollTop, scrollTop + viewHeight)
 
   return (
-    <Box borderStyle="single" flexDirection="column" marginTop={1} width="100%">
+    <Box borderStyle="single" flexDirection="column" width="100%">
       {/* Git history content */}
       <Box flexDirection="column" height={viewHeight} paddingX={1}>
         {visibleLines.map((line, index) => (
