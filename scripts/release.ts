@@ -284,12 +284,23 @@ const createGitCommitAndTag = async (version: string, isDryRun: boolean): Promis
 
   await xASync('git', ['add', '-A'], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
   await xASync('git', ['commit', '-m', `chore(release): v${version}`], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
-  await xASync('git', ['tag', '-a', `v${version}`, '-m', `Release v${version}`], {
+
+  // Check if tag already exists
+  const [, tagCheckResult] = await xASync('git', ['tag', '-l', `v${version}`], {
     nodeOptions: { cwd: ROOT_DIR },
     quiet: true,
   })
+  const tagExists = tagCheckResult?.stdout.trim() === `v${version}`
 
-  log.show(`Created commit and tag v${version}`, { type: 'success' })
+  if (tagExists) {
+    log.warn(`Tag v${version} already exists, skipping tag creation...`)
+  } else {
+    await xASync('git', ['tag', '-a', `v${version}`, '-m', `Release v${version}`], {
+      nodeOptions: { cwd: ROOT_DIR },
+      quiet: true,
+    })
+    log.show(`Created commit and tag v${version}`, { type: 'success' })
+  }
 }
 
 const pushToRemote = async (isDryRun: boolean): Promise<void> => {
@@ -300,10 +311,37 @@ const pushToRemote = async (isDryRun: boolean): Promise<void> => {
     return
   }
 
-  await xASync('git', ['push'], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
-  await xASync('git', ['push', '--tags'], { nodeOptions: { cwd: ROOT_DIR }, quiet: true })
+  let pushFailed = false
 
-  log.show('Pushed to remote', { type: 'success' })
+  // Push commits
+  const [pushErr, pushResult] = await xASync('git', ['push'], { nodeOptions: { cwd: ROOT_DIR }, quiet: false })
+  if (pushErr) {
+    log.error('Failed to push commits to remote')
+    log.info(pushResult?.stderr || pushResult?.stdout || 'Unknown error')
+    pushFailed = true
+  }
+
+  // Push tags
+  const [tagErr, tagResult] = await xASync('git', ['push', '--tags'], {
+    nodeOptions: { cwd: ROOT_DIR },
+    quiet: false,
+  })
+  if (tagErr) {
+    log.warn('Failed to push some tags to remote')
+    log.info(tagResult?.stderr || tagResult?.stdout || 'Unknown error')
+    log.info('Some tags may already exist on remote')
+  }
+
+  if (!pushFailed) {
+    log.show('Pushed to remote', { type: 'success' })
+  } else {
+    log.warn('\n⚠ Git push failed, but packages were published successfully!')
+    log.info('\nTo complete the release:')
+    log.info('  1. Check git status: git status')
+    log.info('  2. Pull and rebase if needed: git pull --rebase')
+    log.info('  3. Push commits: git push')
+    log.info('  4. Push tags: git push --tags')
+  }
 }
 
 // ============== Publish ==============
@@ -603,11 +641,22 @@ const main = async (): Promise<void> => {
       log.info('Creating additional tags for different versions...')
       for (const version of uniqueVersions) {
         if (version !== primaryVersion) {
-          await xASync('git', ['tag', '-a', `v${version}`, '-m', `Release v${version}`], {
+          // Check if tag already exists
+          const [, tagCheckResult] = await xASync('git', ['tag', '-l', `v${version}`], {
             nodeOptions: { cwd: ROOT_DIR },
             quiet: true,
           })
-          log.show(`Created tag v${version}`, { type: 'success' })
+          const tagExists = tagCheckResult?.stdout.trim() === `v${version}`
+
+          if (tagExists) {
+            log.warn(`Tag v${version} already exists, skipping...`)
+          } else {
+            await xASync('git', ['tag', '-a', `v${version}`, '-m', `Release v${version}`], {
+              nodeOptions: { cwd: ROOT_DIR },
+              quiet: true,
+            })
+            log.show(`Created tag v${version}`, { type: 'success' })
+          }
         }
       }
     }
