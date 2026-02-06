@@ -1,14 +1,5 @@
 import type { Command } from '@nemo-cli/shared'
-import {
-  colors,
-  createConfirm,
-  createSearch,
-  createSelect,
-  createSpinner,
-  isEmpty,
-  log,
-  xASync,
-} from '@nemo-cli/shared'
+import { colors, createConfirm, createSelect, createSpinner, isEmpty, log, xASync } from '@nemo-cli/shared'
 import {
   getLocalBranchOptions,
   getRemoteBranchOptions,
@@ -92,17 +83,19 @@ export function mergeCommand(command: Command) {
       }
 
       if (isLocal) {
-        const { options } = await getLocalBranchOptions()
-        const selectedBranch = await createSearch({
+        const { options, currentBranch } = await getLocalBranchOptions()
+        const selectedBranch = await createSelect({
           message: 'Select the branch to merge',
           options,
+          initialValue: currentBranch,
         })
         await handleMerge(selectedBranch)
       } else {
-        const { options } = await getRemoteBranchOptions()
-        const selectedBranch = await createSearch({
+        const { options, currentBranch } = await getRemoteBranchOptions()
+        const selectedBranch = await createSelect({
           message: 'Select the branch to merge',
           options,
+          initialValue: currentBranch,
         })
 
         const check = await createConfirm({
