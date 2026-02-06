@@ -2,6 +2,8 @@ import { readPackage } from './utils/file'
 
 export * from './constants'
 export * from './package-manager/adapter'
+export * from './package-manager/adapters/index'
+export * from './package-manager/detector'
 // Package manager support
 export * from './package-manager/types'
 export * from './utils/browser'
