@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-02-06
+
+### Features
+- feat(release): add package selection with auto-dependency inclusion
+- feat(git): fetch remote branches before pull to show latest list
+- feat(git): enhance merge command with interactive commit customization
+- feat(deps): enhance TypeScript path alias support and improve UX
+- feat(git): add remote repository selection for pull command
+- feat(git): feature/dependencies add ng hist feature
+- feat(deps): implement Next.js dependency analyzer core features
+
+### Bug Fixes
+- fix(release): support independent package version bumps
+- fix(deps): code review fixes from packages/deps review
+- fix(parser): add file extension resolution in resolveModule
+- fix(parser): remove typo in ExportAllDeclaration line number
+- fix(deps): handle scoped npm packages in isExternalModule
+- fix(deps): use childIsLast for proper tree formatting
+- fix(deps): include route groups in getRouteFiles traversal
+- fix(deps): register pageCommand in CLI program
+- fix(shared): make loadEnv optional to allow build without .env files
+- fix(deps): resolve await issues in parser.ts for rolldown compatibility
+- fix(deps): replace any with unknown in _extensions type
+- fix(git): fix ng merge error handling and spinner lifecycle
+
+### Other Changes
+- docs: main archive completed implementation artifacts
+- chore: add completed artifacts directory to gitignore
+- docs: add comprehensive documentation for ng blame and ng hist commands
+- refactor(git): main increase hist viewer height line
+- refactor(git): change branch selection from search to select in merge command
+- refactor(deps): rename CLI command from ndeps to nd
+
 ## [0.1.3] - 2026-02-04
 
 ### Features
