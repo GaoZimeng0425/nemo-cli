@@ -1,9 +1,16 @@
 import { clearScreen as ansiClearScreen, clearTerminal as ansiClearTerminal } from 'ansi-escapes'
-import colors, { type ChalkInstance } from 'chalk'
+import colors, {
+  type BackgroundColorName,
+  type ChalkInstance,
+  type ColorName,
+  type ForegroundColorName,
+  type ModifierName,
+} from 'chalk'
 
 export const clearScreen = () => console.log(ansiClearScreen)
 export const clearTerminal = () => console.log(ansiClearTerminal)
 export type ColorInstance = ChalkInstance
+export type ColorsType = ColorName | ForegroundColorName | BackgroundColorName | ModifierName
 export { colors }
 
 // import pc from 'picocolors'

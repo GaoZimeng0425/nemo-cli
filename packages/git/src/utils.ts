@@ -42,12 +42,12 @@ export const getRemoteBranches = async (): Promise<{ branches: string[] }> => {
 }
 
 const currentBranchPrefix = /^\* /
-const formatBranch = (branch?: string) => branch?.trim().replace(currentBranchPrefix, '')
+const formatBranch = (branch: string) => branch.trim().replace(currentBranchPrefix, '')
 
-export const getLocalBranches = async (): Promise<{ branches: string[]; currentBranch: string | undefined }> => {
+export const getLocalBranches = async (): Promise<{ branches: string[]; currentBranch: string }> => {
   const originBranches = await x('git', ['branch', '--sort=-committerdate'])
   const list = originBranches.stdout.split('\n')
-  const currentBranch = list.find((line) => line.includes('*'))
+  const currentBranch = list.find((line) => line.includes('*'))!
 
   const branches = list
     .filter((line) => line.trim() && !line.includes('->'))
@@ -289,7 +289,7 @@ export const handleGitStash = async (
   // Generate stash name
   const now = new Date()
   let stashName: string
-  if (message && message.trim()) {
+  if (message?.trim()) {
     stashName = message.trim()
   } else {
     const formattedTime = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)

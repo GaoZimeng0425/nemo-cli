@@ -1,4 +1,5 @@
 import {
+  type ColorsType,
   type Command,
   colors,
   createCheckbox,
@@ -23,8 +24,8 @@ import {
 const formatTime = (time: number) => new Date(time * 1000).toLocaleString()
 const formatBranch = (branch: string) => (branch.startsWith('origin/') ? branch.slice(7) : branch)
 
-const displayBranches = (branches: string[], currentBranch: string, label: string, color: keyof typeof colors) => {
-  log.show(`${label} ${branches.length} branches`, { colors: (colors as any)[color] })
+const displayBranches = (branches: string[], currentBranch: string, label: string, color: ColorsType) => {
+  log.show(`${label} ${branches.length} branches`, { colors: colors[color] })
   for (const branch of branches) {
     if (branch === currentBranch) {
       log.show(`${branch}  (current)`, { type: 'info' })
