@@ -10,6 +10,7 @@ import { histCommand } from './commands/hist'
 import { mergeCommand } from './commands/merge'
 import { pullCommand } from './commands/pull'
 import { pushCommand } from './commands/push'
+import { showCommand } from './commands/show'
 import { stashCommand } from './commands/stash'
 import { statusCommand } from './commands/status'
 import { HELP_MESSAGE } from './constants'
@@ -34,6 +35,7 @@ export const init = () => {
   commitCommand(command)
   statusCommand(command)
   histCommand(command)
+  showCommand(command)
   configCommand(command)
 
   return command
