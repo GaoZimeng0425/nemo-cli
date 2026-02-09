@@ -1,4 +1,7 @@
 export { BigText } from './big-text'
+export { CommitDetail, renderCommitDetail } from './commit-detail'
+export type { Commit } from './commit-viewer'
+export { CommitViewer, renderCommitViewer } from './commit-viewer'
 export { HistViewer, renderHistViewer } from './hist-viewer'
 export { renderList } from './list'
 export { ErrorMessage, Message } from './message'
