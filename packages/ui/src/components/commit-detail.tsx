@@ -163,7 +163,21 @@ export const CommitDetail: FC<CommitDetailProps> = ({ commitHash, onExit }) => {
         }
 
         const lines = result.stdout.split('\n')
-        const [hash, author, date, message] = lines[0].split('|')
+        const firstLine = lines[0]
+        if (!firstLine) {
+          setError('Invalid git output: missing commit info')
+          setLoading(false)
+          return
+        }
+
+        const parts = firstLine.split('|')
+        if (parts.length < 4) {
+          setError('Invalid git output: malformed commit info')
+          setLoading(false)
+          return
+        }
+
+        const [hash, author, date, message] = parts as [string, string, string, string]
         const files = lines
           .slice(1)
           .filter(Boolean)
@@ -188,6 +202,7 @@ export const CommitDetail: FC<CommitDetailProps> = ({ commitHash, onExit }) => {
   }, [commitHash])
 
   // Reset diff scroll when changing files
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
   useEffect(() => {
     setDiffScrollTop(0)
   }, [selectedIndex])

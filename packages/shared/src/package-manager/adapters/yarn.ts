@@ -1,5 +1,5 @@
-import type { PackageManagerAdapter } from '../adapter.js'
-import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from '../types.js'
+import type { PackageManagerAdapter } from '../adapter'
+import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from '../types'
 
 /**
  * Yarn adapter - translates operations to yarn-specific commands
@@ -74,7 +74,7 @@ export class YarnAdapter implements PackageManagerAdapter {
       return { name: packageSpec }
     }
     return {
-      name: match[1],
+      name: match[1] ?? packageSpec,
       version: match[2],
     }
   }

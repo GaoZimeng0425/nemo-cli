@@ -61,7 +61,9 @@ export function removeCommand(command: Command) {
       log.info('Fetching workspace packages...')
       const workspaceNames = await getWorkspaceNames()
       if (!workspaceNames || workspaceNames.length === 0) {
-        log.error('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
+        log.error(
+          'No workspace packages found. Please check your workspace configuration (pnpm-workspace.yaml or package.json workspaces field) or run from a workspace root.'
+        )
         return
       }
 

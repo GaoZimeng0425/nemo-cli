@@ -112,7 +112,7 @@ describe('PackageManagerDetector', () => {
     )
 
     // Mock createSelect for user selection
-    const { createSelect } = await import('../src/utils/prompts')
+    const { createSelect } = await import('../../src/utils/prompts')
     vi.mocked(createSelect).mockResolvedValue('npm' as never)
 
     const detector = new PackageManagerDetector(mockProjectRoot)

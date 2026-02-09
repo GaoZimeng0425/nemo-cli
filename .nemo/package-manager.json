@@ -1,0 +1,9 @@
+{
+  "result": {
+    "packageManager": "pnpm",
+    "method": "lock-file",
+    "detectedAt": "2026-02-07T08:37:04.806Z",
+    "isAvailable": true
+  },
+  "expiresAt": "2026-02-14T08:37:04.808Z"
+}

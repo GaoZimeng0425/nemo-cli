@@ -1,5 +1,5 @@
-import type { PackageManagerAdapter } from '../adapter.js'
-import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from '../types.js'
+import type { PackageManagerAdapter } from '../adapter'
+import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from '../types'
 
 /**
  * pnpm adapter - translates operations to pnpm-specific commands
@@ -71,7 +71,7 @@ export class PnpmAdapter implements PackageManagerAdapter {
       return { name: packageSpec }
     }
     return {
-      name: match[1],
+      name: match[1] ?? packageSpec,
       version: match[2],
     }
   }

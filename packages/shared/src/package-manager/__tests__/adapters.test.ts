@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { BunAdapter, DenoAdapter, NpmAdapter, PnpmAdapter, YarnAdapter } from '../src/package-manager/adapters'
-import { PackageManagerDetector } from '../src/package-manager/detector'
-import type { AddOptions, RemoveOptions, UpgradeOptions } from '../src/package-manager/types'
+import { getAdapter } from '../adapters'
+import { PackageManagerDetector } from '../detector'
+import type { AddOptions, RemoveOptions, UpgradeOptions } from '../types'
 
 describe('PackageManagerAdapter', () => {
   describe('NpmAdapter', () => {
-    const adapter = new NpmAdapter()
+    const adapter = getAdapter('npm')
 
     it('should have correct metadata', () => {
       expect(adapter.name).toBe('npm')
@@ -50,7 +50,7 @@ describe('PackageManagerAdapter', () => {
   })
 
   describe('PnpmAdapter', () => {
-    const adapter = new PnpmAdapter()
+    const adapter = getAdapter('pnpm')
 
     it('should have correct metadata', () => {
       expect(adapter.name).toBe('pnpm')
@@ -93,7 +93,7 @@ describe('PackageManagerAdapter', () => {
   })
 
   describe('YarnAdapter', () => {
-    const adapter = new YarnAdapter()
+    const adapter = getAdapter('yarn')
 
     it('should have correct metadata', () => {
       expect(adapter.name).toBe('yarn')
@@ -117,7 +117,7 @@ describe('PackageManagerAdapter', () => {
   })
 
   describe('BunAdapter', () => {
-    const adapter = new BunAdapter()
+    const adapter = getAdapter('bun')
 
     it('should have correct metadata', () => {
       expect(adapter.name).toBe('bun')
@@ -141,7 +141,7 @@ describe('PackageManagerAdapter', () => {
   })
 
   describe('DenoAdapter', () => {
-    const adapter = new DenoAdapter()
+    const adapter = getAdapter('deno')
 
     it('should have correct metadata', () => {
       expect(adapter.name).toBe('deno')

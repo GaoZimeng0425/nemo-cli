@@ -1,10 +1,10 @@
-import type { PackageManagerAdapter } from '../adapter.js'
-import type { PackageManager } from '../types.js'
-import { BunAdapter } from './bun.js'
-import { DenoAdapter } from './deno.js'
-import { NpmAdapter } from './npm.js'
-import { PnpmAdapter } from './pnpm.js'
-import { YarnAdapter } from './yarn.js'
+import type { PackageManagerAdapter } from '../adapter'
+import type { PackageManager } from '../types'
+import { BunAdapter } from './bun'
+import { DenoAdapter } from './deno'
+import { NpmAdapter } from './npm'
+import { PnpmAdapter } from './pnpm'
+import { YarnAdapter } from './yarn'
 
 /**
  * Adapter registry
@@ -31,4 +31,4 @@ export function getAllAdapters(): Record<PackageManager, PackageManagerAdapter> 
   return { ...adapters }
 }
 
-export { BunAdapter, DenoAdapter, NpmAdapter, PnpmAdapter, YarnAdapter }
+// Note: Adapter classes are exported in the main index.ts to avoid rolldown __exportAll issues

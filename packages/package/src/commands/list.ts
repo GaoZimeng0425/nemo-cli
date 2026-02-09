@@ -1,4 +1,5 @@
 import path from 'node:path'
+
 import type { Command } from '@nemo-cli/shared'
 import { colors, createNote, createSelect, getPackageDependencies, getWorkspaceNames, log } from '@nemo-cli/shared'
 
@@ -43,7 +44,9 @@ export function listCommand(command: Command) {
       log.info('Fetching workspace packages...')
       const workspaceNames = await getWorkspaceNames()
       if (!workspaceNames || workspaceNames.length === 0) {
-        log.error('No workspace packages found. Please check your pnpm-workspace.yaml or run from a workspace root.')
+        log.error(
+          'No workspace packages found. Please check your workspace configuration (pnpm-workspace.yaml or package.json workspaces field) or run from a workspace root.'
+        )
         return
       }
 

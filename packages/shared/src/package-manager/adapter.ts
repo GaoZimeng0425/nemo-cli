@@ -1,4 +1,4 @@
-import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from './types.js'
+import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from './types'
 
 /**
  * Interface for package manager adapters

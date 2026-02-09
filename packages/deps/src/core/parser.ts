@@ -1,9 +1,9 @@
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import type typescript from 'typescript'
 
-import type { ExtractedDependency, ModuleSystem, ParserOptions } from './types.js'
+import type { ExtractedDependency, ParserOptions } from './types.js'
 
 const ACORN_OPTIONS = {
   sourceType: 'module' as const,
@@ -280,7 +280,7 @@ export class Parser {
         // Use the first target from tsconfig
         const target = targets[0]
         // Replace the wildcard in the target
-        const resolvedTarget = target.replace('*', wildcard)
+        const resolvedTarget = target?.replace('*', wildcard) ?? ''
         // Resolve relative to baseUrl
         return resolve(this.baseUrl, resolvedTarget)
       }
@@ -288,7 +288,7 @@ export class Parser {
       // Also check for exact match (no wildcard)
       if (modulePath === pattern) {
         const target = targets[0]
-        return resolve(this.baseUrl, target)
+        return resolve(this.baseUrl, target ?? '')
       }
     }
 

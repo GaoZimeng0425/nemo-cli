@@ -1,11 +1,13 @@
 import { readPackage } from './utils/file'
 
+// Re-export from constants
 export * from './constants'
 export * from './package-manager/adapter'
-export * from './package-manager/adapters/index'
+export * from './package-manager/adapters'
 export * from './package-manager/detector'
 // Package manager support
 export * from './package-manager/types'
+// Utils exports
 export * from './utils/browser'
 export * from './utils/color'
 export * from './utils/command'

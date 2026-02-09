@@ -2,11 +2,13 @@ import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { x } from '../utils/command.js'
-import { log } from '../utils/log.js'
-import type { PackageManagerAdapter } from './adapter.js'
-import type { DetectionCache, DetectionMethod, DetectionResult, PackageManager } from './types.js'
-import { LOCK_FILE_PATTERNS, PACKAGE_MANAGER_NAMES } from './types.js'
+import { x } from '../utils/command'
+import { log } from '../utils/log'
+import { createSelect } from '../utils/prompts'
+import type { PackageManagerAdapter } from './adapter'
+import { getAdapter } from './adapters'
+import type { DetectionCache, DetectionMethod, DetectionResult, PackageManager } from './types'
+import { LOCK_FILE_PATTERNS, PACKAGE_MANAGER_NAMES } from './types'
 
 /**
  * Cache file location
@@ -27,6 +29,7 @@ export class PackageManagerDetector {
   private cachePath: string
 
   constructor(projectRoot: string = process.cwd()) {
+    console.log('🚀 : PackageManagerDetector : constructor : projectRoot:', projectRoot)
     this.projectRoot = projectRoot
     this.cachePath = path.join(projectRoot, CACHE_FILE)
   }
@@ -78,6 +81,7 @@ export class PackageManagerDetector {
       const patterns = LOCK_FILE_PATTERNS[pm]
       for (const pattern of patterns) {
         const lockFilePath = path.join(this.projectRoot, pattern)
+        console.log('🚀 : PackageManagerDetector : detectByLockFile : lockFilePath:', lockFilePath)
         if (existsSync(lockFilePath)) {
           log.info(`Detected ${pm} from lock file: ${pattern}`)
           return pm
@@ -115,7 +119,7 @@ export class PackageManagerDetector {
 
       return null
     } catch (error) {
-      log.debug(`Could not read package.json: ${error}`)
+      log.error(`Could not read package.json: ${error as string}`)
       return null
     }
   }
@@ -124,9 +128,6 @@ export class PackageManagerDetector {
    * Prompt user to select package manager interactively
    */
   private async promptUser(): Promise<PackageManager> {
-    // Dynamic import to avoid circular dependency
-    const { createSelect } = await import('../utils/prompts.js')
-
     const choices = Object.entries(PACKAGE_MANAGER_NAMES).map(([value, label]) => ({
       value,
       label,
@@ -205,7 +206,7 @@ export class PackageManagerDetector {
 
       await fs.writeFile(this.cachePath, JSON.stringify(cache, null, 2))
     } catch (error) {
-      log.debug(`Could not save cache: ${error}`)
+      log.error(`Could not save cache: ${error as string}`)
     }
   }
 
@@ -233,7 +234,7 @@ export class PackageManagerDetector {
         log.info('Package manager cache cleared')
       }
     } catch (error) {
-      log.debug(`Could not clear cache: ${error}`)
+      log.error(`Could not clear cache: ${error as string}`)
     }
   }
 }
@@ -246,8 +247,5 @@ export async function getPackageManagerAdapter(packageManager?: PackageManager):
 
   const pm = packageManager || (await detector.detect()).packageManager
 
-  // Dynamic import to avoid circular dependencies
-  const adapters = await import('./adapters/index.js')
-
-  return adapters.getAdapter(pm)
+  return getAdapter(pm)
 }

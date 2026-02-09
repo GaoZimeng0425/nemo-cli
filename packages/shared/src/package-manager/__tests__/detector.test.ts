@@ -2,8 +2,8 @@ import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { PackageManagerDetector } from '../src/package-manager/detector'
-import type { DetectionResult } from '../src/package-manager/types'
+import { PackageManagerDetector } from '../detector'
+import type { DetectionResult } from '../types'
 
 // Mock dependencies
 vi.mock('node:fs')
@@ -112,7 +112,7 @@ describe('PackageManagerDetector', () => {
     )
 
     // Mock createSelect for user selection
-    const { createSelect } = await import('../src/utils/prompts')
+    const { createSelect } = await import('../../utils/prompts')
     vi.mocked(createSelect).mockResolvedValue('npm' as never)
 
     const detector = new PackageManagerDetector(mockProjectRoot)

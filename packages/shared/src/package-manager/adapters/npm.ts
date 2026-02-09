@@ -1,5 +1,5 @@
-import type { PackageManagerAdapter } from '../adapter.js'
-import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from '../types.js'
+import type { PackageManagerAdapter } from '../adapter'
+import type { AddOptions, PackageManager, RemoveOptions, UpgradeOptions } from '../types'
 
 /**
  * NPM adapter - translates operations to npm-specific commands
@@ -37,7 +37,7 @@ export class NpmAdapter implements PackageManagerAdapter {
       args.push('-w')
     } else if (options.workspaces && options.workspaces.length > 0) {
       if (options.workspaces.length === 1) {
-        args.push('--workspace', options.workspaces[0])
+        args.push('--workspace', options.workspaces[0] ?? '')
       } else {
         options.workspaces.forEach((ws) => {
           args.push('--workspace', ws)
@@ -56,7 +56,7 @@ export class NpmAdapter implements PackageManagerAdapter {
       args.push('-w')
     } else if (options.workspaces && options.workspaces.length > 0) {
       if (options.workspaces.length === 1) {
-        args.push('--workspace', options.workspaces[0])
+        args.push('--workspace', options.workspaces[0] ?? '')
       } else {
         options.workspaces.forEach((ws) => {
           args.push('--workspace', ws)
@@ -80,7 +80,7 @@ export class NpmAdapter implements PackageManagerAdapter {
       return { name: packageSpec }
     }
     return {
-      name: match[1],
+      name: match[1] ?? packageSpec,
       version: match[2],
     }
   }

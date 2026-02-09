@@ -49,7 +49,17 @@ export const CommitViewer: FC<CommitViewerProps> = ({ maxCount = 20, onSelect, o
 
         const lines = result.stdout.split('\n').filter(Boolean)
         const parsedCommits: Commit[] = lines.map((line) => {
-          const [hash, author, date, message] = line.split('|')
+          const parts = line.split('|')
+          if (parts.length < 4) {
+            return {
+              hash: line,
+              shortHash: line.slice(0, 7),
+              author: 'Unknown',
+              date: '',
+              message: line,
+            }
+          }
+          const [hash, author, date, message] = parts as [string, string, string, string]
           return {
             hash,
             shortHash: hash.slice(0, 7),
@@ -71,6 +81,7 @@ export const CommitViewer: FC<CommitViewerProps> = ({ maxCount = 20, onSelect, o
   }, [maxCount])
 
   // Auto-scroll to keep selected item visible
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
   useEffect(() => {
     if (commits.length === 0) return
 
