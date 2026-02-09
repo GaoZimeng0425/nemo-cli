@@ -14,14 +14,27 @@
 # Completion Status:
 #   - {file-path}: File created/found (e.g., "docs/product-brief.md")
 #   - skipped: Optional/conditional workflow that was skipped
+#
+# Quick Dev Implementations (Mode B - Direct Instructions)
+#   - Tracks implementations completed via quick-dev workflow
+#   - Format: implementation-artifacts/completed/{feature-name}.md
 
 generated: "2025-11-26"
+updated: "2026-02-09"
 project: "nemo-cli"
 project_type: "brownfield"
 selected_track: "method"
 field_type: "brownfield"
 workflow_path: "method-brownfield"
 user_description: "添加新功能，实现更简便的 git 操作"
+
+recent_implementations:
+  - feature: "交互式分支查看器"
+    date: "2026-02-09"
+    commit: "471512c"
+    status: "completed"
+    artifact: "implementation-artifacts/completed/interactive-branch-viewer.md"
+    summary: "实现双面板布局的交互式分支查看器，支持 vim 风格导航"
 
 workflow_status:
   # Prerequisite - Brownfield Documentation

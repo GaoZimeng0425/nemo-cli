@@ -26,11 +26,15 @@ packages/ui/
 │   ├── components/
 │   │   ├── index.ts           # 组件导出
 │   │   ├── big-text.tsx       # 大字体文本（figlet）
+│   │   ├── branch-viewer.tsx  # 交互式分支查看器 (NEW 2026-02-09)
 │   │   ├── list.tsx           # 列表组件
 │   │   ├── message.tsx        # 消息组件
 │   │   ├── process-message.tsx    # 进度消息
 │   │   ├── stash-list.tsx     # Stash 列表组件 (NEW)
 │   │   ├── status-viewer.tsx  # 交互式状态查看器 (NEW)
+│   │   ├── hist-viewer.tsx    # Git 历史查看器 (NEW)
+│   │   ├── commit-viewer.tsx  # 提交查看器 (NEW)
+│   │   ├── commit-detail.tsx  # 提交详情 (NEW)
 │   │   └── provider/
 │   │       └── index.tsx      # Context Provider
 │   └── hooks/
@@ -155,6 +159,69 @@ renderStatusViewer(files)
 - `k/↑` - 向上移动/滚动
 - `j/↓` - 向下移动/滚动
 - `Enter/q` - 退出
+
+### BranchViewer (NEW 2026-02-09)
+
+交互式分支查看器（双面板布局）：
+
+```tsx
+import { BranchViewer, renderBranchViewer } from '@nemo-cli/ui'
+
+// 直接渲染
+renderBranchViewer(20)  // 限制显示20个分支
+```
+
+**特性：**
+- 📱 双面板布局：左侧本地分支，右侧远程分支
+- ⌨️ Vim 风格键位：hjkl 切换面板和滚动
+- 🎯 面板焦点：绿色边框指示当前焦点
+- 🌟 当前分支：绿色高亮 + `*` 标记
+- 📜 独立滚动：每个面板独立控制
+- 📐 终端自适应：根据终端高度动态调整
+- 📊 状态栏：显示滚动位置和分支统计
+
+**键盘操作：**
+- `h/←` - 切换到左侧面板
+- `l/→` - 切换到右侧面板
+- `k/↑` - 向上滚动
+- `j/↓` - 向下滚动
+- `PageUp/PageDown` - 快速滚动
+- `q/Enter` - 退出
+
+**使用场景：**
+- 快速查看本地和远程分支对比
+- 确认分支同步状态
+- 查找特定分支
+
+**实现细节：**
+- 分离的状态管理（本地/远程）
+- 辅助函数减少代码重复
+- 常量定义避免魔法数字
+- 完整的 JSDoc 文档
+
+### HistViewer (NEW)
+
+Git 历史查看器（单面板滚动）：
+
+```tsx
+import { HistViewer, renderHistViewer } from '@nemo-cli/ui'
+
+renderHistViewer(20)  // 显示最近20条提交
+```
+
+**特性：**
+- 📜 图形化 Git 历史
+- 🎨 彩色提交信息
+- ⌨️ Vim 风格导航
+- 📊 状态栏显示位置
+
+### CommitViewer (NEW)
+
+提交查看器组件。
+
+### CommitDetail (NEW)
+
+提交详情组件。
 
 ---
 

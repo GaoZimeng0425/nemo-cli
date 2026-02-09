@@ -110,7 +110,9 @@ cd packages/git && pnpm link -g
 # Git操作
 ng commit          # 交互式提交
 ng checkout        # 切换分支（自动stash）
+ng branch list     # 交互式分支查看器（新功能）
 ng branch clean    # 清理已合并分支
+ng show            # 交互式提交查看器
 
 # 包管理
 np list            # 列出工作区包
