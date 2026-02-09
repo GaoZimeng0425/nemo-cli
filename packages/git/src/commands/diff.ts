@@ -1,9 +1,8 @@
 import { type Command, createOptions, createSelect, getCurrentBranch, log, type Result, x } from '@nemo-cli/shared'
+import { renderDiffViewer } from '@nemo-cli/ui'
 import { getLocalBranches, getRemoteBranches } from '../utils'
 
 const handleDiff = async (branch: string, { isLocal }: { isLocal: boolean }) => {
-  console.log('🚀 : handleDiff : branch:', branch, isLocal)
-
   // Get current branch for comparison
   const currentBranch = await getCurrentBranch()
   if (!currentBranch) {
@@ -12,29 +11,19 @@ const handleDiff = async (branch: string, { isLocal }: { isLocal: boolean }) => 
   }
 
   // If selected branch is the same as current, show diff with working directory
-  const diffArgs = branch === currentBranch ? ['diff'] : ['diff', `${branch}...${currentBranch}`]
+  const targetBranch = branch === currentBranch ? undefined : branch
 
   log.show(
     `Showing diff between ${branch === currentBranch ? 'working directory and HEAD' : `${branch} and ${currentBranch}`}`
   )
 
-  const process: Result = x('git', diffArgs)
-
-  let hasOutput = false
-  for await (const line of process) {
-    hasOutput = true
-    log.show(line)
-  }
-
-  const { exitCode, stderr } = await process
-
-  if (exitCode) {
-    log.error(`Failed to diff. Command exited with code ${exitCode}.`)
-    if (stderr) {
-      log.error(stderr)
-    }
-  } else if (!hasOutput) {
-    log.show('No differences found.', { type: 'info' })
+  // Use the interactive diff viewer with error handling
+  try {
+    await renderDiffViewer(targetBranch)
+  } catch (error) {
+    log.error(
+      `Failed to display diff viewer: ${error instanceof Error ? error.message : 'Unknown error'}${targetBranch ? ` (branch: ${targetBranch})` : ''}`
+    )
   }
 }
 
