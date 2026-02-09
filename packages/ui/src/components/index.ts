@@ -1,4 +1,5 @@
 export { BigText } from './big-text'
+export { BranchViewer, renderBranchViewer } from './branch-viewer'
 export { CommitDetail, renderCommitDetail } from './commit-detail'
 export type { Commit } from './commit-viewer'
 export { CommitViewer, renderCommitViewer } from './commit-viewer'

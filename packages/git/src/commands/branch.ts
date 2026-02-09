@@ -11,7 +11,7 @@ import {
   type Result,
   x,
 } from '@nemo-cli/shared'
-import { ErrorMessage, Message } from '@nemo-cli/ui'
+import { ErrorMessage, Message, renderBranchViewer } from '@nemo-cli/ui'
 import { HELP_MESSAGE } from '../constants'
 import {
   type BranchInfo,
@@ -184,18 +184,17 @@ export function branchCommand(command: Command) {
     .option('-l, --local', 'List local branches')
     .option('-r, --remote', 'List remote branches')
     .option('-a, --all', 'List all branches', true)
-    .action(async (options: { local?: boolean; remote?: boolean; all?: boolean }) => {
-      if (options.all) {
-        const { branches: localBranches, currentBranch } = await getLocalBranches()
-        const { branches: remoteBranches } = await getRemoteBranches()
-        if (!localBranches.length && !remoteBranches.length) {
-          log.error('No branches found. Please check your git repository.')
-          return
-        }
+    .option('-n, --number <count>', 'Limit number of branches to show')
+    .action(async (options: { local?: boolean; remote?: boolean; all?: boolean; number?: string }) => {
+      // 如果指定了 -a, --all 或者同时没有指定 -l 和 -r，则使用交互式 viewer
+      if (options.all || (!options.local && !options.remote)) {
+        const maxCount = options.number ? Number.parseInt(options.number, 10) : undefined
+        await renderBranchViewer(maxCount)
+        return
+      }
 
-        displayBranches(localBranches, currentBranch, 'Local', 'bgGreen')
-        displayBranches(remoteBranches, currentBranch, 'Remote', 'bgYellow')
-      } else if (options.local) {
+      // 保持原有的简单输出方式用于 -l 或 -r 单独指定的情况
+      if (options.local) {
         const { branches } = await getLocalBranches()
         if (!branches || branches.length === 0) {
           log.error('No local branches found. Please check your git repository.')
