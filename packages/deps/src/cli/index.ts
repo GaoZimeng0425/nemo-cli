@@ -1,5 +1,5 @@
-import { aiCommand } from './ai.js'
-import { analyzeCommand } from './analyze.js'
-import { pageCommand } from './page.js'
+import { aiCommand } from './ai'
+import { analyzeCommand } from './analyze'
+import { pageCommand } from './page'
 
 export { analyzeCommand, aiCommand, pageCommand }

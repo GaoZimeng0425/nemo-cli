@@ -8,7 +8,7 @@ import type {
   PageDependencyOutput,
   PageStats,
   RouteType,
-} from '../core/types.js'
+} from '../core/types'
 
 export interface PageJsonGeneratorOptions {
   /** Pretty print JSON output */
@@ -78,7 +78,7 @@ export class PageJsonGenerator {
    * @param visited - Set of visited nodes to prevent cycles
    * @returns Component tree node
    */
-  private buildTree(nodeId: string, visited: Set<string>): ComponentTreeNode {
+  buildTree(nodeId: string, visited: Set<string>): ComponentTreeNode {
     // Handle circular dependency
     if (visited.has(nodeId)) {
       return { id: nodeId, type: 'component', path: nodeId, children: [] }
@@ -111,7 +111,7 @@ export class PageJsonGenerator {
    * - '/api/users' -> 'api/users'
    * - layout -> add '.layout' suffix
    */
-  private routeToFilePath(route: string, routeType: RouteType): string {
+  routeToFilePath(route: string, routeType: RouteType): string {
     // Convert route path to base filename
     let base = route === '/' ? '_' : route.slice(1)
 
@@ -130,7 +130,7 @@ export class PageJsonGenerator {
     let totalComponents = 0
     let maxDepth = 0
     let hasDynamicImports = false
-    let hasServerComponents = false
+    const hasServerComponents = false
 
     const traverse = (node: ComponentTreeNode, depth: number) => {
       totalComponents++

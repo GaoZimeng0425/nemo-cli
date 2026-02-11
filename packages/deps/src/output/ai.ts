@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 
-import type { AiNode, AiOutput, AiPage, AiSccGroup, AnalysisResult, DependencyGraph, NodeScope } from '../core/types.js'
+import type { AiNode, AiOutput, AiPage, AiSccGroup, AnalysisResult, DependencyGraph, NodeScope } from '../core/types'
 
 export interface AiOutputOptions {
   appRoot: string

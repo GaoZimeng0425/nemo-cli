@@ -1,4 +1,4 @@
-import type { AnalysisResult, DependencyNode } from '../core/types.js'
+import type { AnalysisResult, DependencyNode } from '../core/types'
 
 export interface TreeOutputOptions {
   maxDepth?: number
@@ -36,7 +36,7 @@ export class TreeGenerator {
     }
 
     if (this.analysis.cycles.length > 0) {
-      lines.push('\n' + '='.repeat(80))
+      lines.push(`\n${'='.repeat(80)}`)
       lines.push(`⚠️  检测到 ${this.analysis.cycles.length} 个循环依赖`)
       lines.push('='.repeat(80))
 
@@ -77,7 +77,7 @@ export class TreeGenerator {
         lines.push(`\n... 还有 ${this.analysis.cycles.length - 5} 个循环依赖未显示`)
       }
 
-      lines.push('\n' + '='.repeat(80))
+      lines.push(`\n${'='.repeat(80)}`)
       lines.push('\n💡 解决方案:\n')
       lines.push('1. 📦 提取共同依赖到一个新模块')
       lines.push('2. 🔀 使用依赖注入代替直接导入')

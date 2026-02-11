@@ -1,4 +1,4 @@
-import type { AnalysisResult, DependencyGraph } from './types.js'
+import type { AnalysisResult, DependencyGraph } from './types'
 
 export class DependencyAnalyzer {
   graph: DependencyGraph
@@ -127,7 +127,7 @@ export class DependencyAnalyzer {
     return result
   }
 
-  calculateStats(leaves: string[], topologicalOrder: string[]): AnalysisResult['stats'] {
+  calculateStats(_leaves: string[], _topologicalOrderr: string[]): AnalysisResult['stats'] {
     const totalNodes = this.graph.nodes.size
     const totalEdges = this.getEdgeCount()
 

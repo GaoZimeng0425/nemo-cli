@@ -46,11 +46,8 @@
     "url": "https://github.com/GaoZimeng0425/nemo-cli/issues"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.22",
-    "@ai-sdk/openai": "3.0.26",
+    "@nemo-cli/ai": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
-    "@nemo-cli/ui": "workspace:*",
-    "ai": "6.0.77",
-    "zhipu-ai-provider": "^0.2.2"
+    "@nemo-cli/ui": "workspace:*"
   }
 }

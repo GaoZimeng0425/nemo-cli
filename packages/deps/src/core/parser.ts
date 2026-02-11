@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import type typescript from 'typescript'
 
-import type { ExtractedDependency, ParserOptions } from './types.js'
+import type { ExtractedDependency, ParserOptions } from './types'
 
 export class Parser {
   options: ParserOptions

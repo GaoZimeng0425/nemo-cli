@@ -1,4 +1,4 @@
-import type { AnalysisResult, DependencyGraph, DependencyNode } from '../core/types.js'
+import type { AnalysisResult, DependencyGraph, DependencyNode } from '../core/types'
 
 export interface DotOutputOptions {
   showCycles: boolean

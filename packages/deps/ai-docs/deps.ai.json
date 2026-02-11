@@ -1,0 +1,489 @@
+{
+  "meta": {
+    "generatedAt": "2026-02-11T03:24:30.065Z",
+    "appRoot": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps",
+    "appDir": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/app",
+    "workspaceRoot": "/Users/aa00930/Documents/Learn/nemo-cli"
+  },
+  "nodes": {
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts",
+      "relativePath": "src/index.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts"
+      ],
+      "dependents": []
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts",
+      "relativePath": "src/main.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts"
+      ],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts",
+      "relativePath": "src/cli/index.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts"
+      ],
+      "dependents": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts"
+      ]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts",
+      "relativePath": "src/cli/page.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"
+      ],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts",
+      "relativePath": "src/core/types.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [],
+      "dependents": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts"
+      ]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+      "relativePath": "packages/shared/dist/index.d.ts",
+      "scope": "workspace",
+      "workspacePackage": "@nemo-cli/shared",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [],
+      "dependents": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts"
+      ]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+      "relativePath": "src/cli/ai.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"
+      ],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts",
+      "relativePath": "src/ai/runner.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"
+      ],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts",
+      "relativePath": "packages/ui/dist/index.d.ts",
+      "scope": "workspace",
+      "workspacePackage": "@nemo-cli/ui",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts"],
+      "dependents": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts"
+      ]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts",
+      "relativePath": "src/cli/analyze.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts"
+      ],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts",
+      "relativePath": "src/output/tree.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts",
+      "relativePath": "src/output/json-page.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts",
+      "relativePath": "src/output/json.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts",
+      "relativePath": "src/output/dot.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts",
+      "relativePath": "src/output/ai.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts",
+      "relativePath": "src/core/parser.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts",
+      "relativePath": "src/core/nextjs.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts",
+      "relativePath": "src/core/graph.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts": {
+      "id": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts",
+      "path": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts",
+      "relativePath": "src/core/analyzer.ts",
+      "scope": "app",
+      "moduleSystem": "es6",
+      "dynamic": false,
+      "type": "component",
+      "dependencies": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+      "dependents": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    }
+  },
+  "pages": {
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts": {
+      "route": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts",
+      "routeType": "page",
+      "entryFile": "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts",
+      "layoutChain": [],
+      "rootIds": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"],
+      "nodeIds": [
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts",
+        "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts"
+      ],
+      "orderGroups": [
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts"],
+        ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"]
+      ]
+    }
+  },
+  "nodeToPages": {
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ],
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts": [
+      "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"
+    ]
+  },
+  "sccs": [
+    {
+      "id": "scc_0",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts"]
+    },
+    {
+      "id": "scc_1",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts"]
+    },
+    {
+      "id": "scc_2",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts"]
+    },
+    {
+      "id": "scc_3",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts"]
+    },
+    {
+      "id": "scc_4",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts"]
+    },
+    {
+      "id": "scc_5",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts"]
+    },
+    {
+      "id": "scc_6",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts"]
+    },
+    {
+      "id": "scc_7",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts"]
+    },
+    {
+      "id": "scc_8",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts"]
+    },
+    {
+      "id": "scc_9",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts"]
+    },
+    {
+      "id": "scc_10",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts"]
+    },
+    {
+      "id": "scc_11",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts"]
+    },
+    {
+      "id": "scc_12",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts"]
+    },
+    {
+      "id": "scc_13",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts"]
+    },
+    {
+      "id": "scc_14",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts"]
+    },
+    {
+      "id": "scc_15",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts"]
+    },
+    {
+      "id": "scc_16",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts"]
+    },
+    {
+      "id": "scc_17",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts"]
+    },
+    {
+      "id": "scc_18",
+      "nodes": ["/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts"]
+    }
+  ],
+  "nodeToScc": {
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/shared/dist/index.d.ts": "scc_0",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/types.ts": "scc_1",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/analyzer.ts": "scc_2",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/graph.ts": "scc_3",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/nextjs.ts": "scc_4",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/core/parser.ts": "scc_5",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/ai.ts": "scc_6",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/dot.ts": "scc_7",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json.ts": "scc_8",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/json-page.ts": "scc_9",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/output/tree.ts": "scc_10",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/analyze.ts": "scc_11",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/ui/dist/index.d.ts": "scc_12",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/ai/runner.ts": "scc_13",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/ai.ts": "scc_14",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/page.ts": "scc_15",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/cli/index.ts": "scc_16",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/main.ts": "scc_17",
+    "/Users/aa00930/Documents/Learn/nemo-cli/packages/deps/src/index.ts": "scc_18"
+  }
+}

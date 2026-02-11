@@ -1,4 +1,4 @@
-import type { AnalysisResult, ModuleSystem, NextJsRouteMetadata, NodeType } from '../core/types.js'
+import type { AnalysisResult, ModuleSystem, NextJsRouteMetadata, NodeType } from '../core/types'
 
 export interface JsonOutputOptions {
   pretty: boolean

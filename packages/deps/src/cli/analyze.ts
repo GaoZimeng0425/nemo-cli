@@ -3,16 +3,16 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve as resolvePath } from 'node:path'
 
 import { createCommand, exit, getWorkspaceDirs } from '@nemo-cli/shared'
-import { createAnalyzer } from '../core/analyzer.js'
-import { createGraphBuilder, type GraphBuilder } from '../core/graph.js'
-import { createRouteScanner } from '../core/nextjs.js'
-import { createParser, type Parser } from '../core/parser.js'
-import type { AnalysisResult, AnalyzeCliOptions, CliOptions, OutputFormat } from '../core/types.js'
-import { generateAiOutput } from '../output/ai.js'
-import { generateDotOutput } from '../output/dot.js'
-import { generateJsonOutput } from '../output/json.js'
-import { generatePageJsonOutput } from '../output/json-page.js'
-import { generateTreeOutput } from '../output/tree.js'
+import { createAnalyzer } from '../core/analyzer'
+import { createGraphBuilder, type GraphBuilder } from '../core/graph'
+import { createRouteScanner } from '../core/nextjs'
+import { createParser, type Parser } from '../core/parser'
+import type { AnalysisResult, AnalyzeCliOptions, CliOptions, OutputFormat } from '../core/types'
+import { generateAiOutput } from '../output/ai'
+import { generateDotOutput } from '../output/dot'
+import { generateJsonOutput } from '../output/json'
+import { generatePageJsonOutput } from '../output/json-page'
+import { generateTreeOutput } from '../output/tree'
 
 export function analyzeCommand() {
   const command = createCommand('analyze')
@@ -309,8 +309,6 @@ function formatOutput(
         workspaceRoot: context.workspaceRoot,
         workspacePackages: context.packageMap,
       })
-
-    case 'tree':
     default:
       return generateTreeOutput(analysisResult, {
         maxDepth: options.maxDepth,

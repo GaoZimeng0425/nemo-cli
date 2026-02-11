@@ -1,21 +1,16 @@
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, resolve as resolvePath } from 'node:path'
-import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { createOpenAI } from '@ai-sdk/openai'
-import { generateText } from 'ai'
-import { createZhipu, zhipu } from 'zhipu-ai-provider'
 
+import { type AiProviderEngine, getDefaultAiModel, resolveAiEngine, runModelText } from '@nemo-cli/ai'
 import type { AiProgressUpdate } from '@nemo-cli/ui'
-import type { AiNode, AiOutput, AiPage, NodeScope } from '../core/types.js'
-
-export type AiEngine = 'openai' | 'google' | 'zhipu' | 'none'
+import type { AiNode, AiOutput, AiPage, NodeScope } from '../core/types'
 
 export interface AiRunOptions {
   aiOutput: AiOutput
   route: string
   outputDir: string
-  engine?: AiEngine
+  engine?: AiProviderEngine
   model?: string
   maxSourceChars?: number
   resume?: boolean
@@ -36,7 +31,7 @@ interface ComponentAnalysisFile {
     summary?: string
     content?: string
     model?: string
-    engine?: AiEngine
+    engine?: AiProviderEngine
     promptVersion: string
     sourceHash?: string
     updatedAt: string
@@ -238,7 +233,7 @@ async function analyzeNode({
   outputDir: string
   sourceContent?: string
   sourceHash?: string
-  engine?: AiEngine
+  engine?: AiProviderEngine
   model?: string
   maxSourceChars: number
   existing?: ComponentAnalysisFile
@@ -307,7 +302,7 @@ function buildAnalysisFile(
     status: AnalysisStatus
     content: string
     summary?: string
-    engine?: AiEngine
+    engine?: AiProviderEngine
     model?: string
     error?: string
   }
@@ -392,66 +387,21 @@ function buildPrompt(node: AiNode, dependencyContext: string, source: string): s
     .join('\n')
 }
 
-async function runModel(prompt: string, engine: AiEngine, model: string): Promise<string> {
-  if (engine === 'google') {
-    const apiKey = process.env.GOOGLE_API_KEY
-    if (!apiKey) throw new Error('GOOGLE_API_KEY is not set')
-    const google = createGoogleGenerativeAI({ apiKey })
-    const result = await generateText({
-      model: google(model),
-      messages: [
-        { role: 'system', content: '你是资深前端工程师，负责组件功能分析。' },
-        { role: 'user', content: prompt },
-      ],
-    })
-    return result.text
-  }
-
-  if (engine === 'openai') {
-    const apiKey = process.env.OPENAI_API_KEY
-    if (!apiKey) throw new Error('OPENAI_API_KEY is not set')
-    const openai = createOpenAI({ apiKey })
-    const result = await generateText({
-      model: openai(model),
-      messages: [
-        { role: 'system', content: '你是资深前端工程师，负责组件功能分析。' },
-        { role: 'user', content: prompt },
-      ],
-    })
-    return result.text
-  }
-
-  if (engine === 'zhipu') {
-    const apiKey = process.env.ZHIPU_API_KEY
-    if (!apiKey) throw new Error('ZHIPU_API_KEY is not set')
-    const baseURL = process.env.ZHIPU_BASE_URL
-    const provider = baseURL ? createZhipu({ apiKey, baseURL }) : zhipu
-    const result = await generateText({
-      model: provider(model),
-      messages: [
-        { role: 'system', content: '你是资深前端工程师，负责组件功能分析。' },
-        { role: 'user', content: prompt },
-      ],
-    })
-    return result.text
-  }
-
-  return ''
+async function runModel(prompt: string, engine: AiProviderEngine, model: string): Promise<string> {
+  return runModelText({
+    engine,
+    model,
+    prompt,
+    systemPrompt: '你是资深前端工程师，负责组件功能分析。',
+  })
 }
 
-function resolveEngine(engine?: AiEngine | string): AiEngine {
-  if (engine === 'openai' || engine === 'google' || engine === 'zhipu' || engine === 'none') return engine
-  if (process.env.GOOGLE_API_KEY) return 'google'
-  if (process.env.OPENAI_API_KEY) return 'openai'
-  if (process.env.ZHIPU_API_KEY) return 'zhipu'
-  return 'none'
+function resolveEngine(engine?: AiProviderEngine | string): AiProviderEngine {
+  return resolveAiEngine(engine)
 }
 
-function getDefaultModel(engine: AiEngine): string {
-  if (engine === 'google') return 'gemini-2.5-flash'
-  if (engine === 'openai') return 'gpt-4o-mini'
-  if (engine === 'zhipu') return 'glm-4-plus'
-  return 'none'
+function getDefaultModel(engine: AiProviderEngine): string {
+  return getDefaultAiModel(engine)
 }
 
 async function readSourceContent(node: AiNode): Promise<string | undefined> {

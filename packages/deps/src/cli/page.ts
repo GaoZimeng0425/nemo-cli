@@ -2,7 +2,7 @@ import { readFile, stat } from 'node:fs/promises'
 import { resolve as resolvePath } from 'node:path'
 
 import { createCommand, exit, safeAwait } from '@nemo-cli/shared'
-import type { ComponentTreeNode, PageCliOptions, PageDependencyOutput } from '../core/types.js'
+import type { ComponentTreeNode, PageCliOptions, PageDependencyOutput } from '../core/types'
 
 export function pageCommand() {
   return createCommand('page')

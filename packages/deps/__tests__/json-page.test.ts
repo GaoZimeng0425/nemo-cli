@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { createPageJsonGenerator } from '../src/output/json-page.js'
-import type { ComponentTreeNode, DependencyGraph, NextJsRouteMetadata } from '../src/core/types.js'
+import { describe, expect, it } from 'vitest'
+
+import type { ComponentTreeNode, DependencyGraph, NextJsRouteMetadata } from '../src/core/types'
+import { createPageJsonGenerator } from '../src/output/json-page'
 
 describe('PageJsonGenerator', () => {
   // Mock graph data for testing
@@ -111,7 +112,7 @@ describe('PageJsonGenerator', () => {
       // Test root route '/'
       const entryFile = '/app/page.tsx'
       const routeMeta = routes.get(entryFile)!
-      const result = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+      const result = generator.routeToFilePath(routeMeta.routePath, routeMeta.routeType)
 
       expect(result).toBe('_.json')
     })
@@ -124,7 +125,7 @@ describe('PageJsonGenerator', () => {
       // Test nested route '/api/users'
       const entryFile = '/app/api/users/route.ts'
       const routeMeta = routes.get(entryFile)!
-      const result = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+      const result = generator.routeToFilePath(routeMeta.routePath, routeMeta.routeType)
 
       expect(result).toBe('api/users.json')
     })
@@ -137,7 +138,7 @@ describe('PageJsonGenerator', () => {
       // Test layout file
       const entryFile = '/app/layout.tsx'
       const routeMeta = routes.get(entryFile)!
-      const result = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+      const result = generator.routeToFilePath(routeMeta.routePath, routeMeta.routeType)
 
       expect(result).toBe('_.layout.json')
     })
@@ -150,7 +151,7 @@ describe('PageJsonGenerator', () => {
       // Test route file (API route)
       const entryFile = '/app/api/users/route.ts'
       const routeMeta = routes.get(entryFile)!
-      const result = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+      const result = generator.routeToFilePath(routeMeta.routePath, routeMeta.routeType)
 
       expect(result).toBe('api/users.json')
     })
@@ -162,7 +163,7 @@ describe('PageJsonGenerator', () => {
       const routes = createMockRoutes()
       const generator = createPageJsonGenerator(graph, routes)
 
-      const tree = generator['buildTree']('/app/page.tsx', new Set())
+      const tree = generator.buildTree('/app/page.tsx', new Set())
 
       // Check root node
       expect(tree.id).toBe('/app/page.tsx')
@@ -185,7 +186,7 @@ describe('PageJsonGenerator', () => {
       const routes = createMockRoutes()
       const generator = createPageJsonGenerator(graph, routes)
 
-      const tree = generator['buildTree']('/components/Footer.tsx', new Set())
+      const tree = generator.buildTree('/components/Footer.tsx', new Set())
 
       expect(tree.id).toBe('/components/Footer.tsx')
       expect(tree.children).toEqual([])
@@ -218,7 +219,10 @@ describe('PageJsonGenerator', () => {
             },
           ],
         ]),
-        edges: new Map([['/a.tsx', new Set(['/b.tsx'])], ['/b.tsx', new Set(['/a.tsx'])]]),
+        edges: new Map([
+          ['/a.tsx', new Set(['/b.tsx'])],
+          ['/b.tsx', new Set(['/a.tsx'])],
+        ]),
         entryPoints: ['/a.tsx'],
       }
 
@@ -226,7 +230,7 @@ describe('PageJsonGenerator', () => {
       const generator = createPageJsonGenerator(circularGraph, routes)
 
       // Should not infinite loop
-      const tree = generator['buildTree']('/a.tsx', new Set())
+      const tree = generator.buildTree('/a.tsx', new Set())
 
       expect(tree.id).toBe('/a.tsx')
       // The circular child should be handled gracefully
@@ -275,7 +279,7 @@ describe('PageJsonGenerator', () => {
       const routes = createMockRoutes()
       const generator = createPageJsonGenerator(graph, routes)
 
-      const tree = generator['buildTree']('/app/page.tsx', new Set())
+      const tree = generator.buildTree('/app/page.tsx', new Set())
 
       const checkChildren = (node: ComponentTreeNode) => {
         expect(node).toHaveProperty('children')
@@ -305,7 +309,7 @@ describe('PageJsonGenerator', () => {
       const routeMeta = routes.get(entryFile)!
       const output = generator.generateForEntry(entryFile)
 
-      const relativePath = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+      const relativePath = generator.routeToFilePath(routeMeta.routePath, routeMeta.routeType)
 
       expect(relativePath).toBe('api/users.json')
     })
@@ -318,11 +322,11 @@ describe('PageJsonGenerator', () => {
       // Verify the nested route file naming is correct
       const entryFile = '/app/api/users/route.ts'
       const routeMeta = routes.get(entryFile)!
-      const result = generator['routeToFilePath'](routeMeta.routePath, routeMeta.routeType)
+      const result = generator.routeToFilePath(routeMeta.routePath, routeMeta.routeType)
 
       // Should create api/users.json which requires api/ directory
       expect(result).toBe('api/users.json')
-      expect(result).toMatch(/\//)  // Contains directory separator
+      expect(result).toMatch(/\//) // Contains directory separator
     })
   })
 })

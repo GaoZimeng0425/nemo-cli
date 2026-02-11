@@ -2,16 +2,17 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve as resolvePath } from 'node:path'
 
+import type { AiProviderEngine } from '@nemo-cli/ai'
 import { createCommand, exit } from '@nemo-cli/shared'
 import { renderAiProgressViewer, renderRouteViewer } from '@nemo-cli/ui'
-import { runAiAnalysis } from '../ai/runner.js'
-import type { AiOutput } from '../core/types.js'
+import { runAiAnalysis } from '../ai/runner'
+import type { AiOutput } from '../core/types'
 
 interface AiCliOptions {
   input?: string
   output?: string
   route?: string
-  engine?: string
+  engine?: AiProviderEngine
   model?: string
   maxSourceChars?: number | string
   fresh?: boolean
@@ -89,7 +90,7 @@ async function handleAiCommand(options: AiCliOptions): Promise<void> {
           aiOutput,
           route,
           outputDir,
-          engine: options.engine,
+          engine: options.engine ?? 'zhipu',
           model: options.model,
           maxSourceChars: resolvedMaxSourceChars,
           resume: !options.fresh,

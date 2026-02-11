@@ -1,4 +1,4 @@
-import type { DependencyGraph, DependencyNode, ModuleSystem, NodeType } from './types.js'
+import type { DependencyGraph, DependencyNode, ModuleSystem, NodeType } from './types'
 
 export class GraphBuilder {
   private nodes: Map<string, DependencyNode>

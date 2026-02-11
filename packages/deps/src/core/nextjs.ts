@@ -1,7 +1,7 @@
 import { readdir, stat } from 'node:fs/promises'
 import { join, resolve as resolvePath } from 'node:path'
 
-import type { NextJsRouteMetadata } from './types.js'
+import type { NextJsRouteMetadata } from './types'
 
 export class NextJsRouteScanner {
   private appDir: string
@@ -90,7 +90,7 @@ export class NextJsRouteScanner {
       routeType = 'not-found'
     }
 
-    let finalRoutePath = '/' + routePath.replace(/\[([^.]+)\.\.\.([^.]+)\]/g, '[[...$1]]')
+    let finalRoutePath = `/${routePath.replace(/\[([^.]+)\.\.\.([^.]+)\]/g, '[[...$1]]')}`
     finalRoutePath = finalRoutePath.replace(/\[([^.]+)\.\.([^.]+)\]/g, '[...$1]')
     finalRoutePath = finalRoutePath.replace(/\[([^.]+)\]/g, '[$1]')
     finalRoutePath = finalRoutePath.replace(/\(([^)]+)\)/g, '')
