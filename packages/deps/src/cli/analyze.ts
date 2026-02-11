@@ -13,11 +13,12 @@ import { generateDotOutput } from '../output/dot'
 import { generateJsonOutput } from '../output/json'
 import { generatePageJsonOutput } from '../output/json-page'
 import { generateTreeOutput } from '../output/tree'
+import { resolveWorkspaceProjectPath } from './project-resolver'
 
 export function analyzeCommand() {
   const command = createCommand('analyze')
     .description('Analyze dependencies of a project')
-    .argument('<path>', 'Path to the project to analyze')
+    .argument('[path]', 'Path to the project to analyze', '.')
     .option('-f, --format <format>', 'Output format (dot, json, tree, ai)', 'tree')
     .option('-o, --output <path>', 'Output file or directory path')
     .option('-r, --route <path>', 'Analyze specific Next.js route')
@@ -28,8 +29,8 @@ export function analyzeCommand() {
     .option('--external', 'Follow external dependencies')
     .option('--no-ai-json', 'Do not generate ai-docs/deps.ai.json side output')
     .option('--verbose', 'Verbose output')
-    .action(async (path: string, options: unknown) => {
-      await analyzeDependencies(path, toAnalyzeOptions(options))
+    .action(async (path: string | undefined, options: unknown) => {
+      await analyzeDependencies(path || '.', toAnalyzeOptions(options))
     })
 
   return command
@@ -37,18 +38,24 @@ export function analyzeCommand() {
 
 async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptions): Promise<void> {
   const analysisPath = resolvePath(projectPath)
-  const projectRoot = inferProjectRoot(analysisPath)
-  const scanRoot = resolveScanRoot(analysisPath, projectRoot)
 
   if (!existsSync(analysisPath)) {
     console.error(`Error: Path "${analysisPath}" does not exist.`)
     exit(1)
   }
 
+  const selectedPath = await resolveWorkspaceProjectPath({
+    targetPath: analysisPath,
+    selectMessage: 'Select app to analyze',
+    isCandidate: isAnalyzeCandidate,
+  })
+  const projectRoot = inferProjectRoot(selectedPath)
+  const scanRoot = resolveScanRoot(selectedPath, projectRoot)
+
   const startTime = Date.now()
 
   if (options.verbose) {
-    console.log(`Analyzing: ${analysisPath}`)
+    console.log(`Analyzing: ${selectedPath}`)
     console.log(`Project root: ${projectRoot}`)
   }
 
@@ -85,15 +92,15 @@ async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptio
       const mainFiles = ['index.ts', 'index.tsx', 'index.js', 'index.jsx', 'main.ts', 'main.tsx', 'main.js', 'main.jsx']
 
       for (const mainFile of mainFiles) {
-        const mainPath = resolvePath(analysisPath, mainFile)
+        const mainPath = resolvePath(projectRoot, mainFile)
         if (existsSync(mainPath)) {
           entryPoints.push(mainPath)
           break
         }
       }
 
-      if (entryPoints.length === 0 && existsSync(resolvePath(analysisPath, 'src'))) {
-        const srcPath = resolvePath(analysisPath, 'src')
+      if (entryPoints.length === 0 && existsSync(resolvePath(projectRoot, 'src'))) {
+        const srcPath = resolvePath(projectRoot, 'src')
         for (const mainFile of mainFiles) {
           const mainPath = resolvePath(srcPath, mainFile)
           if (existsSync(mainPath)) {
@@ -226,8 +233,16 @@ function resolveScanRoot(targetPath: string, projectRoot: string): string {
     return targetPath
   }
 
+  if (existsSync(resolvePath(targetPath, 'src', 'app'))) {
+    return resolvePath(targetPath, 'src')
+  }
+
   if (existsSync(resolvePath(projectRoot, 'app'))) {
     return projectRoot
+  }
+
+  if (existsSync(resolvePath(projectRoot, 'src', 'app'))) {
+    return resolvePath(projectRoot, 'src')
   }
 
   return targetPath
@@ -332,6 +347,29 @@ function getNodeTypeForFile(filePath: string, appDir: string) {
 
 function toAnalyzeOptions(options: unknown): AnalyzeCliOptions {
   return options as AnalyzeCliOptions
+}
+
+function isAnalyzeCandidate(path: string): boolean {
+  if (!existsSync(resolvePath(path, 'package.json'))) {
+    return false
+  }
+
+  if (existsSync(resolvePath(path, 'app'))) {
+    return true
+  }
+
+  if (existsSync(resolvePath(path, 'src', 'app'))) {
+    return true
+  }
+
+  const mainFiles = ['index.ts', 'index.tsx', 'index.js', 'index.jsx', 'main.ts', 'main.tsx', 'main.js', 'main.jsx']
+  for (const file of mainFiles) {
+    if (existsSync(resolvePath(path, file)) || existsSync(resolvePath(path, 'src', file))) {
+      return true
+    }
+  }
+
+  return false
 }
 
 async function resolveWorkspaceInfo(appRoot: string): Promise<{

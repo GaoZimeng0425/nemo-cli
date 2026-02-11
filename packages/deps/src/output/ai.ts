@@ -23,10 +23,19 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
   const { appRoot, appDir, workspaceRoot, workspacePackages } = options
   const includeLayouts = options.includeLayouts ?? true
 
-  const { sccs, nodeToScc } = computeSccs(analysis.graph)
-
-  const pages: Record<string, AiPage> = {}
-  const nodeToPages: Record<string, string[]> = {}
+  const pagesByRouteRaw: Record<
+    string,
+    {
+      route: string
+      routeType: AiPage['routeType']
+      entryFile: string
+      layoutChain: string[]
+      rootIds: string[]
+      nodeIds: string[]
+      orderGroups: string[][]
+    }
+  > = {}
+  const nodeToPagesRaw: Record<string, string[]> = {}
   const usedNodeIds = new Set<string>()
 
   const routes = analysis.graph.routes
@@ -41,15 +50,16 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
       const nodeIds = collectNodeIds(analysis.graph, rootIds)
       for (const nodeId of nodeIds) {
         usedNodeIds.add(nodeId)
-        if (!nodeToPages[nodeId]) {
-          nodeToPages[nodeId] = []
+        if (!nodeToPagesRaw[nodeId]) {
+          nodeToPagesRaw[nodeId] = []
         }
-        nodeToPages[nodeId].push(meta.routePath)
+        nodeToPagesRaw[nodeId].push(meta.routePath)
       }
 
+      const { nodeToScc } = computeSccsForNodes(analysis.graph, nodeIds)
       const orderGroups = buildOrderGroups(analysis.graph, nodeIds, nodeToScc)
 
-      pages[meta.routePath] = {
+      pagesByRouteRaw[meta.routePath] = {
         route: meta.routePath,
         routeType: meta.routeType,
         entryFile: filePath,
@@ -68,15 +78,16 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
 
       for (const nodeId of nodeIds) {
         usedNodeIds.add(nodeId)
-        if (!nodeToPages[nodeId]) {
-          nodeToPages[nodeId] = []
+        if (!nodeToPagesRaw[nodeId]) {
+          nodeToPagesRaw[nodeId] = []
         }
-        nodeToPages[nodeId].push(routeKey)
+        nodeToPagesRaw[nodeId].push(routeKey)
       }
 
+      const { nodeToScc } = computeSccsForNodes(analysis.graph, nodeIds)
       const orderGroups = buildOrderGroups(analysis.graph, nodeIds, nodeToScc)
 
-      pages[routeKey] = {
+      pagesByRouteRaw[routeKey] = {
         route: routeKey,
         routeType: 'page',
         entryFile,
@@ -87,6 +98,9 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
       }
     }
   }
+
+  const nodeIdMap = buildNodeIdMap(usedNodeIds, appRoot, workspaceRoot, workspacePackages)
+  const mapNodeId = (nodeId: string) => nodeIdMap.get(nodeId) ?? nodeId
 
   const nodes: Record<string, AiNode> = {}
   for (const nodeId of usedNodeIds) {
@@ -102,13 +116,17 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
       workspacePackages
     )
 
-    const dependencies = Array.from(graphNode.dependencies).filter(
-      (depId) => usedNodeIds.has(depId) && isCodeNode(depId)
-    )
-    const dependents = Array.from(graphNode.dependents).filter((depId) => usedNodeIds.has(depId) && isCodeNode(depId))
+    const dependencies = Array.from(graphNode.dependencies)
+      .filter((depId) => usedNodeIds.has(depId) && isCodeNode(depId))
+      .map(mapNodeId)
+    const dependents = Array.from(graphNode.dependents)
+      .filter((depId) => usedNodeIds.has(depId) && isCodeNode(depId))
+      .map(mapNodeId)
 
-    nodes[nodeId] = {
-      id: nodeId,
+    const mappedId = mapNodeId(nodeId)
+
+    nodes[mappedId] = {
+      id: mappedId,
       path: isAbsolute(nodeId) ? nodeId : undefined,
       relativePath,
       scope,
@@ -122,12 +140,32 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
     }
   }
 
+  const pages: Record<string, AiPage> = {}
+  for (const [routeKey, page] of Object.entries(pagesByRouteRaw)) {
+    pages[routeKey] = {
+      ...page,
+      entryFile: mapNodeId(page.entryFile),
+      layoutChain: page.layoutChain.map(mapNodeId),
+      rootIds: page.rootIds.map(mapNodeId),
+      nodeIds: page.nodeIds.map(mapNodeId),
+      orderGroups: page.orderGroups.map((group) => group.map(mapNodeId)),
+    }
+  }
+
+  const nodeToPages: Record<string, string[]> = {}
+  for (const [rawNodeId, routeKeys] of Object.entries(nodeToPagesRaw)) {
+    nodeToPages[mapNodeId(rawNodeId)] = routeKeys
+  }
+
+  const { sccs, nodeToScc } = computeSccsForNodes(analysis.graph, Array.from(usedNodeIds), nodeIdMap)
+
   return {
     meta: {
       generatedAt: new Date().toISOString(),
       appRoot,
       appDir,
       workspaceRoot,
+      nodeKeyStrategy: 'relative',
     },
     nodes,
     pages,
@@ -135,6 +173,69 @@ function buildAiOutput(analysis: AnalysisResult, options: AiOutputOptions): AiOu
     sccs,
     nodeToScc,
   }
+}
+
+function buildNodeIdMap(
+  nodeIds: Set<string>,
+  appRoot: string,
+  workspaceRoot?: string,
+  workspacePackages?: Map<string, string>
+): Map<string, string> {
+  const result = new Map<string, string>()
+  const collisions = new Map<string, string>()
+
+  for (const nodeId of nodeIds) {
+    const normalized = normalizeNodeId(nodeId, appRoot, workspaceRoot, workspacePackages)
+    if (result.has(nodeId)) {
+      continue
+    }
+    if (collisions.has(normalized)) {
+      const previous = collisions.get(normalized)
+      if (previous) {
+        result.set(previous, `abs:${previous}`)
+      }
+      result.set(nodeId, `abs:${nodeId}`)
+      continue
+    }
+    collisions.set(normalized, nodeId)
+    result.set(nodeId, normalized)
+  }
+
+  return result
+}
+
+function normalizeNodeId(
+  nodeId: string,
+  appRoot: string,
+  workspaceRoot?: string,
+  workspacePackages?: Map<string, string>
+): string {
+  if (!isAbsolute(nodeId)) {
+    return `pkg:${nodeId}`
+  }
+
+  if (nodeId.includes('/node_modules/') || nodeId.includes('\\node_modules\\')) {
+    return `pkg:${nodeId}`
+  }
+
+  if (nodeId.startsWith(appRoot)) {
+    return `app:${nodeId.slice(appRoot.length + 1)}`
+  }
+
+  if (workspacePackages && workspacePackages.size > 0) {
+    for (const [pkgName, pkgDir] of workspacePackages.entries()) {
+      if (nodeId.startsWith(pkgDir)) {
+        const subPath = nodeId.slice(pkgDir.length + 1)
+        return `ws:${pkgName}/${subPath}`
+      }
+    }
+  }
+
+  if (workspaceRoot && nodeId.startsWith(workspaceRoot)) {
+    return `root:${nodeId.slice(workspaceRoot.length + 1)}`
+  }
+
+  return `abs:${nodeId}`
 }
 
 function collectNodeIds(graph: DependencyGraph, rootIds: string[]): string[] {
@@ -273,10 +374,15 @@ function isCodeNode(nodeId: string): boolean {
   return CODE_EXTENSIONS.has(ext)
 }
 
-function computeSccs(graph: DependencyGraph): {
+function computeSccsForNodes(
+  graph: DependencyGraph,
+  nodeIds: string[],
+  nodeIdMap?: Map<string, string>
+): {
   sccs: AiSccGroup[]
   nodeToScc: Record<string, string>
 } {
+  const allowed = new Set(nodeIds)
   const indexMap = new Map<string, number>()
   const lowLinkMap = new Map<string, number>()
   const stack: string[] = []
@@ -295,6 +401,9 @@ function computeSccs(graph: DependencyGraph): {
     const node = graph.nodes.get(nodeId)
     if (node) {
       for (const depId of node.dependencies) {
+        if (!allowed.has(depId)) {
+          continue
+        }
         if (!indexMap.has(depId)) {
           strongConnect(depId)
           const lowLink = Math.min(lowLinkMap.get(nodeId) ?? 0, lowLinkMap.get(depId) ?? 0)
@@ -319,13 +428,14 @@ function computeSccs(graph: DependencyGraph): {
       }
       const sccId = `scc_${sccs.length}`
       for (const n of nodes) {
-        nodeToScc[n] = sccId
+        const mappedId = nodeIdMap?.get(n) ?? n
+        nodeToScc[mappedId] = sccId
       }
-      sccs.push({ id: sccId, nodes })
+      sccs.push({ id: sccId, nodes: nodes.map((nodeId) => nodeIdMap?.get(nodeId) ?? nodeId) })
     }
   }
 
-  for (const nodeId of graph.nodes.keys()) {
+  for (const nodeId of nodeIds) {
     if (!indexMap.has(nodeId)) {
       strongConnect(nodeId)
     }

@@ -7,6 +7,7 @@ import { createCommand, exit } from '@nemo-cli/shared'
 import { renderAiProgressViewer, renderRouteViewer } from '@nemo-cli/ui'
 import { runAiAnalysis } from '../ai/runner'
 import type { AiOutput } from '../core/types'
+import { resolveWorkspaceProjectPath } from './project-resolver'
 
 interface AiCliOptions {
   input?: string
@@ -21,22 +22,26 @@ interface AiCliOptions {
 export function aiCommand() {
   return createCommand('ai')
     .description('Analyze page components with AI')
-    .option('-i, --input <file>', 'Input AI dependency JSON file', './ai-docs/deps.ai.json')
+    .argument('[path]', 'App path, src path, or monorepo root', '.')
+    .option('-i, --input <file>', 'Input AI dependency JSON file (default: <appRoot>/ai-docs/deps.ai.json)')
     .option('-o, --output <dir>', 'Output directory for analysis results (default: <appRoot>/ai-docs)')
-    .option('-r, --route <path>', 'Route to analyze (skip selector)')
+    .option('-r, --route <path>', 'Route to analyze (skip selector, comma-separated for multiple)')
     .option('--engine <engine>', 'AI engine (openai, google, zhipu, none)')
     .option('--model <name>', 'Model name')
     .option('--max-source-chars <number>', 'Max source chars per component', '12000')
     .option('--fresh', 'Ignore existing analysis results')
-    .action(async (options: unknown) => {
-      await handleAiCommand(toAiCliOptions(options))
+    .action(async (path: string, options: AiCliOptions) => {
+      await handleAiCommand(path, toAiCliOptions(options))
     })
 }
 
-async function handleAiCommand(options: AiCliOptions): Promise<void> {
-  const inputPath = resolvePath(options.input || './ai-docs/deps.ai.json')
-  const fallbackPath = resolvePath('./deps.ai.json')
-  const resolvedInputPath = existsSync(inputPath) ? inputPath : fallbackPath
+async function handleAiCommand(targetPath: string, options: AiCliOptions): Promise<void> {
+  const appRoot = await resolveWorkspaceProjectPath({
+    targetPath,
+    selectMessage: 'Select app to analyze',
+    isCandidate: isAiCandidate,
+  })
+  const resolvedInputPath = resolveInputPath(options.input, appRoot)
 
   let content: string
   let aiOutput: AiOutput
@@ -46,35 +51,33 @@ async function handleAiCommand(options: AiCliOptions): Promise<void> {
     aiOutput = JSON.parse(content) as AiOutput
   } catch (error) {
     console.error(`Error: Failed to read AI input file: "${resolvedInputPath}"`)
-    console.error('Hint: Run `nd analyze <app-path> --format ai` first.')
+    console.error(`Hint: Run \`nd analyze ${appRoot} --format ai\` first.`)
     exit(1)
     return
   }
 
-  const routes = Object.keys(aiOutput.pages)
+  const routes = Array.from(new Set(Object.keys(aiOutput.pages)))
   if (routes.length === 0) {
     console.error('Error: No pages found in AI output.')
     exit(1)
     return
   }
 
-  const outputDir = options.output
-    ? resolvePath(options.output)
-    : resolvePath(aiOutput.meta?.appRoot ?? process.cwd(), 'ai-docs')
+  const outputDir = options.output ? resolvePath(options.output) : resolvePath(appRoot, 'ai-docs')
 
-  let route = options.route
-  if (!route) {
-    route = await renderRouteViewer(routes)
-  }
+  const selectedRoutesFromOption = parseRouteOption(options.route)
+  const selectedRoutes =
+    selectedRoutesFromOption.length > 0 ? selectedRoutesFromOption : await renderRouteViewer(routes)
 
-  if (!route) {
+  if (!selectedRoutes || selectedRoutes.length === 0) {
     console.error('Error: No route selected.')
     exit(1)
     return
   }
 
-  if (!aiOutput.pages[route]) {
-    console.error(`Error: Route "${route}" not found in AI output.`)
+  const missingRoutes = selectedRoutes.filter((route) => !aiOutput.pages[route])
+  if (missingRoutes.length > 0) {
+    console.error(`Error: Route(s) not found in AI output: ${missingRoutes.join(', ')}`)
     exit(1)
     return
   }
@@ -82,28 +85,80 @@ async function handleAiCommand(options: AiCliOptions): Promise<void> {
   const maxSourceChars = Number(options.maxSourceChars)
   const resolvedMaxSourceChars = Number.isFinite(maxSourceChars) && maxSourceChars > 0 ? maxSourceChars : 12000
 
-  await renderAiProgressViewer({
-    title: `AI Analyze ${route}`,
-    onStart: async (emit, signal) => {
-      await runAiAnalysis(
-        {
-          aiOutput,
-          route,
-          outputDir,
-          engine: options.engine ?? 'zhipu',
-          model: options.model,
-          maxSourceChars: resolvedMaxSourceChars,
-          resume: !options.fresh,
-        },
-        emit,
-        signal
-      )
-    },
-  })
+  for (const route of selectedRoutes) {
+    await renderAiProgressViewer({
+      title: `AI Analyze ${route}`,
+      onStart: async (emit, signal) => {
+        await runAiAnalysis(
+          {
+            aiOutput,
+            route,
+            outputDir,
+            engine: options.engine ?? 'zhipu',
+            model: options.model,
+            maxSourceChars: resolvedMaxSourceChars,
+            resume: !options.fresh,
+          },
+          emit,
+          signal
+        )
+      },
+    })
+  }
 
   console.log(`AI analysis output written to: ${outputDir}`)
 }
 
 function toAiCliOptions(options: unknown): AiCliOptions {
   return options as AiCliOptions
+}
+
+function parseRouteOption(routeOption?: string): string[] {
+  if (!routeOption) return []
+  return Array.from(
+    new Set(
+      routeOption
+        .split(',')
+        .map((route) => route.trim())
+        .filter(Boolean)
+    )
+  )
+}
+
+function resolveInputPath(inputOption: string | undefined, appRoot: string): string {
+  if (inputOption) {
+    return resolvePath(inputOption)
+  }
+
+  const preferred = resolvePath(appRoot, 'ai-docs', 'deps.ai.json')
+  if (existsSync(preferred)) {
+    return preferred
+  }
+
+  const fallback = resolvePath(appRoot, 'deps.ai.json')
+  if (existsSync(fallback)) {
+    return fallback
+  }
+
+  return preferred
+}
+
+function isAiCandidate(path: string): boolean {
+  if (!existsSync(resolvePath(path, 'package.json'))) {
+    return false
+  }
+
+  if (existsSync(resolvePath(path, 'app'))) {
+    return true
+  }
+
+  if (existsSync(resolvePath(path, 'src', 'app'))) {
+    return true
+  }
+
+  if (existsSync(resolvePath(path, 'ai-docs', 'deps.ai.json')) || existsSync(resolvePath(path, 'deps.ai.json'))) {
+    return true
+  }
+
+  return false
 }

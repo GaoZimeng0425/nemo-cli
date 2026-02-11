@@ -4,12 +4,13 @@ import { Box, render, Text, useApp, useInput } from 'ink'
 
 interface RouteViewerProps {
   routes: string[]
-  onSelect: (route: string) => void
+  onSelect: (routes: string[]) => void
   onExit: () => void
 }
 
 export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selectedRoutes, setSelectedRoutes] = useState<Set<string>>(new Set())
   const [scrollTop, setScrollTop] = useState(0)
 
   const { exit } = useApp()
@@ -20,7 +21,6 @@ export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) 
   useEffect(() => {
     if (routes.length === 0) return
 
-    const halfView = Math.floor(viewHeight / 2)
     if (selectedIndex < scrollTop + 2) {
       setScrollTop(Math.max(0, selectedIndex - 2))
     } else if (selectedIndex > scrollTop + viewHeight - 3) {
@@ -43,9 +43,13 @@ export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) 
     if (routes.length === 0) return
 
     if (key.return) {
-      if (routes[selectedIndex]) {
-        onSelect(routes[selectedIndex])
+      const selected = Array.from(selectedRoutes)
+      if (selected.length > 0) {
+        onSelect(routes.filter((route) => selected.includes(route)))
+        return
       }
+
+      if (routes[selectedIndex]) onSelect([routes[selectedIndex]])
       return
     }
 
@@ -53,6 +57,20 @@ export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) 
       setSelectedIndex((prev) => Math.max(0, prev - 1))
     } else if (key.downArrow || input === 'j') {
       setSelectedIndex((prev) => Math.min(routes.length - 1, prev + 1))
+    } else if (input === ' ') {
+      const route = routes[selectedIndex]
+      if (!route) return
+      setSelectedRoutes((prev) => {
+        const next = new Set(prev)
+        if (next.has(route)) next.delete(route)
+        else next.add(route)
+        return next
+      })
+    } else if (input === 'a') {
+      setSelectedRoutes((prev) => {
+        if (prev.size === routes.length) return new Set()
+        return new Set(routes)
+      })
     }
   })
 
@@ -73,13 +91,15 @@ export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) 
       </Box>
 
       <Box flexDirection="column" height={viewHeight} paddingX={1}>
-        {visibleRoutes.map((route) => {
-          const actualIndex = routes.indexOf(route)
+        {visibleRoutes.map((route, visibleIndex) => {
+          const actualIndex = scrollTop + visibleIndex
           const isSelected = actualIndex === selectedIndex
+          const isChecked = selectedRoutes.has(route)
 
           return (
             <Box backgroundColor={isSelected ? 'gray' : undefined} key={route}>
               <Text color={isSelected ? 'white' : 'yellow'}>{isSelected ? '>' : ' '} </Text>
+              <Text color={isChecked ? 'green' : 'gray'}>{isChecked ? '[x]' : '[ ]'} </Text>
               <Text color={isSelected ? 'white' : 'green'}>{route}</Text>
             </Box>
           )
@@ -87,13 +107,13 @@ export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) 
       </Box>
 
       <Box borderBottom={false} borderColor="gray" borderLeft={false} borderRight={false} borderStyle="single">
-        <Text dimColor> ↑↓/jk: Navigate | Enter: Select | q: Quit</Text>
+        <Text dimColor> ↑↓/jk: Navigate | Space: Toggle | a: All | Enter: Confirm | q: Quit</Text>
       </Box>
     </Box>
   )
 }
 
-export const renderRouteViewer = (routes: string[]): Promise<string | undefined> => {
+export const renderRouteViewer = (routes: string[]): Promise<string[] | undefined> => {
   return new Promise((resolve) => {
     const { unmount } = render(
       <RouteViewer

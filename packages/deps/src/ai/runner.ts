@@ -332,22 +332,49 @@ function buildAnalysisFile(
 }
 
 async function buildDependencyContext(node: AiNode, aiOutput: AiOutput, outputDir: string): Promise<string> {
-  const summaries: string[] = []
-  for (const depId of node.dependencies.slice(0, 8)) {
+  const analyzed: string[] = []
+  const pending: string[] = []
+  for (const depId of node.dependencies) {
     const depNode = aiOutput.nodes[depId]
     if (!depNode) continue
+
+    if (depNode.scope === 'external') {
+      continue
+    }
+
     const depPath = getComponentOutputPath(outputDir, depNode)
     const depFile = await readJsonSafe<ComponentAnalysisFile>(depPath)
-    if (depFile?.analysis?.status === 'done' && depFile.analysis.summary) {
-      summaries.push(`- ${shortName(depId)}: ${trimText(depFile.analysis.summary, 200)}`)
+
+    if (depFile?.analysis?.status === 'done') {
+      const summary = depFile.analysis.summary || extractSummary(depFile.analysis.content || '') || 'No summary'
+      const highlights = extractHighlights(depFile.analysis.content)
+      analyzed.push(
+        [
+          `- ${shortName(depId)} (${depId})`,
+          `  Summary: ${trimText(summary, 220)}`,
+          highlights ? `  Highlights: ${highlights}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n')
+      )
+    } else {
+      pending.push(`- ${shortName(depId)} (${depId})`)
     }
   }
 
-  if (summaries.length === 0) {
-    return 'None'
-  }
-
-  return summaries.join('\n')
+  return [
+    `Direct child components: ${analyzed.length + pending.length}`,
+    `Analyzed children: ${analyzed.length}`,
+    pending.length > 0 ? `Not-yet-analyzed children: ${pending.length}` : '',
+    '',
+    analyzed.length > 0 ? '[Analyzed Child Summaries]' : '',
+    analyzed.length > 0 ? analyzed.join('\n') : '',
+    pending.length > 0 ? '' : '',
+    pending.length > 0 ? '[Missing Child Analyses]' : '',
+    pending.length > 0 ? pending.join('\n') : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
 }
 
 function ensureRouteRecorded(existing: ComponentAnalysisFile, route: string): ComponentAnalysisFile | undefined {
@@ -371,6 +398,8 @@ function buildPrompt(node: AiNode, dependencyContext: string, source: string): s
     '1) 第一行必须以 "Summary: " 开头，简洁描述组件职责。',
     '2) 后续使用小标题：Responsibilities, Behavior, Dependencies, Notes。',
     '3) 如果是推断内容，请在 Notes 中标注 "推断"。',
+    '4) 如果当前源码主要是组合子组件（自身逻辑很少），必须优先汇总 [Analyzed Child Summaries] 得出父组件行为，不能只写“渲染子组件”。',
+    '5) 在 Dependencies 小节明确写出哪些结论来自子组件分析，哪些来自当前源码。',
     '',
     '[Component]',
     `ID: ${node.id}`,
@@ -385,6 +414,17 @@ function buildPrompt(node: AiNode, dependencyContext: string, source: string): s
   ]
     .filter(Boolean)
     .join('\n')
+}
+
+function extractHighlights(content?: string): string | undefined {
+  if (!content) {
+    return undefined
+  }
+  const compact = content.replace(/\s+/g, ' ').trim()
+  if (!compact) {
+    return undefined
+  }
+  return trimText(compact, 280)
 }
 
 async function runModel(prompt: string, engine: AiProviderEngine, model: string): Promise<string> {

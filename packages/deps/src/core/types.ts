@@ -285,7 +285,9 @@ export interface AiNode {
 export interface AiPage {
   route: string
   routeType: RouteType
+  /** Entry node id */
   entryFile: string
+  /** Layout node ids */
   layoutChain: string[]
   /** Root node ids (entry + layouts) */
   rootIds: string[]
@@ -304,6 +306,7 @@ export interface AiOutput {
     appRoot: string
     appDir: string
     workspaceRoot?: string
+    nodeKeyStrategy?: 'relative'
     toolVersion?: string
   }
   nodes: Record<string, AiNode>
