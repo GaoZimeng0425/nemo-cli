@@ -140,14 +140,21 @@ export const xASync = async (
     )
 
     const execPromise = tinyexec(command, args, mergedOptions)
-    const result = timeout
-      ? await Promise.race([
-          execPromise,
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error(`Command timeout after ${timeout}ms`)), timeout)
-          ),
-        ])
-      : await execPromise
+    let result: Output
+    if (timeout) {
+      let timer: NodeJS.Timeout | undefined
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`Command timeout after ${timeout}ms`)), timeout)
+      })
+
+      try {
+        result = await Promise.race([execPromise, timeoutPromise])
+      } finally {
+        timer && clearTimeout(timer)
+      }
+    } else {
+      result = await execPromise
+    }
 
     if (result.exitCode) {
       if (!quiet) {
