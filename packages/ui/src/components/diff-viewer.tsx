@@ -97,12 +97,12 @@ export const DiffViewer: FC<DiffViewerProps> = ({ targetBranch }) => {
 
     if (selectedFileIndex < minVisible) {
       // Selected file is above visible area, scroll up
-      setFilesScrollTop((prev) => Math.max(0, selectedFileIndex - padding))
+      setFilesScrollTop((_prev) => Math.max(0, selectedFileIndex - padding))
     } else if (selectedFileIndex > maxVisible) {
       // Selected file is below visible area, scroll down
-      setFilesScrollTop((prev) => Math.min(maxScroll, selectedFileIndex - viewHeight + padding + 1))
+      setFilesScrollTop((_prev) => Math.min(maxScroll, selectedFileIndex - viewHeight + padding + 1))
     }
-  }, [selectedFileIndex, fileData.files.length, viewHeight])
+  }, [selectedFileIndex, fileData.files.length, viewHeight, filesScrollTop])
 
   // Fetch changed files
   useEffect(() => {
@@ -363,7 +363,7 @@ export const DiffViewer: FC<DiffViewerProps> = ({ targetBranch }) => {
         </Box>
 
         {visibleLines.map((line, index) => {
-          let lineColor = COLOR_NORMAL
+          let lineColor: string = COLOR_NORMAL
           if (line.startsWith('+') && !line.startsWith('+++')) {
             lineColor = COLOR_ADDED
           } else if (line.startsWith('-') && !line.startsWith('---')) {

@@ -46,8 +46,11 @@
     "url": "https://github.com/GaoZimeng0425/nemo-cli/issues"
   },
   "dependencies": {
-    "acorn": "^8.15.0",
-    "acorn-jsx": "^5.3.2",
-    "acorn-walk": "^8.3.4"
+    "@ai-sdk/google": "^3.0.22",
+    "@ai-sdk/openai": "3.0.26",
+    "@nemo-cli/shared": "workspace:*",
+    "@nemo-cli/ui": "workspace:*",
+    "ai": "6.0.77",
+    "zhipu-ai-provider": "^0.2.2"
   }
 }

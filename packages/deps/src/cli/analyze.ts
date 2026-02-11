@@ -1,14 +1,14 @@
 import { existsSync } from 'node:fs'
-import { mkdir } from 'node:fs/promises'
-import { resolve as resolvePath } from 'node:path'
-import { writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, resolve as resolvePath } from 'node:path'
 
-import { createCommand, exit } from '@nemo-cli/shared'
+import { createCommand, exit, getWorkspaceDirs } from '@nemo-cli/shared'
 import { createAnalyzer } from '../core/analyzer.js'
-import { createGraphBuilder } from '../core/graph.js'
+import { createGraphBuilder, type GraphBuilder } from '../core/graph.js'
 import { createRouteScanner } from '../core/nextjs.js'
-import { createParser } from '../core/parser.js'
-import type { AnalyzeCliOptions, CliOptions, OutputFormat } from '../core/types.js'
+import { createParser, type Parser } from '../core/parser.js'
+import type { AnalysisResult, AnalyzeCliOptions, CliOptions, OutputFormat } from '../core/types.js'
+import { generateAiOutput } from '../output/ai.js'
 import { generateDotOutput } from '../output/dot.js'
 import { generateJsonOutput } from '../output/json.js'
 import { generatePageJsonOutput } from '../output/json-page.js'
@@ -18,7 +18,7 @@ export function analyzeCommand() {
   const command = createCommand('analyze')
     .description('Analyze dependencies of a project')
     .argument('<path>', 'Path to the project to analyze')
-    .option('-f, --format <format>', 'Output format (dot, json, tree)', 'tree')
+    .option('-f, --format <format>', 'Output format (dot, json, tree, ai)', 'tree')
     .option('-o, --output <path>', 'Output file or directory path')
     .option('-r, --route <path>', 'Analyze specific Next.js route')
     .option('--leaves', 'Show only leaf nodes')
@@ -26,44 +26,52 @@ export function analyzeCommand() {
     .option('--cycles', 'Highlight cycles in output')
     .option('--max-depth <number>', 'Maximum depth to analyze')
     .option('--external', 'Follow external dependencies')
+    .option('--no-ai-json', 'Do not generate ai-docs/deps.ai.json side output')
     .option('--verbose', 'Verbose output')
-    .action(async (path: string, options: any) => {
-      await analyzeDependencies(path, options as AnalyzeCliOptions)
+    .action(async (path: string, options: unknown) => {
+      await analyzeDependencies(path, toAnalyzeOptions(options))
     })
 
   return command
 }
 
 async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptions): Promise<void> {
-  const resolvedPath = resolvePath(projectPath)
+  const analysisPath = resolvePath(projectPath)
+  const projectRoot = inferProjectRoot(analysisPath)
+  const scanRoot = resolveScanRoot(analysisPath, projectRoot)
 
-  if (!existsSync(resolvedPath)) {
-    console.error(`Error: Path "${resolvedPath}" does not exist.`)
+  if (!existsSync(analysisPath)) {
+    console.error(`Error: Path "${analysisPath}" does not exist.`)
     exit(1)
   }
 
   const startTime = Date.now()
 
   if (options.verbose) {
-    console.log(`Analyzing: ${resolvedPath}`)
+    console.log(`Analyzing: ${analysisPath}`)
+    console.log(`Project root: ${projectRoot}`)
   }
 
   try {
+    const workspaceInfo = await resolveWorkspaceInfo(projectRoot)
+
     const parser = createParser({
-      basePath: resolvedPath,
+      basePath: projectRoot,
       includeTypeImports: false,
       followExternal: options.external ?? false,
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'],
+      workspacePackages: workspaceInfo.packageMap,
     })
 
     const graphBuilder = createGraphBuilder()
 
-    const isNextJsProject = existsSync(resolvePath(resolvedPath, 'app'))
+    const appDir = resolvePath(scanRoot, 'app')
+    const isNextJsProject = existsSync(appDir)
 
     let entryPoints: string[] = []
 
     if (isNextJsProject) {
-      const routeScanner = createRouteScanner(resolvedPath)
+      const routeScanner = createRouteScanner(scanRoot)
       entryPoints = await routeScanner.getRouteFiles()
 
       if (options.verbose) {
@@ -77,15 +85,15 @@ async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptio
       const mainFiles = ['index.ts', 'index.tsx', 'index.js', 'index.jsx', 'main.ts', 'main.tsx', 'main.js', 'main.jsx']
 
       for (const mainFile of mainFiles) {
-        const mainPath = resolvePath(resolvedPath, mainFile)
+        const mainPath = resolvePath(analysisPath, mainFile)
         if (existsSync(mainPath)) {
           entryPoints.push(mainPath)
           break
         }
       }
 
-      if (entryPoints.length === 0 && existsSync(resolvePath(resolvedPath, 'src'))) {
-        const srcPath = resolvePath(resolvedPath, 'src')
+      if (entryPoints.length === 0 && existsSync(resolvePath(analysisPath, 'src'))) {
+        const srcPath = resolvePath(analysisPath, 'src')
         for (const mainFile of mainFiles) {
           const mainPath = resolvePath(srcPath, mainFile)
           if (existsSync(mainPath)) {
@@ -102,21 +110,22 @@ async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptio
     }
 
     for (const entryPoint of entryPoints) {
-      const node = graphBuilder.addNode(entryPoint, 'es6', 'page')
+      const nodeType = getNodeTypeForFile(entryPoint, appDir)
+      graphBuilder.addNode(entryPoint, 'es6', nodeType)
       graphBuilder.markAsEntryPoint(entryPoint)
 
       if (options.verbose) {
         console.log(`Processing entry point: ${entryPoint}`)
       }
 
-      await processFile(entryPoint, parser, graphBuilder, options)
+      await processFile(entryPoint, parser, graphBuilder, options, appDir)
     }
 
     const graph = graphBuilder.getGraph()
 
     let routes = new Map()
     if (isNextJsProject) {
-      const routeScanner = createRouteScanner(resolvedPath)
+      const routeScanner = createRouteScanner(scanRoot)
       routes = await routeScanner.scanRoutes()
       graph.routes = routes
     }
@@ -149,14 +158,37 @@ async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptio
       }
     } else {
       // Use existing output format
-      const output = formatOutput(analysisResult, options)
+      const output = formatOutput(analysisResult, options, {
+        appRoot: projectRoot,
+        appDir,
+        workspaceRoot: workspaceInfo.workspaceRoot,
+        packageMap: workspaceInfo.packageMap,
+      })
 
-      if (options.output) {
-        await writeFile(options.output, output, 'utf-8')
-        console.log(`Output written to: ${options.output}`)
+      const outputPath =
+        options.output || (options.format === 'ai' ? resolvePath(projectRoot, 'ai-docs', 'deps.ai.json') : undefined)
+
+      if (outputPath) {
+        await mkdir(dirname(outputPath), { recursive: true })
+        await writeFile(outputPath, output, 'utf-8')
+        console.log(`Output written to: ${outputPath}`)
       } else {
         console.log(output)
       }
+    }
+
+    if (options.aiJson !== false && options.format !== 'ai') {
+      const aiSideOutputPath = resolvePath(projectRoot, 'ai-docs', 'deps.ai.json')
+      const aiOutput = generateAiOutput(analysisResult, {
+        appRoot: projectRoot,
+        appDir,
+        workspaceRoot: workspaceInfo.workspaceRoot,
+        workspacePackages: workspaceInfo.packageMap,
+      })
+
+      await mkdir(dirname(aiSideOutputPath), { recursive: true })
+      await writeFile(aiSideOutputPath, aiOutput, 'utf-8')
+      console.log(`AI JSON written to: ${aiSideOutputPath}`)
     }
 
     const elapsed = Date.now() - startTime
@@ -173,11 +205,40 @@ async function analyzeDependencies(projectPath: string, options: AnalyzeCliOptio
   }
 }
 
+function inferProjectRoot(targetPath: string): string {
+  if (existsSync(resolvePath(targetPath, 'package.json'))) {
+    return targetPath
+  }
+
+  const normalized = targetPath.replace(/\\/g, '/')
+  if (normalized.endsWith('/src')) {
+    const parent = resolvePath(targetPath, '..')
+    if (existsSync(resolvePath(parent, 'package.json'))) {
+      return parent
+    }
+  }
+
+  return targetPath
+}
+
+function resolveScanRoot(targetPath: string, projectRoot: string): string {
+  if (existsSync(resolvePath(targetPath, 'app'))) {
+    return targetPath
+  }
+
+  if (existsSync(resolvePath(projectRoot, 'app'))) {
+    return projectRoot
+  }
+
+  return targetPath
+}
+
 async function processFile(
   filePath: string,
-  parser: any,
-  graphBuilder: any,
+  parser: Parser,
+  graphBuilder: GraphBuilder,
   options: CliOptions,
+  appDir: string,
   depth = 0,
   visited = new Set<string>()
 ): Promise<void> {
@@ -194,21 +255,36 @@ async function processFile(
   const dependencies = await parser.parseFile(filePath)
 
   for (const dep of dependencies) {
-    const resolved = parser.resolveModule(dep.module, filePath)
+    const resolved = await parser.resolveModule(dep.module, filePath)
 
     if (resolved) {
       if (!graphBuilder.getNode(resolved)) {
-        graphBuilder.addNode(resolved, dep.moduleSystem, 'component', dep.dynamic)
+        const nodeType = getNodeTypeForFile(resolved, appDir)
+        graphBuilder.addNode(resolved, dep.moduleSystem, nodeType, dep.dynamic)
       }
 
       graphBuilder.addEdge(filePath, resolved)
 
-      await processFile(resolved, parser, graphBuilder, options, depth + 1, new Set(visited))
+      await processFile(resolved, parser, graphBuilder, options, appDir, depth + 1, new Set(visited))
+    } else if (options.external && parser.isExternalModule(dep.module)) {
+      if (!graphBuilder.getNode(dep.module)) {
+        graphBuilder.addNode(dep.module, dep.moduleSystem, 'external', dep.dynamic)
+      }
+      graphBuilder.addEdge(filePath, dep.module)
     }
   }
 }
 
-function formatOutput(analysisResult: any, options: CliOptions): string {
+function formatOutput(
+  analysisResult: AnalysisResult,
+  options: CliOptions,
+  context: {
+    appRoot: string
+    appDir: string
+    workspaceRoot?: string
+    packageMap: Map<string, string>
+  }
+): string {
   const format: OutputFormat = options.format || 'tree'
 
   switch (format) {
@@ -226,6 +302,14 @@ function formatOutput(analysisResult: any, options: CliOptions): string {
         includeRoutes: true,
       })
 
+    case 'ai':
+      return generateAiOutput(analysisResult, {
+        appRoot: context.appRoot,
+        appDir: context.appDir,
+        workspaceRoot: context.workspaceRoot,
+        workspacePackages: context.packageMap,
+      })
+
     case 'tree':
     default:
       return generateTreeOutput(analysisResult, {
@@ -233,5 +317,49 @@ function formatOutput(analysisResult: any, options: CliOptions): string {
         showPaths: options.verbose,
         showDynamicImports: true,
       })
+  }
+}
+
+function getNodeTypeForFile(filePath: string, appDir: string) {
+  const fileName = filePath.split('/').pop() || ''
+
+  if (filePath.startsWith(appDir)) {
+    if (fileName.startsWith('page.')) return 'page'
+    if (fileName.startsWith('layout.')) return 'layout'
+    if (fileName.startsWith('route.')) return 'route'
+  }
+
+  return 'component'
+}
+
+function toAnalyzeOptions(options: unknown): AnalyzeCliOptions {
+  return options as AnalyzeCliOptions
+}
+
+async function resolveWorkspaceInfo(appRoot: string): Promise<{
+  workspaceRoot?: string
+  packageMap: Map<string, string>
+}> {
+  const packageMap = new Map<string, string>()
+  const cwd = process.cwd()
+  try {
+    process.chdir(appRoot)
+    const workspace = await getWorkspaceDirs()
+    for (const pkgDir of workspace.packages) {
+      const pkgJsonPath = resolvePath(pkgDir, 'package.json')
+      if (!existsSync(pkgJsonPath)) continue
+      try {
+        const content = await readFile(pkgJsonPath, 'utf-8')
+        const pkg = JSON.parse(content) as { name?: string }
+        if (pkg.name) {
+          packageMap.set(pkg.name, pkgDir)
+        }
+      } catch {}
+    }
+    return { workspaceRoot: workspace.root, packageMap }
+  } catch {
+    return { packageMap }
+  } finally {
+    process.chdir(cwd)
   }
 }

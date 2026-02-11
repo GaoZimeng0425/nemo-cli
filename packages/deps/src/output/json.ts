@@ -1,9 +1,34 @@
-import type { AnalysisResult } from '../core/types.js'
+import type { AnalysisResult, ModuleSystem, NextJsRouteMetadata, NodeType } from '../core/types.js'
 
 export interface JsonOutputOptions {
   pretty: boolean
   includeStats: boolean
   includeRoutes: boolean
+}
+
+interface JsonNodeOutput {
+  id: string
+  moduleSystem: ModuleSystem
+  dynamic: boolean
+  type: NodeType
+  dependencies: string[]
+  dependents: string[]
+  isEntryPoint: boolean
+}
+
+interface JsonRouteOutput {
+  routePath: string
+  routeType: NextJsRouteMetadata['routeType']
+  isDynamic: boolean
+  isCatchAll: boolean
+}
+
+interface JsonOutput {
+  nodes: Record<string, JsonNodeOutput>
+  edges: Array<{ from: string; to: string }>
+  stats?: AnalysisResult['stats']
+  cycles?: string[][]
+  routes?: Record<string, JsonRouteOutput>
 }
 
 export class JsonGenerator {
@@ -20,7 +45,7 @@ export class JsonGenerator {
   }
 
   generate(): string {
-    const output: Record<string, any> = {
+    const output: JsonOutput = {
       nodes: this.serializeNodes(),
       edges: this.serializeEdges(),
     }
@@ -41,8 +66,8 @@ export class JsonGenerator {
     return JSON.stringify(output, null, indent)
   }
 
-  private serializeNodes(): Record<string, any> {
-    const nodes: Record<string, any> = {}
+  private serializeNodes(): Record<string, JsonNodeOutput> {
+    const nodes: Record<string, JsonNodeOutput> = {}
 
     for (const [id, node] of this.analysis.graph.nodes) {
       nodes[id] = {
@@ -71,8 +96,8 @@ export class JsonGenerator {
     return edges
   }
 
-  private serializeRoutes(): Record<string, any> {
-    const routes: Record<string, any> = {}
+  private serializeRoutes(): Record<string, JsonRouteOutput> {
+    const routes: Record<string, JsonRouteOutput> = {}
 
     if (!this.analysis.graph.routes) {
       return routes

@@ -113,6 +113,9 @@ export interface ParserOptions {
 
   /** Extensions to include in analysis */
   extensions: string[]
+
+  /** Optional workspace package map (package name -> absolute path) */
+  workspacePackages?: Map<string, string>
 }
 
 /**
@@ -146,7 +149,7 @@ export interface AnalysisResult {
 /**
  * Output format type
  */
-export type OutputFormat = 'dot' | 'json' | 'tree' | 'text'
+export type OutputFormat = 'dot' | 'json' | 'tree' | 'text' | 'ai'
 
 /**
  * CLI options
@@ -246,6 +249,8 @@ export interface AnalyzeCliOptions extends CliOptions {
   output?: string
   /** Whether to split output per entry point (default: true) */
   perEntry?: boolean
+  /** Whether to write ai-docs/deps.ai.json side output */
+  aiJson?: boolean
 }
 
 /**
@@ -256,4 +261,54 @@ export interface PageCliOptions {
   from: string
   /** Output format (tree or json) */
   format: 'tree' | 'json'
+}
+
+/**
+ * AI-friendly output types
+ */
+export type NodeScope = 'app' | 'workspace' | 'external' | 'internal'
+
+export interface AiNode {
+  id: string
+  path?: string
+  relativePath?: string
+  scope: NodeScope
+  packageName?: string
+  workspacePackage?: string
+  moduleSystem: ModuleSystem
+  dynamic: boolean
+  type: NodeType
+  dependencies: string[]
+  dependents: string[]
+}
+
+export interface AiPage {
+  route: string
+  routeType: RouteType
+  entryFile: string
+  layoutChain: string[]
+  /** Root node ids (entry + layouts) */
+  rootIds: string[]
+  nodeIds: string[]
+  orderGroups: string[][]
+}
+
+export interface AiSccGroup {
+  id: string
+  nodes: string[]
+}
+
+export interface AiOutput {
+  meta: {
+    generatedAt: string
+    appRoot: string
+    appDir: string
+    workspaceRoot?: string
+    toolVersion?: string
+  }
+  nodes: Record<string, AiNode>
+  pages: Record<string, AiPage>
+  nodeToPages: Record<string, string[]>
+  sccs: AiSccGroup[]
+  nodeToScc: Record<string, string>
 }

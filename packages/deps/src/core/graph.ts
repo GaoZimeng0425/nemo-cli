@@ -15,6 +15,12 @@ export class GraphBuilder {
     const existing = this.nodes.get(id)
 
     if (existing) {
+      if (dynamic && !existing.dynamic) {
+        existing.dynamic = true
+      }
+      if (type !== 'unknown' && existing.type === 'unknown') {
+        existing.type = type
+      }
       return existing
     }
 

@@ -1,4 +1,4 @@
-import type { AnalysisResult } from '../core/types.js'
+import type { AnalysisResult, DependencyNode } from '../core/types.js'
 
 export interface TreeOutputOptions {
   maxDepth?: number
@@ -138,7 +138,7 @@ export class TreeGenerator {
     return [result, ...children].filter(Boolean).join('\n')
   }
 
-  private getMarker(node: any, depth: number): string {
+  private getMarker(node: DependencyNode, depth: number): string {
     if (this.analysis.graph.entryPoints.includes(node.id)) {
       return '🚀 '
     }
@@ -151,7 +151,7 @@ export class TreeGenerator {
     return branchChars[depth % 3] || '├── '
   }
 
-  private formatNodeLabel(id: string, node: any): string {
+  private formatNodeLabel(id: string, node: DependencyNode): string {
     const shortName = id.split('/').pop() ?? id
 
     if (this.options.showPaths) {

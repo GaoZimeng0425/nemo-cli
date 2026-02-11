@@ -1,47 +1,56 @@
 import { existsSync, statSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import type typescript from 'typescript'
 
 import type { ExtractedDependency, ParserOptions } from './types.js'
-
-const ACORN_OPTIONS = {
-  sourceType: 'module' as const,
-  ecmaVersion: 'latest' as const,
-  locations: true,
-  allowHashBang: true,
-}
 
 export class Parser {
   options: ParserOptions
   cache: Map<string, Promise<ExtractedDependency[]>>
   pathMappings: Map<string, string[]> = new Map()
   baseUrl = ''
+  workspacePackages: Map<string, string>
+  private tsConfigPromise: Promise<void>
+  private compilerOptions?: typescript.CompilerOptions
+  private moduleResolutionCache?: typescript.ModuleResolutionCache
+  private ts?: typeof typescript
+  private tsPromise?: Promise<typeof typescript>
 
   constructor(options: ParserOptions) {
     this.options = options
     this.cache = new Map()
-    this.loadTsConfig()
+    this.workspacePackages = options.workspacePackages ?? new Map()
+    this.tsConfigPromise = this.loadTsConfig()
   }
 
   private async loadTsConfig(): Promise<void> {
     try {
-      const tsConfigPath = resolve(this.options.basePath, 'tsconfig.json')
-      const tsConfigContent = await readFile(tsConfigPath, 'utf-8')
-      const tsConfig = JSON.parse(tsConfigContent)
+      const ts = await this.getTypeScript()
+      const tsConfigPath =
+        ts.findConfigFile(this.options.basePath, ts.sys.fileExists, 'tsconfig.json') ??
+        ts.findConfigFile(this.options.basePath, ts.sys.fileExists, 'jsconfig.json')
 
-      // Load baseUrl
-      if (tsConfig.compilerOptions?.baseUrl) {
-        this.baseUrl = resolve(this.options.basePath, tsConfig.compilerOptions.baseUrl)
-      } else {
+      if (!tsConfigPath) {
         this.baseUrl = this.options.basePath
+        return
       }
 
-      // Load path mappings
-      if (tsConfig.compilerOptions?.paths) {
-        for (const [pattern, targets] of Object.entries(tsConfig.compilerOptions.paths)) {
-          // Convert pattern to regex (e.g., "@/*" -> "@/(.*)")
-          const patternRegex = pattern.replace('*', '(.*)')
+      const configFile = ts.readConfigFile(tsConfigPath, ts.sys.readFile)
+      if (configFile.error) {
+        this.baseUrl = this.options.basePath
+        return
+      }
+
+      const configDir = dirname(tsConfigPath)
+      const parsed = ts.parseJsonConfigFileContent(configFile.config, ts.sys, configDir, undefined, tsConfigPath)
+
+      this.compilerOptions = parsed.options
+      this.baseUrl = this.compilerOptions.baseUrl ? resolve(configDir, this.compilerOptions.baseUrl) : configDir
+      this.moduleResolutionCache = ts.createModuleResolutionCache(configDir, (value) => value, this.compilerOptions)
+
+      if (this.compilerOptions.paths) {
+        for (const [pattern, targets] of Object.entries(this.compilerOptions.paths)) {
           this.pathMappings.set(pattern, targets as string[])
         }
       }
@@ -52,6 +61,7 @@ export class Parser {
   }
 
   async parseFile(filePath: string): Promise<ExtractedDependency[]> {
+    await this.tsConfigPromise
     const cached = this.cache.get(filePath)
     if (cached) {
       return cached
@@ -64,15 +74,11 @@ export class Parser {
       filePath.endsWith('.ts') ||
       filePath.endsWith('.tsx') ||
       filePath.endsWith('.js') ||
-      filePath.endsWith('.jsx')
+      filePath.endsWith('.jsx') ||
+      filePath.endsWith('.mjs') ||
+      filePath.endsWith('.cjs')
     ) {
       const dependencies = await this.parseTypeScript(content, filePath)
-      this.cache.set(filePath, Promise.resolve(dependencies))
-      return dependencies
-    }
-
-    if (filePath.endsWith('.mjs')) {
-      const dependencies = await this.parseJavaScript(content, filePath)
       this.cache.set(filePath, Promise.resolve(dependencies))
       return dependencies
     }
@@ -83,7 +89,7 @@ export class Parser {
 
   private async parseTypeScript(content: string, filePath: string): Promise<ExtractedDependency[]> {
     const dependencies: ExtractedDependency[] = []
-    const ts = (await import('typescript')).default as typeof typescript
+    const ts = await this.getTypeScript()
     const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true)
 
     const visit = (node: typescript.Node): void => {
@@ -146,109 +152,22 @@ export class Parser {
     return dependencies
   }
 
-  private async parseJavaScript(content: string, filePath: string): Promise<ExtractedDependency[]> {
-    const dependencies: ExtractedDependency[] = []
+  async resolveModule(modulePath: string, fromFile: string): Promise<string | null> {
+    await this.tsConfigPromise
 
-    try {
-      const acorn = await import('acorn')
-      const acornWalk = await import('acorn-walk')
-
-      // For .jsx files and .js files with JSX, we need to extend Acorn with JSX plugin
-      let parser = acorn
-      const isJsxFile = filePath.endsWith('.jsx') || filePath.endsWith('.js')
-
-      if (isJsxFile) {
-        const acornJsxPlugin = await import('acorn-jsx')
-        // @ts-expect-error - acorn-jsx extends the Parser
-        parser = acorn.Parser.extend(acornJsxPlugin.default())
-      }
-
-      const ast = parser.parse(content, {
-        sourceType: 'module' as const,
-        ecmaVersion: 'latest' as const,
-        locations: true,
-        allowHashBang: true,
-      })
-
-      acornWalk.simple(ast, {
-        ImportDeclaration: (node: any) => {
-          if (node.source?.value) {
-            dependencies.push({
-              module: node.source.value,
-              moduleSystem: 'es6' as const,
-              dynamic: false,
-              type: 'import',
-              line: node.loc?.start.line ?? 0,
-              column: node.loc?.start.column ?? 0,
-            })
-          }
-        },
-        ExportNamedDeclaration: (node: any) => {
-          if (node.source?.value) {
-            dependencies.push({
-              module: node.source.value,
-              moduleSystem: 'es6' as const,
-              dynamic: false,
-              type: 're-export',
-              line: node.loc?.start.line ?? 0,
-              column: node.loc?.start.column ?? 0,
-            })
-          }
-        },
-        ExportAllDeclaration: (node: any) => {
-          if (node.source?.value) {
-            dependencies.push({
-              module: node.source.value,
-              moduleSystem: 'es6' as const,
-              dynamic: false,
-              type: 're-export',
-              line: node.loc?.start.line ?? 0,
-              column: node.loc?.start.column ?? 0,
-            })
-          }
-        },
-        ImportExpression: (node: any) => {
-          if (node.source?.type === 'Literal' && typeof node.source.value === 'string') {
-            dependencies.push({
-              module: node.source.value,
-              moduleSystem: 'es6' as const,
-              dynamic: true,
-              type: 'dynamic-import',
-              line: node.loc?.start.line ?? 0,
-              column: node.loc?.start.column ?? 0,
-            })
-          }
-        },
-        CallExpression: (node: any) => {
-          if (
-            node.callee?.type === 'Identifier' &&
-            node.callee?.name === 'require' &&
-            node.arguments[0]?.type === 'Literal' &&
-            typeof node.arguments[0].value === 'string'
-          ) {
-            dependencies.push({
-              module: node.arguments[0].value,
-              moduleSystem: 'commonjs' as const,
-              dynamic: false,
-              type: 'require',
-              line: node.loc?.start.line ?? 0,
-              column: node.loc?.start.column ?? 0,
-            })
-          }
-        },
-      })
-    } catch (error) {
-      // Log error for debugging
-      if (process.env.DEBUG) {
-        console.error(`Error parsing JavaScript file ${filePath}:`, error)
-      }
-      return []
+    const workspaceResolved = this.resolveWorkspaceModule(modulePath)
+    if (workspaceResolved) {
+      return workspaceResolved
     }
 
-    return dependencies
-  }
+    const tsResolved = await this.resolveWithTypeScript(modulePath, fromFile)
+    if (tsResolved) {
+      if (this.isNodeModulesPath(tsResolved)) {
+        return this.options.followExternal ? tsResolved : null
+      }
+      return tsResolved
+    }
 
-  resolveModule(modulePath: string, fromFile: string): string | null {
     // Check if this is a path alias that needs to be resolved
     const aliasedPath = this.resolvePathAlias(modulePath)
     if (aliasedPath) {
@@ -256,15 +175,56 @@ export class Parser {
     }
 
     if (this.isExternalModule(modulePath)) {
-      if (this.options.followExternal) {
-        return modulePath
-      }
       return null
     }
 
     const resolvedPath = this.resolveFileWithExtensions(resolve(resolve(fromFile, '..'), modulePath))
 
     return resolvedPath
+  }
+
+  private async resolveWithTypeScript(modulePath: string, fromFile: string): Promise<string | null> {
+    if (!this.compilerOptions) {
+      return null
+    }
+
+    const ts = await this.getTypeScript()
+    const result = ts.resolveModuleName(modulePath, fromFile, this.compilerOptions, ts.sys, this.moduleResolutionCache)
+
+    const resolved = result.resolvedModule?.resolvedFileName
+    if (!resolved) {
+      return null
+    }
+
+    return resolved
+  }
+
+  private resolveWorkspaceModule(modulePath: string): string | null {
+    const workspacePackage = this.matchWorkspacePackage(modulePath)
+    if (!workspacePackage) {
+      return null
+    }
+
+    const packageRoot = this.workspacePackages.get(workspacePackage)
+    if (!packageRoot) {
+      return null
+    }
+
+    if (modulePath === workspacePackage) {
+      return this.resolveFileWithExtensions(resolve(packageRoot, 'index'))
+    }
+
+    const subpath = modulePath.slice(workspacePackage.length + 1)
+    return this.resolveFileWithExtensions(resolve(packageRoot, subpath))
+  }
+
+  private matchWorkspacePackage(modulePath: string): string | null {
+    for (const name of this.workspacePackages.keys()) {
+      if (modulePath === name || modulePath.startsWith(`${name}/`)) {
+        return name
+      }
+    }
+    return null
   }
 
   private resolvePathAlias(modulePath: string): string | null {
@@ -341,6 +301,11 @@ export class Parser {
       return false
     }
 
+    // Check if it matches any workspace package
+    if (this.matchWorkspacePackage(modulePath)) {
+      return false
+    }
+
     // Check if it matches any of our path mappings
     for (const pattern of this.pathMappings.keys()) {
       const patternRegex = new RegExp(`^${pattern.replace('*', '.*')}$`)
@@ -359,13 +324,27 @@ export class Parser {
       return true
     }
 
-    // Paths with / could be either local paths or package subpaths
-    // For safety, treat them as local paths to resolve
-    return false
+    // Package subpaths like lodash/fp are external unless mapped
+    return true
   }
 
   clearCache(): void {
     this.cache.clear()
+  }
+
+  private isNodeModulesPath(resolvedPath: string): boolean {
+    return resolvedPath.includes('/node_modules/') || resolvedPath.includes('\\node_modules\\')
+  }
+
+  private async getTypeScript(): Promise<typeof typescript> {
+    if (this.ts) {
+      return this.ts
+    }
+    if (!this.tsPromise) {
+      this.tsPromise = import('typescript').then((mod) => mod.default as typeof typescript)
+    }
+    this.ts = await this.tsPromise
+    return this.ts
   }
 }
 

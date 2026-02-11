@@ -1,4 +1,4 @@
-import type { AnalysisResult, CliOptions, DependencyGraph } from '../core/types.js'
+import type { AnalysisResult, DependencyGraph, DependencyNode } from '../core/types.js'
 
 export interface DotOutputOptions {
   showCycles: boolean
@@ -100,8 +100,7 @@ export class DotGenerator {
     return Array.from(new Set(highlighted))
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: ignore
-  private formatNodeLabel(id: string, _node: any): string {
+  private formatNodeLabel(id: string, _node: DependencyNode): string {
     const maxLength = 30
     const shortName = id.split('/').pop() || id
 
