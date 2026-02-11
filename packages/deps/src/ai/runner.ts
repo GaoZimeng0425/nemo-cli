@@ -50,8 +50,8 @@ interface PageIndexFile {
   updatedAt: string
 }
 
-const DEFAULT_MAX_SOURCE_CHARS = 12000
-const PROMPT_VERSION = 'v1'
+const DEFAULT_MAX_SOURCE_CHARS = Number.POSITIVE_INFINITY
+const PROMPT_VERSION = 'v2-business'
 
 export async function runAiAnalysis(
   options: AiRunOptions,
@@ -101,7 +101,8 @@ export async function runAiAnalysis(
     if (
       options.resume !== false &&
       existing?.analysis?.status === 'done' &&
-      existing.analysis.sourceHash === sourceHash
+      existing.analysis.sourceHash === sourceHash &&
+      existing.analysis.promptVersion === PROMPT_VERSION
     ) {
       const updated = ensureRouteRecorded(existing, route)
       if (updated) {
@@ -393,13 +394,37 @@ function ensureRouteRecorded(existing: ComponentAnalysisFile, route: string): Co
 
 function buildPrompt(node: AiNode, dependencyContext: string, source: string): string {
   return [
-    '你是资深前端工程师，负责组件级功能分析。',
-    '请基于给定源码与依赖摘要输出分析，格式要求：',
-    '1) 第一行必须以 "Summary: " 开头，简洁描述组件职责。',
-    '2) 后续使用小标题：Responsibilities, Behavior, Dependencies, Notes。',
-    '3) 如果是推断内容，请在 Notes 中标注 "推断"。',
-    '4) 如果当前源码主要是组合子组件（自身逻辑很少），必须优先汇总 [Analyzed Child Summaries] 得出父组件行为，不能只写“渲染子组件”。',
-    '5) 在 Dependencies 小节明确写出哪些结论来自子组件分析，哪些来自当前源码。',
+    '你是资深业务分析师和前端架构师，负责从组件源码中提炼“业务功能分析”，而不是技术实现说明。',
+    '你的目标是回答：这个组件在业务上解决什么问题、支持哪些用户动作、处理哪些业务数据、有哪些规则与状态。',
+    '若组件主要是组合子组件（自身代码逻辑少），必须优先汇总 [Analyzed Child Summaries] 推导完整业务能力，不能只写“渲染子组件”。',
+    '',
+    '请严格使用中文，并按以下结构输出：',
+    'Summary: <一句话业务摘要，强调业务价值与核心动作>',
+    'Business Goal:',
+    '- 该组件服务的业务目标（面向用户/运营/管理流程）',
+    'Actors & Scenarios:',
+    '- 角色 -> 典型场景 -> 用户意图',
+    'Business Capabilities:',
+    '- 能力名称 | 触发方式 | 输入信息 | 处理规则 | 输出/结果',
+    '- 尽量显式写出动作词，例如“新增用户、删除用户、筛选列表、提交审批”等',
+    'Domain Data:',
+    '- 业务实体与字段（例如姓名、性别、年龄、状态、时间等）及其业务含义',
+    'Business Rules:',
+    '- 校验规则、权限规则、状态流转、边界条件、异常处理规则',
+    'User Journey & States:',
+    '- 正常流程（用户从进入到完成业务动作）',
+    '- 状态反馈（Loading / Empty / Error / Success）及对应用户可见行为',
+    'Dependencies:',
+    '- 哪些结论来自子组件摘要',
+    '- 哪些结论来自当前源码',
+    'Uncertainties:',
+    '- 信息不足时写“未知”，并给出最小合理推断；推断内容必须显式标注“推断”',
+    '',
+    '输出要求：',
+    '1) 重点写“业务语义”，弱化技术细节（如 hook、渲染细节仅在必要时简述）。',
+    '2) 每条关键结论尽量标注来源：[源码] / [子组件] / [推断]。',
+    '3) 尽可能提取具体字段和可执行的业务动作，避免空泛描述。',
+    '4) 不要编造接口或规则；无证据时写“未知”。',
     '',
     '[Component]',
     `ID: ${node.id}`,
@@ -432,7 +457,7 @@ async function runModel(prompt: string, engine: AiProviderEngine, model: string)
     engine,
     model,
     prompt,
-    systemPrompt: '你是资深前端工程师，负责组件功能分析。',
+    systemPrompt: '你是资深业务分析师，擅长从前端源码与组件关系中提炼业务功能、业务规则与用户流程。',
   })
 }
 
