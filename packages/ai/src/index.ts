@@ -23,7 +23,7 @@ export function resolveAiEngine(engine?: AiProviderEngine | string): AiProviderE
 export function getDefaultAiModel(engine: AiProviderEngine): string {
   if (engine === 'google') return 'gemini-2.5-flash'
   if (engine === 'openai') return 'gpt-4o-mini'
-  if (engine === 'zhipu') return 'glm-4-plus'
+  if (engine === 'zhipu') return 'glm-4.7'
   return 'none'
 }
 

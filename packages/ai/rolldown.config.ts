@@ -16,6 +16,8 @@ export default mergeConfig({
       'process.env.CONFLUENCE_EMAIL': JSON.stringify(process.env.CONFLUENCE_EMAIL ?? ''),
       'process.env.SLACK_SIGNING_SECRET': JSON.stringify(process.env.SLACK_SIGNING_SECRET ?? ''),
       'process.env.SLACK_APP_TOKEN': JSON.stringify(process.env.SLACK_APP_TOKEN ?? ''),
+      'process.env.ZHIPU_API_KEY': JSON.stringify(process.env.ZHIPU_API_KEY ?? ''),
+      'process.env.ZHIPU_BASE_URL': JSON.stringify(process.env.ZHIPU_BASE_URL ?? ''),
     }),
   ],
   external: Object.keys(dependencies),
