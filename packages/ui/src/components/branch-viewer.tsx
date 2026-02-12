@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
 import { xASync } from '@nemo-cli/shared'
+import { useRawMode } from '../hooks'
 
 interface BranchViewerProps {
   maxCount?: number
@@ -70,6 +71,9 @@ export const BranchViewer: FC<BranchViewerProps> = ({ maxCount }) => {
   const [remoteScrollTop, setRemoteScrollTop] = useState(0)
 
   const { exit } = useApp()
+
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   // Get terminal height
   const terminalHeight = process.stdout.rows || 24

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
 import { xASync } from '@nemo-cli/shared'
+import { useRawMode } from '../hooks'
 
 interface HistViewerProps {
   maxCount?: number
@@ -16,6 +17,9 @@ export const HistViewer: FC<HistViewerProps> = ({ maxCount }) => {
   const [lastKey, setLastKey] = useState<string>('')
 
   const { exit } = useApp()
+
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   // Get terminal height, fallback to 24
   const terminalHeight = process.stdout.rows || 24

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
 import { xASync } from '@nemo-cli/shared'
+import { useRawMode } from '../hooks'
 
 export interface Commit {
   hash: string
@@ -26,6 +27,9 @@ export const CommitViewer: FC<CommitViewerProps> = ({ maxCount = 20, onSelect, o
   const [scrollTop, setScrollTop] = useState(0)
 
   const { exit } = useApp()
+
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   // Get terminal height
   const terminalHeight = process.stdout.rows || 24

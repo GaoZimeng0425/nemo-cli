@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
 import { xASync } from '@nemo-cli/shared'
+import { useRawMode } from '../hooks'
 
 interface DiffViewerProps {
   targetBranch?: string
@@ -67,6 +68,9 @@ export const DiffViewer: FC<DiffViewerProps> = ({ targetBranch }) => {
   const [diffScrollTop, setDiffScrollTop] = useState(0)
 
   const { exit } = useApp()
+
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   // Get terminal height
   const terminalHeight = process.stdout.rows || 24

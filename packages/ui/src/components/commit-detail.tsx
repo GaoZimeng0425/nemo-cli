@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
 import { xASync } from '@nemo-cli/shared'
+import { useRawMode } from '../hooks'
 
 export interface ChangedFile {
   path: string
@@ -127,16 +128,8 @@ export const CommitDetail: FC<CommitDetailProps> = ({ commitHash, onExit }) => {
   const app = useApp()
   const { exit } = app
 
-  // Set stdin to raw mode
-  useEffect(() => {
-    const stdin = (app as unknown as { stdin?: { setRawMode: (mode: boolean) => void } }).stdin
-    if (stdin && typeof stdin.setRawMode === 'function') {
-      stdin.setRawMode(true)
-      return () => {
-        stdin.setRawMode(false)
-      }
-    }
-  }, [app])
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   // Calculate visible lines (terminal height - header - footer - borders)
   const stdout = (app as unknown as { stdout?: { rows: number } }).stdout

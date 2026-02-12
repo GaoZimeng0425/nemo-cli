@@ -2,6 +2,8 @@ import type { FC } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
+import { useRawMode } from '../hooks'
+
 interface RouteViewerProps {
   routes: string[]
   onSelect: (routes: string[]) => void
@@ -14,6 +16,9 @@ export const RouteViewer: FC<RouteViewerProps> = ({ routes, onSelect, onExit }) 
   const [scrollTop, setScrollTop] = useState(0)
 
   const { exit } = useApp()
+
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   const terminalHeight = process.stdout.rows || 24
   const viewHeight = Math.max(5, terminalHeight - 4)

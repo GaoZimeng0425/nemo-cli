@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Box, render, Text, useApp, useInput } from 'ink'
 
 import { xASync } from '@nemo-cli/shared'
+import { useRawMode } from '../hooks'
 
 export interface StatusFile {
   path: string
@@ -111,17 +112,9 @@ export const StatusViewer: FC<StatusViewerProps> = ({ files, onExit }) => {
   const [diffScrollTop, setDiffScrollTop] = useState(0)
   const app = useApp()
   const { exit } = app
-  const stdin = (app as { stdin?: { setRawMode: (mode: boolean) => void } }).stdin
 
-  // 设置 stdin 为 raw mode
-  useEffect(() => {
-    if (stdin && typeof stdin.setRawMode === 'function') {
-      stdin.setRawMode(true)
-      return () => {
-        stdin.setRawMode(false)
-      }
-    }
-  }, [stdin])
+  // Enable raw mode for keyboard input
+  useRawMode()
 
   // 计算可见行数（终端高度 - 顶部信息行 - 底部提示行 - 边框）
   const stdout = (app as { stdout?: { rows: number } }).stdout
