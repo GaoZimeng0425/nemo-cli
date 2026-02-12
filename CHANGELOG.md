@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2026-02-12
+
+### Features
+- feat(deps): main update ai analyze prompt
+- feat(ai): main add test api key
+- feat(packages): add deps ai workflow and typed outputs
+- feat: add interactive diff viewer with dual-panel layout
+- feat: add interactive branch viewer with dual-panel layout
+- feat: add ng show command with interactive commit viewer
+- feat: export detector and adapters from shared package
+- feat: add unit tests for package manager detection and adapters
+- feat: add package manager auto-detection and adapter system
+
+### Bug Fixes
+- fix(git): main fix command exec error
+- fix: main fix rolldown-plugin-dts version error
+- fix: correct np add flow and fix catalog error
+- fix(git): improve type safety and handle null values
+- fix(release): improve git push error handling
+
+### Other Changes
+- refactor: extract useRawMode hook to fix terminal pollution
+- refactor(packages): unify nd project resolution and ai flow
+- chore: commit dependency updates and .js import refactors
+- chore: main delete unused skill
+- docs: main delete opencode agent
+- docs: update _bmad-output with branch viewer implementation docs
+- chore: update dependencies
+- refactor: improve workspace detection and error handling
+- docs: add implementation status and verification guide
+- chore: add .worktrees/ to gitignore
+- docs: add package manager auto-detection design
+- docs: improve command reference with clear tables
+- refactor(git): restructure list command as branch subcommand
+
 ## [0.1.1] - 2026-02-06
 
 ### Features

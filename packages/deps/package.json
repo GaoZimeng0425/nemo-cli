@@ -1,6 +1,6 @@
 {
   "name": "@nemo-cli/deps",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Dependency analysis CLI for Next.js App Router projects",
   "author": "gaozimeng <gaozimeng0425@gmail.com>",
   "homepage": "https://github.com/GaoZimeng0425/nemo-cli#readme",
