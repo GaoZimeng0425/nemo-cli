@@ -1,10 +1,10 @@
 ---
-description: 'Generates or updates an index.md of all documents in the specified directory'
-disable-model-invocation: true
+name: 'index-docs'
+description: 'Generates or updates an index.md to reference all docs in the folder. Use if user requests to create or update an index of all files in a specific folder'
 ---
 
-# Index Docs
+# index-docs
 
-Read the entire task file at: _bmad/core/tasks/index-docs.xml
+Read the entire task file at: {project-root}/_bmad/core/tasks/index-docs.xml
 
 Follow all instructions in the task file exactly as written.
