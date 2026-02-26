@@ -12,31 +12,37 @@ const ANALYSIS_CACHE = new Map<string, ComponentAnalysis>()
 function getPossiblePaths(nodeId: string, basePath = '/ai-docs/components'): string[] {
   const paths: string[] = []
 
-  // Direct conversion
-  const sanitized = sanitizePath(nodeId)
-  paths.push(`${basePath}/${sanitized}.json`)
-
   // Handle app: prefix -> external/app_src/
   if (nodeId.startsWith('app:')) {
     const rest = nodeId.slice(4) // Remove 'app:'
 
-    // Try external/app_src/ prefix
+    // Try external/app_src/ prefix WITHOUT sanitizing (keep parentheses, etc.)
     const appSrcPath = rest.replace(/^src\//, 'app_src/')
-    paths.push(`${basePath}/external/${sanitizePath(appSrcPath)}.json`)
+    paths.push(`${basePath}/external/${appSrcPath}.json`)
 
-    // Also try without src/
+    // Also try without src/ (no sanitize)
     if (rest.startsWith('src/')) {
       const withoutSrc = rest.slice(4)
-      paths.push(`${basePath}/external/${sanitizePath(withoutSrc)}.json`)
+      paths.push(`${basePath}/external/${withoutSrc}.json`)
     }
-  }
 
-  // Handle workspace packages
-  if (nodeId.startsWith('ws:')) {
+    // Try sanitized version as fallback
+    const sanitized = sanitizePath(nodeId)
+    paths.push(`${basePath}/${sanitized}.json`)
+  } else if (nodeId.startsWith('ws:')) {
+    // Handle workspace packages
     const rest = nodeId.slice(3) // Remove 'ws:'
     // Convert ws:pkg-name/path -> external/ws_pkgname/path
     const wsPath = rest.replace(/^([^/]+)\//, 'ws_$1/')
-    paths.push(`${basePath}/external/${sanitizePath(wsPath)}.json`)
+    paths.push(`${basePath}/external/${wsPath}.json`)
+
+    // Try sanitized version as fallback
+    const sanitized = sanitizePath(nodeId)
+    paths.push(`${basePath}/${sanitized}.json`)
+  } else {
+    // Direct conversion for other nodes
+    const sanitized = sanitizePath(nodeId)
+    paths.push(`${basePath}/${sanitized}.json`)
   }
 
   return paths
