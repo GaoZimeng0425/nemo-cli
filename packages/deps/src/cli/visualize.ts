@@ -40,6 +40,29 @@ export function visualizeCommand() {
           exit(1)
         }
 
+        // Check for ai-docs directory in current/parent directories
+        let aiDocsPath: string | null = null
+        const checkPaths = [
+          resolve(process.cwd(), 'ai-docs'),
+          resolve(process.cwd(), 'apps/risk/ai-docs'),
+          resolve(process.cwd(), '../ai-docs'),
+          resolve(process.cwd(), '../../ai-docs'),
+        ]
+
+        for (const checkPath of checkPaths) {
+          if (existsSync(checkPath)) {
+            aiDocsPath = checkPath
+            break
+          }
+        }
+
+        if (aiDocsPath) {
+          console.log(`📁 Found AI docs directory: ${aiDocsPath}`)
+        } else {
+          console.log('⚠️  No ai-docs directory found - AI analysis will not be available')
+          console.log('   Run: nd ai to generate AI analysis results')
+        }
+
         // Parse port
         const port = Number.parseInt(options.port || '3000', 10)
         if (Number.isNaN(port)) {
@@ -60,11 +83,18 @@ export function visualizeCommand() {
           viteArgs.push('--open')
         }
 
+        // Set environment variable for ai-docs path
+        const env = {
+          ...process.env,
+          VITE_AI_DOCS_PATH: aiDocsPath || '',
+        }
+
         // Start Vite dev server
         const viteProcess = spawn('pnpm', ['run', 'dev', '--', ...viteArgs], {
           cwd: visualizerPath,
           stdio: 'inherit',
           shell: true,
+          env,
         })
 
         // Handle process exit
