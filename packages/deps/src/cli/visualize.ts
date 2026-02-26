@@ -46,6 +46,7 @@ export function visualizeCommand() {
 
         if (existsSync(aiDocsPath)) {
           console.log(`📁 Serving AI docs from: ${aiDocsPath}`)
+          console.log('   (includes components/, pages/, and other subdirectories)')
         } else {
           console.log('⚠️  No ai-docs directory found in current directory')
           console.log('   The deps.ai.json file should contain meta.appRoot pointing to your project')

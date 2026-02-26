@@ -24,8 +24,12 @@ export function NodeDetails() {
 
     setIsLoadingAnalysis(true)
 
-    // Use the ai-docs path from deps.ai.json, fallback to default
-    const basePath = aiDocsBasePath || '/ai-docs/components'
+    // Build the base path for AI docs
+    // VITE_AI_DOCS_PATH points to ai-docs/, but we need ai-docs/components/
+    const docsBasePath = aiDocsBasePath || '/ai-docs'
+    const basePath = docsBasePath.endsWith('/ai-docs') ? `${docsBasePath}/components` : docsBasePath
+
+    console.log('[NodeDetails] Loading AI analysis with basePath:', basePath)
 
     loadNodeAnalysis(selectedNode.id, basePath)
       .then((analysis) => {

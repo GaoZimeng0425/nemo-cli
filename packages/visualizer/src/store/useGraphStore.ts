@@ -199,12 +199,12 @@ export const useGraphStore = create<GraphStore>()(
         const entryNodes = graph.nodes.filter((n) => entryNodeIds.has(n.id))
         const entryEdges = graph.edges.filter((e) => entryNodeIds.has(e.source) && entryNodeIds.has(e.target))
 
-        // Extract appRoot from meta info
-        const appRoot = output.meta.appRoot || null
-        const aiDocsBasePath = appRoot ? `${appRoot}/ai-docs` : null
+        // The ai-docs path is served by Vite at /ai-docs (not the absolute file system path)
+        // This is because browsers can only access paths through the web server
+        const aiDocsBasePath = '/ai-docs'
 
         console.log('[GraphStore] Project info:', {
-          appRoot,
+          appRoot: output.meta.appRoot,
           aiDocsBasePath,
           generatedAt: output.meta.generatedAt,
         })
