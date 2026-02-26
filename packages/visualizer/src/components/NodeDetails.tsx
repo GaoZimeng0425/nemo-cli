@@ -9,7 +9,7 @@ import { useGraphStore } from '../store/useGraphStore'
 import type { ComponentAnalysis } from '../types'
 
 export function NodeDetails() {
-  const { getSelectedNode, aiOutput } = useGraphStore()
+  const { getSelectedNode, aiOutput, aiDocsBasePath } = useGraphStore()
   const selectedNode = getSelectedNode()
   const [aiAnalysis, setAiAnalysis] = useState<ComponentAnalysis | null>(null)
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false)
@@ -24,7 +24,10 @@ export function NodeDetails() {
 
     setIsLoadingAnalysis(true)
 
-    loadNodeAnalysis(selectedNode.id)
+    // Use the ai-docs path from deps.ai.json, fallback to default
+    const basePath = aiDocsBasePath || '/ai-docs/components'
+
+    loadNodeAnalysis(selectedNode.id, basePath)
       .then((analysis) => {
         setAiAnalysis(analysis)
         setIsLoadingAnalysis(false)
@@ -33,7 +36,7 @@ export function NodeDetails() {
         setAiAnalysis(null)
         setIsLoadingAnalysis(false)
       })
-  }, [selectedNode])
+  }, [selectedNode, aiDocsBasePath])
 
   if (!selectedNode || !aiOutput) {
     return (

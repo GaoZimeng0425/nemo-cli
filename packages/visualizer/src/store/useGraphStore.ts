@@ -18,6 +18,9 @@ interface GraphState {
   // Progressive expansion state
   expandedNodeIds: Set<string>
 
+  // AI docs base path (extracted from deps.ai.json meta.appRoot)
+  aiDocsBasePath: string | null
+
   // UI state
   selectedNodeId: string | null
   filteredScopes: FilterScope[]
@@ -120,6 +123,7 @@ export const useGraphStore = create<GraphStore>()(
       allNodes: [],
       allEdges: [],
       expandedNodeIds: new Set<string>(),
+      aiDocsBasePath: null,
       selectedNodeId: null,
       filteredScopes: ['app', 'workspace', 'external', 'internal', 'other'],
       selectedPageId: null,
@@ -195,6 +199,16 @@ export const useGraphStore = create<GraphStore>()(
         const entryNodes = graph.nodes.filter((n) => entryNodeIds.has(n.id))
         const entryEdges = graph.edges.filter((e) => entryNodeIds.has(e.source) && entryNodeIds.has(e.target))
 
+        // Extract appRoot from meta info
+        const appRoot = output.meta.appRoot || null
+        const aiDocsBasePath = appRoot ? `${appRoot}/ai-docs` : null
+
+        console.log('[GraphStore] Project info:', {
+          appRoot,
+          aiDocsBasePath,
+          generatedAt: output.meta.generatedAt,
+        })
+
         set({
           aiOutput: output,
           nodes: entryNodes,
@@ -202,6 +216,7 @@ export const useGraphStore = create<GraphStore>()(
           allNodes: graph.nodes,
           allEdges: graph.edges,
           expandedNodeIds: entryNodeIds,
+          aiDocsBasePath,
           error: null,
         })
 
@@ -216,6 +231,7 @@ export const useGraphStore = create<GraphStore>()(
           allNodes: [],
           allEdges: [],
           expandedNodeIds: new Set(),
+          aiDocsBasePath: null,
           selectedNodeId: null,
           selectedPageId: null,
           searchQuery: '',
