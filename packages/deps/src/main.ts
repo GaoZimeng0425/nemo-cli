@@ -1,5 +1,5 @@
 import { createCommand, readPackage } from '@nemo-cli/shared'
-import { aiCommand, analyzeCommand, pageCommand } from './cli/index'
+import { aiCommand, analyzeCommand, pageCommand, visualizeCommand } from './cli/index'
 
 const pkg = readPackage(import.meta, '..')
 
@@ -11,6 +11,7 @@ export const init = () => {
   command.addCommand(analyzeCommand())
   command.addCommand(aiCommand())
   command.addCommand(pageCommand())
+  command.addCommand(visualizeCommand())
 
   return command
 }

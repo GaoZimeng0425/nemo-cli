@@ -38,17 +38,17 @@
     "check": "biome check --write"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^2.0.18",
-    "@ai-sdk/google": "^3.0.24",
-    "@ai-sdk/openai": "3.0.26",
-    "@ai-sdk/react": "3.0.81",
+    "@ai-sdk/deepseek": "^2.0.20",
+    "@ai-sdk/google": "^3.0.31",
+    "@ai-sdk/openai": "3.0.33",
+    "@ai-sdk/react": "3.0.101",
     "@nemo-cli/git": "workspace:*",
     "@nemo-cli/mail": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "ai": "6.0.79",
+    "ai": "6.0.99",
     "confluence.js": "^2.1.0",
-    "fastmcp": "^3.32.0",
+    "fastmcp": "^3.33.0",
     "zhipu-ai-provider": "^0.2.2"
   }
 }

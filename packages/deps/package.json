@@ -48,6 +48,9 @@
   "dependencies": {
     "@nemo-cli/ai": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
-    "@nemo-cli/ui": "workspace:*"
+    "@nemo-cli/ui": "workspace:*",
+    "d3": "^7.9.0",
+    "d3-hierarchy": "^3.1.2",
+    "d3-shape": "^3.2.0"
   }
 }
