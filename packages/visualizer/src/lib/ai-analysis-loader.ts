@@ -16,6 +16,10 @@ function getPossiblePaths(nodeId: string, basePath = '/ai-docs/components'): str
   // Sanitize the node ID to match how nd ai generates files
   const sanitized = sanitizePath(nodeId)
 
+  console.log(`[AI Analysis] Node ID: ${nodeId}`)
+  console.log(`[AI Analysis] Sanitized: ${sanitized}`)
+  console.log(`[AI Analysis] Base path: ${basePath}`)
+
   // For non-absolute paths (app:, ws:, etc.), nd ai saves to external/
   if (!nodeId.startsWith('/') && !nodeId.startsWith('.')) {
     // Try external/ prefix (this is where nd ai saves non-absolute paths)
@@ -25,6 +29,7 @@ function getPossiblePaths(nodeId: string, basePath = '/ai-docs/components'): str
   // Fallback: try in the base components directory
   paths.push(`${basePath}/${sanitized}.json`)
 
+  console.log('[AI Analysis] Trying paths:', paths)
   return paths
 }
 
@@ -55,15 +60,17 @@ export async function loadNodeAnalysis(
       if (response.ok) {
         const analysis: ComponentAnalysis = await response.json()
         ANALYSIS_CACHE.set(nodeId, analysis)
-        console.log(`[AI Analysis] Loaded for ${nodeId} from ${path}`)
+        console.log(`[AI Analysis] ✓ Loaded for ${nodeId}`)
+        console.log(`              from: ${path}`)
         return analysis
       }
-    } catch {
-      // Try next path
+      console.log(`[AI Analysis] ✗ Failed (${response.status}): ${path}`)
+    } catch (error) {
+      console.log('[AI Analysis] ✗ Network error:', (error as Error).message)
     }
   }
 
-  console.log(`[AI Analysis] Not found for ${nodeId}. Tried:`, possiblePaths)
+  console.log(`[AI Analysis] ❌ Not found for ${nodeId}. Tried:`, possiblePaths)
   return null
 }
 
