@@ -41,15 +41,23 @@ export function visualizeCommand() {
         }
 
         // Check for ai-docs directory in current working directory
+        // Note: process.cwd() is where user runs 'nd visualize' from
         const cwd = process.cwd()
+        console.log(`[Debug] Current working directory: ${cwd}`)
+
         const aiDocsPath = resolve(cwd, 'ai-docs')
+        console.log(`[Debug] Checking for ai-docs at: ${aiDocsPath}`)
+        console.log(`[Debug] Exists: ${existsSync(aiDocsPath)}`)
 
         if (existsSync(aiDocsPath)) {
           console.log(`📁 Serving AI docs from: ${aiDocsPath}`)
           console.log('   (includes components/, pages/, and other subdirectories)')
         } else {
           console.log('⚠️  No ai-docs directory found in current directory')
-          console.log('   The deps.ai.json file should contain meta.appRoot pointing to your project')
+          console.log(`   Looked in: ${cwd}`)
+          console.log('   Please ensure you are running this command from the project root directory')
+          console.log('   Example: cd /Users/aa00930/Documents/Antalpha/prime-next/apps/risk')
+          console.log('            nd visualize')
           console.log('   Run: nd ai to generate AI analysis results')
         }
 
@@ -78,6 +86,8 @@ export function visualizeCommand() {
           ...process.env,
           VITE_AI_DOCS_PATH: existsSync(aiDocsPath) ? aiDocsPath : '',
         }
+
+        console.log(`[Debug] VITE_AI_DOCS_PATH: ${env.VITE_AI_DOCS_PATH || '(empty)'}`)
 
         // Start Vite dev server
         const viteProcess = spawn('pnpm', ['run', 'dev', '--', ...viteArgs], {
