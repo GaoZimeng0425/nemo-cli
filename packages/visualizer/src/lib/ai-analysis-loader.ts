@@ -8,48 +8,29 @@ const ANALYSIS_CACHE = new Map<string, ComponentAnalysis>()
 
 /**
  * Convert node ID to possible file paths
+ * Matches the logic in packages/deps/src/ai/runner.ts#getComponentOutputPath
  */
 function getPossiblePaths(nodeId: string, basePath = '/ai-docs/components'): string[] {
   const paths: string[] = []
 
-  // Handle app: prefix -> external/app_src/
-  if (nodeId.startsWith('app:')) {
-    const rest = nodeId.slice(4) // Remove 'app:'
+  // Sanitize the node ID to match how nd ai generates files
+  const sanitized = sanitizePath(nodeId)
 
-    // Try external/app_src/ prefix WITHOUT sanitizing (keep parentheses, etc.)
-    const appSrcPath = rest.replace(/^src\//, 'app_src/')
-    paths.push(`${basePath}/external/${appSrcPath}.json`)
-
-    // Also try without src/ (no sanitize)
-    if (rest.startsWith('src/')) {
-      const withoutSrc = rest.slice(4)
-      paths.push(`${basePath}/external/${withoutSrc}.json`)
-    }
-
-    // Try sanitized version as fallback
-    const sanitized = sanitizePath(nodeId)
-    paths.push(`${basePath}/${sanitized}.json`)
-  } else if (nodeId.startsWith('ws:')) {
-    // Handle workspace packages
-    const rest = nodeId.slice(3) // Remove 'ws:'
-    // Convert ws:pkg-name/path -> external/ws_pkgname/path
-    const wsPath = rest.replace(/^([^/]+)\//, 'ws_$1/')
-    paths.push(`${basePath}/external/${wsPath}.json`)
-
-    // Try sanitized version as fallback
-    const sanitized = sanitizePath(nodeId)
-    paths.push(`${basePath}/${sanitized}.json`)
-  } else {
-    // Direct conversion for other nodes
-    const sanitized = sanitizePath(nodeId)
-    paths.push(`${basePath}/${sanitized}.json`)
+  // For non-absolute paths (app:, ws:, etc.), nd ai saves to external/
+  if (!nodeId.startsWith('/') && !nodeId.startsWith('.')) {
+    // Try external/ prefix (this is where nd ai saves non-absolute paths)
+    paths.push(`${basePath}/external/${sanitized}.json`)
   }
+
+  // Fallback: try in the base components directory
+  paths.push(`${basePath}/${sanitized}.json`)
 
   return paths
 }
 
 function sanitizePath(value: string): string {
-  return value.replace(/[:*?"<>|]/g, '_').replace(/\.\./g, '__')
+  // Must match the sanitizePath in packages/deps/src/ai/runner.ts
+  return value.replace(/[:*?"<>|]/g, '_').replace(/\.\../g, '__')
 }
 
 /**
