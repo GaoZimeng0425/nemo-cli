@@ -117,4 +117,168 @@ export class BilibiliService {
     this.biliJct = biliJct
     this.dedeuserid = dedeuserid
   }
+
+  async getUserFavorites(mid?: number): Promise<
+    Array<{
+      id: number
+      fid: number
+      title: string
+      media_count: number
+    }>
+  > {
+    const userId = mid || this.dedeuserid
+    if (!userId) {
+      throw new Error('未指定用户 ID')
+    }
+
+    const data = await this.http.get<
+      BiliResponse<{
+        list: Array<{
+          id: number
+          fid: number
+          title: string
+          media_count: number
+        }>
+      }>
+    >('/x/v3/fav/folder/created/list-all', { up_mid: userId }, { cookies: this.getCookies() })
+
+    if (data.code !== 0) {
+      throw new Error(`获取收藏夹失败: ${data.message}`)
+    }
+
+    return data.data?.list || []
+  }
+
+  async getFavoriteContent(
+    mediaId: number,
+    pn = 1,
+    ps = 20
+  ): Promise<{
+    info: { id: number; title: string }
+    medias: Array<{
+      id: number
+      bvid: string
+      title: string
+      cover: string
+      intro: string
+      owner: { mid: number; name: string }
+    }>
+    has_more: boolean
+  }> {
+    const data = await this.http.get<
+      BiliResponse<{
+        info: { id: number; title: string }
+        medias: Array<{
+          id: number
+          bvid: string
+          title: string
+          cover: string
+          intro: string
+          owner: { mid: number; name: string }
+        }>
+        has_more: boolean
+      }>
+    >(
+      '/x/v3/fav/resource/list',
+      {
+        media_id: mediaId,
+        pn,
+        ps: Math.min(ps, 20),
+        platform: 'web',
+      },
+      { cookies: this.getCookies() }
+    )
+
+    if (data.code !== 0) {
+      throw new Error(`获取收藏夹内容失败: ${data.message}`)
+    }
+
+    return {
+      info: data.data!.info,
+      medias: data.data!.medias || [],
+      has_more: data.data!.has_more,
+    }
+  }
+
+  async getAllFavoriteVideos(mediaId: number): Promise<
+    Array<{
+      id: number
+      bvid: string
+      title: string
+      cover: string
+      intro: string
+      owner: { mid: number; name: string }
+    }>
+  > {
+    const allVideos: Array<{
+      id: number
+      bvid: string
+      title: string
+      cover: string
+      intro: string
+      owner: { mid: number; name: string }
+    }> = []
+    let pn = 1
+
+    while (true) {
+      const result = await this.getFavoriteContent(mediaId, pn, 20)
+      allVideos.push(...result.medias)
+
+      if (!result.has_more) break
+
+      pn++
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    }
+
+    return allVideos
+  }
+
+  async moveFavoriteResources(srcMediaId: number, tarMediaId: number, resources: string[]): Promise<{ moved: number }> {
+    if (!this.biliJct) {
+      throw new Error('缺少 bili_jct，无法进行收藏夹移动')
+    }
+
+    if (!resources.length) {
+      return { moved: 0 }
+    }
+
+    const data = await this.http.post<BiliResponse<{ moved: number }>>(
+      '/x/v3/fav/resource/move',
+      {
+        src_media_id: srcMediaId,
+        tar_media_id: tarMediaId,
+        resources: resources.join(','),
+        csrf: this.biliJct,
+        mid: this.dedeuserid,
+      },
+      { cookies: this.getCookies() }
+    )
+
+    if (data.code !== 0) {
+      throw new Error(`移动收藏夹内容失败: ${data.message}`)
+    }
+
+    return data.data || { moved: 0 }
+  }
+
+  async cleanFavoriteResources(mediaId: number): Promise<{ cleaned: number }> {
+    if (!this.biliJct) {
+      throw new Error('缺少 bili_jct，无法清理失效内容')
+    }
+
+    const data = await this.http.post<BiliResponse<{ cleaned: number }>>(
+      '/x/v3/fav/resource/clean',
+      {
+        media_id: mediaId,
+        csrf: this.biliJct,
+      },
+      { cookies: this.getCookies() }
+    )
+
+    if (data.code !== 0) {
+      throw new Error(`清理失效内容失败: ${data.message}`)
+    }
+
+    return data.data || { cleaned: 0 }
+  }
 }
