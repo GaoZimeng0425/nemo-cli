@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilibili QR Code Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .animate-pulse-slow {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full">
+    <h1 class="text-2xl font-bold text-white text-center mb-6">Bilibili 登录</h1>
+
+    <!-- QR Code Section -->
+    <div id="qrcode-section" class="text-center">
+      <div class="bg-white p-4 rounded-xl inline-block mb-4">
+        <img id="qrcode-image" src="" alt="QR Code" class="w-56 h-56" />
+      </div>
+
+      <!-- Status Display -->
+      <div id="status-container" class="mb-4">
+        <div id="status-badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400">
+          <span id="status-dot" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse-slow"></span>
+          <span id="status-text">初始化中...</span>
+        </div>
+        <p id="status-message" class="text-gray-400 text-sm mt-2"></p>
+      </div>
+
+      <!-- Instructions -->
+      <div class="text-left bg-gray-700/50 rounded-lg p-4 mt-4">
+        <h3 class="text-white font-semibold mb-2">📱 登录步骤：</h3>
+        <ol class="text-gray-300 text-sm space-y-1 list-decimal list-inside">
+          <li>打开哔哩哔哩手机App</li>
+          <li>点击右上角扫描图标</li>
+          <li>扫描二维码</li>
+          <li>在手机上确认登录</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Success Section -->
+    <div id="success-section" class="hidden text-center">
+      <div class="mb-6">
+        <svg class="w-20 h-20 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Success icon">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-green-400 mb-4">登录成功！</h2>
+      <div id="user-info" class="bg-gray-700/50 rounded-lg p-4 text-left">
+        <p class="text-gray-400">加载用户信息中...</p>
+      </div>
+    </div>
+
+    <!-- Error Section -->
+    <div id="error-section" class="hidden text-center">
+      <div class="mb-6">
+        <svg class="w-20 h-20 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Error icon">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-red-400 mb-4">登录失败</h2>
+      <p id="error-message" class="text-gray-400 mb-4"></p>
+      <button type="button" onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
+        重新登录
+      </button>
+    </div>
+
+    <!-- Debug Info -->
+    <div class="mt-6 text-xs text-gray-500 text-center">
+      <p>API: <span id="api-url">http://localhost:3001</span></p>
+      <p>Polling: <span id="polling-status">Running</span></p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3001';
+    let qrcodeKey = null;
+    let pollingInterval = null;
+    let pollCount = 0;
+    const MAX_POLLS = 100; // 5 minutes (3 seconds * 100)
+
+    // Status mappings
+    const statusConfig = {
+      waiting: {
+        text: '等待扫码',
+        message: '请使用哔哩哔哩手机App扫描二维码',
+        color: 'yellow',
+        icon: '⏳'
+      },
+      scanned: {
+        text: '已扫码',
+        message: '请在手机上确认登录',
+        color: 'blue',
+        icon: '📱'
+      },
+      confirmed: {
+        text: '登录成功',
+        message: '正在获取用户信息...',
+        color: 'green',
+        icon: '✅'
+      },
+      expired: {
+        text: '二维码已过期',
+        message: '请刷新页面重新获取二维码',
+        color: 'red',
+        icon: '⏰'
+      }
+    };
+
+    // Initialize
+    async function init() {
+      try {
+        // Generate QR code
+        const response = await fetch(`${API_BASE}/api/auth/qrcode`);
+        const data = await response.json();
+
+        if (data.code === 0 && data.data.qrcode_key) {
+          qrcodeKey = data.data.qrcode_key;
+          document.getElementById('qrcode-image').src = data.data.qrcode_image_base64;
+          updateStatus('waiting');
+          startPolling();
+        } else {
+          showError('Failed to generate QR code');
+        }
+      } catch (error) {
+        showError(`Network error: ${error.message}`);
+      }
+    }
+
+    // Update status display
+    function updateStatus(status) {
+      const config = statusConfig[status];
+      if (!config) return;
+
+      const badge = document.getElementById('status-badge');
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      const message = document.getElementById('status-message');
+
+      // Update color classes
+      badge.className = `inline-flex items-center gap-2 px-4 py-2 rounded-full bg-${config.color}-500/20 text-${config.color}-400`;
+      dot.className = `w-2 h-2 rounded-full bg-${config.color}-400 animate-pulse-slow`;
+
+      text.textContent = `${config.icon} ${config.text}`;
+      message.textContent = config.message;
+
+      if (status === 'confirmed') {
+        showSuccess();
+      } else if (status === 'expired') {
+        stopPolling();
+        document.getElementById('polling-status').textContent = 'Stopped (Expired)';
+      }
+    }
+
+    // Start polling
+    function startPolling() {
+      pollingInterval = setInterval(pollStatus, 3000); // Poll every 3 seconds
+    }
+
+    // Stop polling
+    function stopPolling() {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        document.getElementById('polling-status').textContent = 'Stopped';
+      }
+    }
+
+    // Poll status
+    async function pollStatus() {
+      if (!qrcodeKey) return;
+
+      pollCount++;
+      if (pollCount > MAX_POLLS) {
+        updateStatus('expired');
+        stopPolling();
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/qrcode/poll?qrcode_key=${qrcodeKey}`);
+        const data = await response.json();
+
+        if (data.code === 0 && data.data.status) {
+          updateStatus(data.data.status);
+
+          if (data.data.status === 'confirmed') {
+            stopPolling();
+          }
+        }
+      } catch (error) {
+        console.error('Poll error:', error);
+      }
+    }
+
+    // Show success
+    async function showSuccess() {
+      document.getElementById('qrcode-section').classList.add('hidden');
+      document.getElementById('success-section').classList.remove('hidden');
+
+      // Fetch user info
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/user-info`);
+        const data = await response.json();
+
+        const userInfoDiv = document.getElementById('user-info');
+        if (data.code === 0 && data.data) {
+          const user = data.data;
+          userInfoDiv.innerHTML = `
+            <div class="space-y-3">
+              <div class="flex items-center gap-4">
+                <img src="${user.face}" alt="Avatar" class="w-16 h-16 rounded-full">
+                <div>
+                  <h3 class="text-white font-semibold text-lg">${user.uname}</h3>
+                  <p class="text-gray-400 text-sm">UID: ${user.mid}</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="bg-gray-600/50 rounded p-2">
+                  <p class="text-gray-400">关注</p>
+                  <p class="text-white font-semibold">${user.following || 0}</p>
+                </div>
+                <div class="bg-gray-600/50 rounded p-2">
+                  <p class="text-gray-400">粉丝</p>
+                  <p class="text-white font-semibold">${user.follower || 0}</p>
+                </div>
+              </div>
+              <div class="text-xs text-gray-500">
+                <p>级别: ${user.level} | VIP: ${user.vip.status ? '是' : '否'}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          userInfoDiv.innerHTML = '<p class="text-yellow-400">获取用户信息失败</p>';
+        }
+      } catch (error) {
+        document.getElementById('user-info').innerHTML = '<p class="text-red-400">Network error</p>';
+      }
+    }
+
+    // Show error
+    function showError(message) {
+      stopPolling();
+      document.getElementById('qrcode-section').classList.add('hidden');
+      document.getElementById('error-section').classList.remove('hidden');
+      document.getElementById('error-message').textContent = message;
+      document.getElementById('polling-status').textContent = 'Error';
+    }
+
+    // Start
+    init();
+  </script>
+</body>
+</html>
