@@ -32,6 +32,7 @@
     "check": "biome check --write"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.1",
     "@nemo-cli/shared": "workspace:*",
     "hono": "^4.6.0",
     "qrcode": "^1.5.4",
