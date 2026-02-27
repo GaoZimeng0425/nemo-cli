@@ -1,0 +1,44 @@
+{
+  "name": "@nemo-cli/bilibili",
+  "version": "0.1.0",
+  "description": "Bilibili API Service",
+  "author": "gaozimeng <gaozimeng0425@gmail.com>",
+  "license": "ISC",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "directories": {
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js",
+    "build": "rolldown -c ./rolldown.config.ts",
+    "build-dts": "rolldown -c ./rolldown.config.ts",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "prepublish": "npm run build",
+    "check": "biome check --write"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@nemo-cli/shared": "workspace:*",
+    "hono": "^4.6.0",
+    "qrcode": "^1.5.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5"
+  }
+}
