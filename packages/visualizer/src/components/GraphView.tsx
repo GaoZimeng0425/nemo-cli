@@ -8,7 +8,6 @@ import ReactFlow, {
   BackgroundVariant,
   type Connection,
   Controls,
-  type Edge,
   type Node as FlowNode,
   MiniMap,
   type NodeTypes,
@@ -18,7 +17,6 @@ import ReactFlow, {
 import 'reactflow/dist/style.css'
 
 import { useGraphStore } from '../store/useGraphStore'
-import type { GraphEdge, GraphNode } from '../types'
 import { DependencyNode } from './DependencyNode'
 
 const nodeTypes: NodeTypes = {
@@ -26,7 +24,7 @@ const nodeTypes: NodeTypes = {
 }
 
 export function GraphView() {
-  const { nodes: storeNodes, edges: storeEdges, selectNode } = useGraphStore()
+  const { nodes: storeNodes, edges: storeEdges, selectNode, toggleNodeExpansion, selectEntryNode } = useGraphStore()
 
   // Convert GraphNode to FlowNode
   const flowNodes: FlowNode[] = storeNodes.map((node) => ({
@@ -71,14 +69,22 @@ export function GraphView() {
   const onNodeClick = useCallback(
     (_event: React.MouseEvent, node: FlowNode) => {
       selectNode(node.id)
+      const nodeData = node.data as GraphNode['data']
+      // If this is an entry node, select it to focus view
+      if (nodeData.dependentCount === 0) {
+        selectEntryNode(node.id)
+      }
     },
-    [selectNode]
+    [selectNode, selectEntryNode]
   )
 
-  const onNodeDoubleClick = useCallback((_event: React.MouseEvent, node: FlowNode) => {
-    // TODO: Open file in editor
-    console.log('Double clicked node:', node.id)
-  }, [])
+  const onNodeDoubleClick = useCallback(
+    (_event: React.MouseEvent, node: FlowNode) => {
+      // Toggle expansion to show/hide next level dependencies
+      toggleNodeExpansion(node.id)
+    },
+    [toggleNodeExpansion]
+  )
 
   const onPaneClick = useCallback(() => {
     selectNode(null)
@@ -127,7 +133,7 @@ export function GraphView() {
           className="!bg-black/60 !backdrop-blur-xl !border !border-white/10"
           maskColor="rgba(0, 0, 0, 0.6)"
           nodeColor={(node) => {
-            const data = node.data as GraphNode['data']
+            const data = node.data as { aiNode: { scope: string } }
             const scopeColors: Record<string, string> = {
               app: '#00F0FF',
               workspace: '#00FF94',

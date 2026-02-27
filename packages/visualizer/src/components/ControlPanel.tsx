@@ -12,10 +12,13 @@ export function ControlPanel() {
     filteredScopes,
     searchQuery,
     viewMode,
+    displayMode,
+    selectedEntryNodeId,
     setSearchQuery,
     setViewMode,
+    setDisplayMode,
     toggleScopeFilter,
-    clearScopeFilters,
+    resetEntrySelection,
     aiOutput,
   } = useGraphStore()
 
@@ -28,8 +31,6 @@ export function ControlPanel() {
     internal: { label: 'Internal', color: '#FFBE0B', icon: '⚙️' },
     other: { label: 'Other', color: '#8B5CF6', icon: '📄' },
   }
-
-  const pages = aiOutput ? Object.entries(aiOutput.pages) : []
 
   return (
     <div
@@ -118,12 +119,71 @@ export function ControlPanel() {
                   CYCLES
                 </button>
               </div>
+
+              {/* Display mode toggle */}
+              <div className="flex items-center rounded-lg border border-white/10 bg-black/40 p-1">
+                <button
+                  className={`rounded px-3 py-1 font-bold text-xs transition-all duration-200 ${displayMode === 'graph' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-400 hover:text-cyan-400'}
+                  `}
+                  onClick={() => setDisplayMode('graph')}
+                  type="button"
+                >
+                  🔗 图形
+                </button>
+                <button
+                  className={`rounded px-3 py-1 font-bold text-xs transition-all duration-200 ${displayMode === 'tree' ? 'bg-green-500/20 text-green-400' : 'text-gray-400 hover:text-green-400'}
+                  `}
+                  onClick={() => setDisplayMode('tree')}
+                  type="button"
+                >
+                  🌳 树形
+                </button>
+              </div>
             </div>
           )}
         </div>
 
         {/* Right: Search + Actions */}
         <div className="flex items-center gap-4">
+          {/* Selected entry indicator */}
+          {selectedEntryNodeId && (
+            <div className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5">
+              <span className="font-medium text-cyan-400 text-xs">聚焦入口:</span>
+              <span className="max-w-[150px] truncate font-bold text-white text-xs">
+                {selectedEntryNodeId.split('/').pop() || selectedEntryNodeId}
+              </span>
+              <button
+                className="ml-1 rounded p-0.5 text-cyan-400 transition-colors hover:bg-cyan-500/20"
+                onClick={resetEntrySelection}
+                title="显示所有入口节点"
+                type="button"
+              >
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24">
+                  <title>Clear selection</title>
+                  <path
+                    d="M6 18L18 6M6 6l12 12"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Reset button (only show when entry is selected) */}
+          {selectedEntryNodeId && (
+            <button
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-bold text-gray-400 text-xs transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white"
+              onClick={resetEntrySelection}
+              title="显示所有入口节点"
+              type="button"
+            >
+              重置视图
+            </button>
+          )}
+
           {/* Search */}
           <div className="relative">
             <input

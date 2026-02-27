@@ -23,12 +23,17 @@ interface GraphState {
 
   // UI state
   selectedNodeId: string | null
+  selectedEntryNodeId: string | null // Currently selected entry node for focus view
   filteredScopes: FilterScope[]
   selectedPageId: string | null
   searchQuery: string
   viewMode: 'all' | 'page' | 'scc'
+  displayMode: 'graph' | 'tree' // Graph view or tree view
   isLoading: boolean
   error: string | null
+
+  // Tree view state
+  treeExpandedNodes: Set<string> // Expanded nodes in tree view
 
   // Computed helpers
   getFilteredNodes: () => GraphNode[]
@@ -51,12 +56,18 @@ interface GraphActions {
 
   // UI operations
   selectNode: (nodeId: string | null) => void
+  selectEntryNode: (entryNodeId: string | null) => void // Select entry node to focus
+  resetEntrySelection: () => void // Reset to show all entry nodes
   setFilteredScopes: (scopes: FilterScope[]) => void
   setSelectedPageId: (pageId: string | null) => void
   setSearchQuery: (query: string) => void
   setViewMode: (mode: 'all' | 'page' | 'scc') => void
+  setDisplayMode: (mode: 'graph' | 'tree') => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
+
+  // Tree view operations
+  toggleTreeNode: (nodeId: string) => void
 
   // Filter operations
   toggleScopeFilter: (scope: FilterScope) => void
@@ -125,12 +136,15 @@ export const useGraphStore = create<GraphStore>()(
       expandedNodeIds: new Set<string>(),
       aiDocsBasePath: null,
       selectedNodeId: null,
+      selectedEntryNodeId: null, // No entry node selected initially
       filteredScopes: ['app', 'workspace', 'external', 'internal', 'other'],
       selectedPageId: null,
       searchQuery: '',
       viewMode: 'all',
+      displayMode: 'graph', // Default to graph view
       isLoading: false,
       error: null,
+      treeExpandedNodes: new Set<string>(),
 
       // Computed helpers
       getFilteredNodes: () => {
@@ -231,41 +245,62 @@ export const useGraphStore = create<GraphStore>()(
           allNodes: [],
           allEdges: [],
           expandedNodeIds: new Set(),
+          treeExpandedNodes: new Set(),
           aiDocsBasePath: null,
           selectedNodeId: null,
+          selectedEntryNodeId: null,
           selectedPageId: null,
           searchQuery: '',
+          displayMode: 'graph',
           error: null,
         })
       },
 
-      // Progressive expansion
+      // Progressive expansion - only expand/collapse immediate dependencies
       toggleNodeExpansion: (nodeId: string) => {
         const state = get()
-        const isExpanded = state.expandedNodeIds.has(nodeId)
+        const node = state.allNodes.find((n) => n.id === nodeId)
+        if (!node) return
 
-        if (isExpanded) {
-          // Collapse: remove this node and its descendants
+        // Check if any direct dependencies are currently visible
+        const directDeps = node.data.aiNode.dependencies.filter((depId) => state.allNodes.find((n) => n.id === depId))
+        const hasVisibleDeps = directDeps.some((depId) => state.expandedNodeIds.has(depId))
+
+        const newExpanded = new Set(state.expandedNodeIds)
+
+        if (hasVisibleDeps) {
+          // Collapse: remove direct dependencies and their descendants
           const toRemove = new Set<string>()
           const collectDescendants = (id: string) => {
             toRemove.add(id)
-            const node = state.allNodes.find((n) => n.id === id)
-            if (node) {
-              node.data.aiNode.dependencies.forEach((depId: string) => {
-                if (state.expandedNodeIds.has(depId)) {
-                  collectDescendants(depId)
+            const n = state.allNodes.find((node) => node.id === id)
+            if (n) {
+              n.data.aiNode.dependencies.forEach((depId: string) => {
+                if (newExpanded.has(depId)) {
+                  // Only collect if this child doesn't have other expanded parents
+                  const hasOtherExpandedParents = state.allEdges.some(
+                    (e) => e.target === depId && e.source !== id && newExpanded.has(e.source) && !toRemove.has(e.source)
+                  )
+                  if (!hasOtherExpandedParents) {
+                    collectDescendants(depId)
+                  }
                 }
               })
             }
           }
-          collectDescendants(nodeId)
 
-          const newExpanded = new Set(state.expandedNodeIds)
+          // Collect all direct dependencies and their descendants
+          for (const depId of directDeps) {
+            if (newExpanded.has(depId)) {
+              collectDescendants(depId)
+            }
+          }
+
           toRemove.forEach((id: string) => {
             newExpanded.delete(id)
           })
 
-          console.log('[GraphStore] Collapsed node:', nodeId, 'Removing:', Array.from(toRemove))
+          console.log('[GraphStore] Collapsed dependencies of:', nodeId, 'Removing:', Array.from(toRemove))
 
           set({
             expandedNodeIds: newExpanded,
@@ -273,38 +308,12 @@ export const useGraphStore = create<GraphStore>()(
             edges: state.allEdges.filter((e) => newExpanded.has(e.source) && newExpanded.has(e.target)),
           })
         } else {
-          // Expand: add this node's dependencies
-          const node = state.allNodes.find((n) => n.id === nodeId)
-          if (!node) return
-
-          const newExpanded = new Set(state.expandedNodeIds)
-          newExpanded.add(nodeId)
-
-          // Add all descendant nodes that are reachable from expanded nodes
-          const toAdd = new Set<string>()
-          const collectDescendants = (id: string) => {
-            toAdd.add(id)
-            const n = state.allNodes.find((node) => node.id === id)
-            if (n) {
-              n.data.aiNode.dependencies.forEach((depId: string) => {
-                if (state.allNodes.find((n) => n.id === depId)) {
-                  collectDescendants(depId)
-                }
-              })
-            }
+          // Expand: add direct dependencies
+          for (const depId of directDeps) {
+            newExpanded.add(depId)
           }
 
-          node.data.aiNode.dependencies.forEach((depId: string) => {
-            if (state.allNodes.find((n) => n.id === depId)) {
-              collectDescendants(depId)
-            }
-          })
-
-          toAdd.forEach((id: string) => {
-            newExpanded.add(id)
-          })
-
-          console.log('[GraphStore] Expanded node:', nodeId, 'Adding:', Array.from(toAdd))
+          console.log('[GraphStore] Expanded dependencies of:', nodeId, 'Adding:', directDeps)
 
           set({
             expandedNodeIds: newExpanded,
@@ -354,6 +363,48 @@ export const useGraphStore = create<GraphStore>()(
         set({ selectedNodeId: nodeId })
       },
 
+      selectEntryNode: (entryNodeId: string | null) => {
+        const state = get()
+        if (!entryNodeId) {
+          // If null, just reset the selection (but keep current nodes)
+          set({ selectedEntryNodeId: null })
+          return
+        }
+
+        const entryNode = state.allNodes.find((n) => n.id === entryNodeId)
+        if (!entryNode) return
+
+        // Set the selected entry node
+        set({ selectedEntryNodeId: entryNodeId })
+
+        // Clear expanded nodes and only show this entry node
+        const newExpanded = new Set<string>()
+        newExpanded.add(entryNodeId)
+
+        console.log('[GraphStore] Selected entry node:', entryNodeId, 'Hiding other entry nodes')
+
+        set({
+          expandedNodeIds: newExpanded,
+          nodes: state.allNodes.filter((n) => newExpanded.has(n.id)),
+          edges: state.allEdges.filter((e) => newExpanded.has(e.source) && newExpanded.has(e.target)),
+        })
+      },
+
+      resetEntrySelection: () => {
+        const state = get()
+        // Find all entry nodes
+        const entryNodeIds = new Set(state.allNodes.filter((n) => n.data.dependentCount === 0).map((n) => n.id))
+
+        console.log('[GraphStore] Reset to show all entry nodes:', entryNodeIds.size)
+
+        set({
+          selectedEntryNodeId: null,
+          expandedNodeIds: entryNodeIds,
+          nodes: state.allNodes.filter((n) => entryNodeIds.has(n.id)),
+          edges: state.allEdges.filter((e) => entryNodeIds.has(e.source) && entryNodeIds.has(e.target)),
+        })
+      },
+
       setFilteredScopes: (scopes: FilterScope[]) => {
         set({ filteredScopes: scopes })
       },
@@ -370,12 +421,27 @@ export const useGraphStore = create<GraphStore>()(
         set({ viewMode: mode })
       },
 
+      setDisplayMode: (mode: 'graph' | 'tree') => {
+        set({ displayMode: mode })
+      },
+
       setLoading: (loading: boolean) => {
         set({ isLoading: loading })
       },
 
       setError: (error: string | null) => {
         set({ error })
+      },
+
+      toggleTreeNode: (nodeId: string) => {
+        const state = get()
+        const newExpanded = new Set(state.treeExpandedNodes)
+        if (newExpanded.has(nodeId)) {
+          newExpanded.delete(nodeId)
+        } else {
+          newExpanded.add(nodeId)
+        }
+        set({ treeExpandedNodes: newExpanded })
       },
 
       toggleScopeFilter: (scope: FilterScope) => {

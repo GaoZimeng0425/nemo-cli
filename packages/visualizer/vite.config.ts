@@ -1,9 +1,11 @@
 // vite.config.ts
 
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { extname, join } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   const aiDocsPath = process.env.VITE_AI_DOCS_PATH
 
   return {
@@ -28,11 +30,8 @@ export default defineConfig(({ mode }) => {
 
           server.middlewares.use((req, res, next) => {
             if (req.url?.startsWith('/ai-docs')) {
-              const fs = require('fs')
-              const path = require('path')
-
               const relativePath = req.url.replace('/ai-docs', '') || ''
-              const fullPath = path.join(aiDocsPath, relativePath)
+              const fullPath = join(aiDocsPath, relativePath)
 
               // Enhanced logging
               console.log('\n=== AI Docs Request ===')
@@ -40,18 +39,18 @@ export default defineConfig(({ mode }) => {
               console.log('Relative path:', relativePath)
               console.log('AI docs root:', aiDocsPath)
               console.log('Full file path:', fullPath)
-              console.log('File exists:', fs.existsSync(fullPath))
+              console.log('File exists:', existsSync(fullPath))
 
-              if (fs.existsSync(fullPath)) {
-                const stats = fs.statSync(fullPath)
+              if (existsSync(fullPath)) {
+                const stats = statSync(fullPath)
                 if (stats.isFile()) {
-                  const ext = path.extname(fullPath)
+                  const ext = extname(fullPath)
                   const contentType =
                     ext === '.json' ? 'application/json' : ext === '.html' ? 'text/html' : 'text/plain'
 
                   res.setHeader('Content-Type', contentType)
                   res.setHeader('Access-Control-Allow-Origin', '*')
-                  res.end(fs.readFileSync(fullPath))
+                  res.end(readFileSync(fullPath))
                   console.log('✓ File served successfully\n')
                   return
                 }

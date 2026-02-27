@@ -3,7 +3,7 @@
  */
 
 import type { AiOutput, GraphEdge, GraphNode } from '../types'
-import { ForceLayoutStrategy } from './layout/force-strategy'
+import { HierarchicalLayoutStrategy } from './layout/hierarchical-layout'
 
 /**
  * Build React Flow graph from AiOutput
@@ -59,13 +59,9 @@ export async function buildReactFlowGraph(aiOutput: AiOutput): Promise<{
     }
   }
 
-  // Apply force-directed layout (better visualization)
-  const layoutStrategy = new ForceLayoutStrategy()
-  const layouted = await layoutStrategy.apply(nodes, edges, {
-    iterations: 1000, // More iterations for better layout
-    width: 5000, // Larger canvas
-    height: 4000,
-  })
+  // Apply hierarchical layout (entry nodes on left, dependencies flow right)
+  const layoutStrategy = new HierarchicalLayoutStrategy()
+  const layouted = await layoutStrategy.apply(nodes, edges)
 
   return {
     nodes: layouted.nodes,

@@ -5,12 +5,13 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import FileUploader from './components/FileUploader'
 import { GraphView } from './components/GraphView'
 import { NodeDetails } from './components/NodeDetails'
+import { TreeView } from './components/TreeView'
 import { buildReactFlowGraph } from './lib/graph-builder'
 import { parseWithWorker } from './lib/worker-wrapper'
 import { useGraphStore } from './store/useGraphStore'
 
 function App() {
-  const { loadAiOutput, setLoading, setError, isLoading, error, aiOutput } = useGraphStore()
+  const { loadAiOutput, setLoading, setError, isLoading, error, aiOutput, displayMode } = useGraphStore()
   const [showGraph, setShowGraph] = useState(false)
 
   const handleFileSelect = useCallback(
@@ -175,7 +176,7 @@ function App() {
                 </div>
               )}
 
-              <GraphView />
+              {displayMode === 'graph' ? <GraphView /> : <TreeView />}
             </div>
           </div>
 
