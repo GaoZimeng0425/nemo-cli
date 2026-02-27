@@ -1,7 +1,8 @@
 import QRCode from 'qrcode'
 
 import { HttpClient } from '../lib/http.js'
-import type { BiliResponse, QRCodePollResult, QRCodeResult, QRCodeStatus, UserInfo } from '../types/index.js'
+import type { BiliResponse, QRCodePollResult, QRCodeResult, UserInfo } from '../types/index.js'
+import { QRCodeStatus } from '../types/index.js'
 
 const BASE_URL = 'https://api.bilibili.com'
 const PASSPORT_URL = 'https://passport.bilibili.com'

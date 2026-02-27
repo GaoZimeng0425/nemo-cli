@@ -144,6 +144,9 @@ importers:
 
   packages/bilibili:
     dependencies:
+      '@hono/node-server':
+        specifier: ^1.14.1
+        version: 1.19.9(hono@4.12.2)
       '@nemo-cli/shared':
         specifier: workspace:*
         version: link:../shared
