@@ -348,12 +348,45 @@ export const handleGitPop = async (stashOrResult: string | StashResult): Promise
   if (typeof stashOrResult !== 'string') {
     const { metadata } = stashOrResult
 
+    // Check if the stash reference exists before attempting to pop
+    const stashList = await handleGitStashCheck()
+    const stashExists = stashList.some((stash) => stash.startsWith(metadata.stashRef))
+
+    if (!stashExists) {
+      // Stash reference doesn't exist in git stash list
+      log.show(`Stash ${colors.yellow(metadata.stashRef)} not found. It may have been manually removed or expired.`, {
+        type: 'warn',
+      })
+      log.show(
+        `Branch: ${colors.cyan(metadata.currentBranch || 'unknown')} | Message: ${colors.dim(metadata.message)}`,
+        { type: 'warn' }
+      )
+      if (metadata.internalId && metadata.currentBranch) {
+        await updateStashStatus(
+          metadata.currentBranch,
+          metadata.internalId,
+          'not_found',
+          'Stash reference not found in git stash list'
+        )
+      }
+      return
+    }
+
     // Try to pop using stashRef
     const [error, result] = await xASync('git', ['stash', 'pop', metadata.stashRef])
 
     if (error) {
-      // Pop failed
-      log.show(`Failed to pop stash: ${error.message}`, { type: 'error' })
+      // Pop failed - show detailed error information
+      log.show(`Failed to pop stash ${colors.yellow(metadata.stashRef)}:`, { type: 'error' })
+      log.show(`  ${colors.red(error.message)}`, { type: 'error' })
+      log.show(`  Branch: ${colors.cyan(metadata.currentBranch || 'unknown')}`, { type: 'error' })
+      log.show(`  Message: ${colors.dim(metadata.message)}`, { type: 'error' })
+      log.show('', { type: 'error' })
+      log.show('Possible reasons:', { type: 'warn' })
+      log.show('  • The stash has merge conflicts with current changes', { type: 'warn' })
+      log.show('  • The stash was created on a different branch state', { type: 'warn' })
+      log.show(`  • Run ${colors.yellow('git stash list')} to see available stashes`, { type: 'warn' })
+
       if (metadata.internalId && metadata.currentBranch) {
         await updateStashStatus(metadata.currentBranch, metadata.internalId, 'popped', error.message)
       }
