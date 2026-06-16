@@ -93,9 +93,13 @@ export default defineConfig(() => {
       sourcemap: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom'],
-            'reactflow-vendor': ['reactflow'],
+          manualChunks: (id) => {
+            if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+              return 'react-vendor'
+            }
+            if (id.includes('node_modules/reactflow') || id.includes('node_modules/@reactflow')) {
+              return 'reactflow-vendor'
+            }
           },
         },
       },

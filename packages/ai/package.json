@@ -40,15 +40,15 @@
   "dependencies": {
     "@ai-sdk/deepseek": "^2.0.38",
     "@ai-sdk/google": "^3.0.82",
-    "@ai-sdk/openai": "3.0.33",
-    "@ai-sdk/react": "3.0.101",
+    "@ai-sdk/openai": "3.0.71",
+    "@ai-sdk/react": "3.0.207",
     "@nemo-cli/git": "workspace:*",
     "@nemo-cli/mail": "workspace:*",
     "@nemo-cli/shared": "workspace:*",
     "@nemo-cli/ui": "workspace:*",
-    "ai": "6.0.99",
+    "ai": "6.0.205",
     "confluence.js": "^2.1.0",
-    "fastmcp": "^3.35.0",
-    "zhipu-ai-provider": "^0.2.2"
+    "fastmcp": "^4.3.0",
+    "zhipu-ai-provider": "^0.3.1"
   }
 }

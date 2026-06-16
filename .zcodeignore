@@ -1,0 +1,25 @@
+# ZCode agent 忽略规则（gitignore 风格）
+# 排除重量级目录，避免 agent 子进程因文件过多而崩溃 (transport closed)
+
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 构建产物
+dist/
+build/
+.next/
+.nx/cache/
+.nx/workspace-data/
+out/
+
+# 其他大目录 / 缓存
+.git/
+coverage/
+*.log
+.DS_Store
+*.tsbuildinfo
+
+# 二进制 / 媒体
+*.node
+*.wasm

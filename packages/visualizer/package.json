@@ -24,8 +24,8 @@
     "d3-hierarchy": "^3.1.2",
     "d3-shape": "^3.2.0",
     "elkjs": "^0.11.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "reactflow": "^11.11.4",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
@@ -34,16 +34,16 @@
     "@tailwindcss/postcss": "^4.3.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "^6.0.2",
     "autoprefixer": "^10.5.0",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.1",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.5",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
     "vitest": "^4.1.9"
   }
 }
