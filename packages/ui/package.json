@@ -38,14 +38,14 @@
     "cfonts": "^3.3.1",
     "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
-    "figlet": "^1.10.0",
+    "figlet": "^1.11.0",
     "figures": "^6.1.0",
     "ink": "^6.8.0",
     "ink-big-text": "^2.0.0",
-    "ink-gradient": "^4.0.0",
+    "ink-gradient": "^4.0.1",
     "ink-markdown": "^1.0.4",
     "ink-table": "^3.1.0",
-    "marked": "^17.0.3",
+    "marked": "^17.0.6",
     "react": "catalog:"
   },
   "devDependencies": {

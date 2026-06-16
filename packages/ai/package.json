@@ -38,8 +38,8 @@
     "check": "biome check --write"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^2.0.20",
-    "@ai-sdk/google": "^3.0.31",
+    "@ai-sdk/deepseek": "^2.0.38",
+    "@ai-sdk/google": "^3.0.82",
     "@ai-sdk/openai": "3.0.33",
     "@ai-sdk/react": "3.0.101",
     "@nemo-cli/git": "workspace:*",
@@ -48,7 +48,7 @@
     "@nemo-cli/ui": "workspace:*",
     "ai": "6.0.99",
     "confluence.js": "^2.1.0",
-    "fastmcp": "^3.33.0",
+    "fastmcp": "^3.35.0",
     "zhipu-ai-provider": "^0.2.2"
   }
 }
